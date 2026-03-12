@@ -553,7 +553,7 @@
         <div class="field-grid">
           <div class="field">
             <label class="lbl">WhatsApp de contacto <span class="req">*</span></label>
-            <input class="inp" type="tel" id="whatsapp" placeholder="Ej: +56 9 9199 9301" />
+            <input class="inp" type="tel" id="whatsapp" placeholder="Ej: +569 9199 9301" value="+569" />
             <div class="hint">Los clientes te escribirán directamente aquí.</div>
           </div>
           <div class="field">
@@ -567,6 +567,13 @@
           <div class="field">
             <label class="lbl">Sitio web (si tienes)</label>
             <input class="inp" type="url" id="web" placeholder="https://minegocio.cl" />
+            <div class="hint" style="margin-top:6px;line-height:1.55">
+              ¿No tienes sitio web?
+              <a href="https://wa.me/56991999301?text=Quiero%20crear%20mi%20sitio%20web%20por%2045.000" target="_blank" style="color:var(--coral);font-weight:600;text-decoration:none">
+                Contáctanos aquí →
+              </a>
+              <span style="color:var(--muted)">— creamos tu sitio desde $45.000</span>
+            </div>
           </div>
         </div>
       </div>
@@ -630,32 +637,40 @@
             <span class="pos-badge pb-gold">★★★ Más visible</span>
             <span class="pos-ico">🥇</span>
             <div class="pos-name">Posición #1 Oro</div>
-            <div class="pos-price">Mayor visibilidad<br/>Top del listado</div>
+            <div class="pos-price">Top del listado<br/><strong style="color:var(--coral)">$50.000/mes</strong></div>
           </label>
           <label class="pos-option" onclick="selectPos(this, 'Posición Plata #2')">
             <input type="radio" name="posicion" value="Posición Plata #2" />
             <span class="pos-badge pb-silver">★★☆</span>
             <span class="pos-ico">🥈</span>
             <div class="pos-name">Posición #2 Plata</div>
-            <div class="pos-price">Alta visibilidad<br/>Segundo destacado</div>
+            <div class="pos-price">Segundo destacado<br/><strong style="color:var(--coral)">$30.000/mes</strong></div>
           </label>
           <label class="pos-option" onclick="selectPos(this, 'Posición Bronce #3')">
             <input type="radio" name="posicion" value="Posición Bronce #3" />
             <span class="pos-badge pb-bronze">★☆☆</span>
             <span class="pos-ico">🥉</span>
             <div class="pos-name">Posición #3 Bronce</div>
-            <div class="pos-price">Buena visibilidad<br/>Tercer destacado</div>
+            <div class="pos-price">Tercer destacado<br/><strong style="color:var(--coral)">$20.000/mes</strong></div>
           </label>
           <label class="pos-option" onclick="selectPos(this, 'Listado Básico')">
             <input type="radio" name="posicion" value="Listado Básico" />
             <span class="pos-badge pb-basic">Básico</span>
             <span class="pos-ico">📋</span>
             <div class="pos-name">Listado Básico</div>
-            <div class="pos-price">Visibilidad básica<br/>Solo nombre y precio</div>
+            <div class="pos-price">Visibilidad básica<br/><strong style="color:var(--teal)">Gratis</strong></div>
           </label>
         </div>
-        <div style="margin-top:20px;padding:16px 18px;background:var(--bg);border-radius:12px;border:1px solid var(--border)">
-          <p style="font-size:.82rem;color:var(--muted);line-height:1.6">💡 <strong style="color:var(--ink)">¿Cómo funciona?</strong> Una vez revisemos tu registro, te contactaremos para confirmar disponibilidad y detalle de tu posición. Las posiciones se asignan en orden de solicitud.</p>
+
+        <!-- Aviso promocional -->
+        <div style="margin-top:16px;padding:14px 18px;background:#f0fdf4;border-radius:12px;border:1.5px solid #86efac">
+          <p style="font-size:.82rem;color:#166534;line-height:1.65">
+            🎉 <strong>¡Lanzamiento gratuito!</strong> Por orden de llegada, las posiciones destacadas son <strong>gratis durante los primeros 2 meses</strong>. Luego se confirmará la suscripción al valor indicado, por orden de quién paga primero. ¡Aprovecha ahora antes que se acaben!
+          </p>
+        </div>
+
+        <div style="margin-top:10px;padding:14px 18px;background:var(--bg);border-radius:12px;border:1px solid var(--border)">
+          <p style="font-size:.82rem;color:var(--muted);line-height:1.6">💡 <strong style="color:var(--ink)">¿Cómo funciona?</strong> Las posiciones se asignan por orden de solicitud. Una vez revisemos tu registro, te contactaremos para confirmar tu posición y activar tu publicación.</p>
         </div>
       </div>
     </div>
@@ -768,7 +783,7 @@
     <div style="background:var(--coral-lt);border:1.5px solid var(--coral-md);border-radius:14px;padding:18px 22px;margin-bottom:20px">
       <p style="font-size:.87rem;color:var(--ink2);line-height:1.6;">
         ✅ Al confirmar, se descargará el <strong>archivo Excel</strong> con tus datos. 
-        Luego deberás enviarlo a <strong>contactocotizaeventos@gmail.com</strong> o por WhatsApp al <strong>+56 9 9199 9301</strong> para completar tu registro.
+        Luego deberás enviarlo a <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9ffcf0f1ebfefcebf0fcf0ebf6e5fefae9faf1ebf0ecdff8f2fef6f3b1fcf0f2">[email&#160;protected]</a></strong> o por WhatsApp al <strong>+56 9 9199 9301</strong> para completar tu registro.
       </p>
     </div>
 
@@ -854,7 +869,7 @@
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 /* ═══════════════════════════════════════
    STATE
 ═══════════════════════════════════════ */
@@ -1267,8 +1282,8 @@ let logoUrl  = '';
 async function handleImageUpload(type, input) {
   const file = input.files[0];
   if (!file) return;
-  if (file.size > 5 * 1024 * 1024) {
-    showToast('La imagen supera los 5MB.', 'error'); return;
+  if (file.size > 50 * 1024 * 1024) {
+    showToast('La imagen supera los 50MB.', 'error'); return;
   }
   const reader = new FileReader();
   reader.onload = async (e) => {
@@ -1328,14 +1343,4 @@ function removeImage(type) {
   if (type === 'cover') {
     coverUrl = '';
     document.getElementById('cover-url-input').value = '';
-  } else {
-    logoUrl = '';
-    document.getElementById('logo-url').value = '';
-  }
-  document.getElementById(`${type}-preview-wrap`).style.display = 'none';
-  document.getElementById(`${type}-preview-img`).src = '';
-}
-
-</script>
-</body>
-</html>
+  } 

@@ -400,15 +400,9 @@
         <div class="em-field full"><label>Tagline / Eslogan</label><input id="em-tagline" type="text" placeholder="Frase corta que aparece debajo del nombre"/></div>
         <div class="em-field full"><label>Descripción completa</label><textarea id="em-descripcion" rows="3"></textarea></div>
         <div class="em-field full"><label>Diferenciador (badge)</label><input id="em-diferenciador" type="text" placeholder="✦ Tu diferenciador principal"/></div>
-        <div class="em-field"><label>Categoría</label>
+        <div class="em-field"><label>Categoría / Etiqueta</label>
           <select id="em-categoria">
-            <option value="banqueteria">🍽️ Banquetería</option>
-            <option value="pizzas">🍕 Catering Pizzas</option>
-            <option value="hamburguesas">🍔 Catering Hamburguesas</option>
-            <option value="churrascos">🥩 Catering Churrascos</option>
-            <option value="completos">🌭 Catering Completos</option>
-            <option value="torta">🎂 Torta y Postres</option>
-            <option value="barra">🍹 Barra de Tragos</option>
+            <option value="">Cargando...</option>
           </select>
         </div>
         <div class="em-field"><label>Posición (1=Oro, 2=Plata, 3=Bronce, 4+=Básico)</label><input id="em-posicion" type="number" min="1" max="99"/></div>
@@ -505,7 +499,8 @@ function logout() {
 }
 
 function getStoredToken() {
-  return document.cookie.split(';').find(c => c.trim().startsWith('ctf_admin='))?.split('=')[1] || '';
+  const match = document.cookie.split(';').find(c => c.trim().startsWith('ctf_admin='));
+  return match ? match.trim().slice('ctf_admin='.length) : '';
 }
 
 async function showApp() {
@@ -513,6 +508,7 @@ async function showApp() {
   document.getElementById('app').style.display = 'block';
   await loadSolicitudes();
   await loadProveedores();
+  await loadCategorias();  // pre-load so edit modal has dynamic options
 }
 
 // Check cookie on load
@@ -776,7 +772,15 @@ function openEdit(id) {
   document.getElementById('em-tagline').value     = p.tagline || '';
   document.getElementById('em-descripcion').value = p.descripcion || '';
   document.getElementById('em-diferenciador').value = p.diferenciador || '';
-  document.getElementById('em-categoria').value   = p.categoria || 'banqueteria';
+  // Populate dynamic categories first, then set value
+  if (allCategorias.length) populateCatSelect();
+  // Set the value after a tick so options exist
+  setTimeout(() => {
+    const sel = document.getElementById('em-categoria');
+    sel.value = p.categoria || p.etiqueta_id || '';
+    if (!sel.value && sel.options.length) sel.selectedIndex = 0;
+  }, 50);
+  void 0; // placeholder for removed direct assignment
   document.getElementById('em-posicion').value    = p.posicion || 4;
   document.getElementById('em-precio-min').value  = p.precio_minimo || '';
   document.getElementById('em-precio-max').value  = p.precio_maximo || '';
@@ -889,18 +893,52 @@ let allCategorias = [];
 let selectedCatId = null;
 
 async function loadCategorias() {
-  const token = localStorage.getItem('admin_token');
   try {
     const res = await fetch('/api/admin-manage?action=categorias', {
-      headers: { 'Authorization': 'Bearer ' + token }
+      headers: { 'Authorization': 'Bearer ' + TOKEN }
     });
+    if (!res.ok) { showToast('Error ' + res.status + ' cargando categorías', 'error'); return; }
     const data = await res.json();
     allCategorias = data.categorias || [];
     renderCatList();
     if (selectedCatId) renderTagPanel(selectedCatId);
+    populateCatSelect();  // update provider edit dropdown too
   } catch(e) {
-    showToast('Error cargando categorías', 'error');
+    showToast('Error cargando categorías: ' + e.message, 'error');
   }
+}
+
+// Populate the categoria select in the edit-provider modal with real tags from DB
+function populateCatSelect() {
+  const sel = document.getElementById('em-categoria');
+  if (!sel || !allCategorias.length) return;
+  const prev = sel.value;
+  sel.innerHTML = '';
+
+  allCategorias.forEach(cat => {
+    // Group label
+    const grp = document.createElement('optgroup');
+    grp.label = (cat.ico || '') + ' ' + cat.nombre;
+
+    if (cat.etiquetas && cat.etiquetas.length) {
+      cat.etiquetas.forEach(tag => {
+        const opt = document.createElement('option');
+        opt.value = tag.id;
+        opt.textContent = (tag.ico || '🏷️') + ' ' + tag.nombre;
+        grp.appendChild(opt);
+      });
+    } else {
+      // No tags — use the category itself as option
+      const opt = document.createElement('option');
+      opt.value = cat.id;
+      opt.textContent = (cat.ico || '🍽️') + ' ' + cat.nombre;
+      grp.appendChild(opt);
+    }
+    sel.appendChild(grp);
+  });
+
+  // Restore previous value if still valid
+  if (prev && sel.querySelector(`option[value="${prev}"]`)) sel.value = prev;
 }
 
 function renderCatList() {
@@ -1000,14 +1038,15 @@ function showTagModal(tag, catId, isEdit) {
 }
 
 async function saveCat() {
-  const token = localStorage.getItem('admin_token');
+  const token = TOKEN;
   const isEdit = document.getElementById('mc-edit').value === '1';
   const payload = {
-    action: isEdit ? 'update_categoria' : 'create_categoria',
-    id:     document.getElementById('mc-id').value,
-    nombre: document.getElementById('mc-nombre').value.trim(),
-    ico:    document.getElementById('mc-ico').value.trim(),
-    desc:   document.getElementById('mc-desc').value.trim(),
+    action:   isEdit ? 'update_categoria' : 'create_categoria',
+    id:       document.getElementById('mc-id').value,
+    id_slug:  document.getElementById('mc-id-slug')?.value.trim() || '',
+    nombre:   document.getElementById('mc-nombre').value.trim(),
+    ico:      document.getElementById('mc-ico').value.trim(),
+    desc:     document.getElementById('mc-desc').value.trim(),
   };
   if (!payload.nombre) { showToast('El nombre es obligatorio','error'); return; }
   try {
@@ -1025,7 +1064,7 @@ async function saveCat() {
 
 async function deleteCat(catId, nombre) {
   if (!confirm(`¿Eliminar la categoría "${nombre}"? Esto también eliminará todas sus etiquetas.`)) return;
-  const token = localStorage.getItem('admin_token');
+  const token = TOKEN;
   try {
     const res = await fetch('/api/admin-manage', {
       method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
@@ -1040,15 +1079,16 @@ async function deleteCat(catId, nombre) {
 }
 
 async function saveTag() {
-  const token = localStorage.getItem('admin_token');
+  const token = TOKEN;
   const isEdit = document.getElementById('mt-edit').value === '1';
   const payload = {
-    action:    isEdit ? 'update_etiqueta' : 'create_etiqueta',
-    cat_id:    document.getElementById('mt-cat-id').value,
-    id:        document.getElementById('mt-id').value,
-    nombre:    document.getElementById('mt-nombre').value.trim(),
-    ico:       document.getElementById('mt-ico').value.trim(),
-    desc:      document.getElementById('mt-desc').value.trim(),
+    action:   isEdit ? 'update_etiqueta' : 'create_etiqueta',
+    cat_id:   document.getElementById('mt-cat-id').value,
+    id:       document.getElementById('mt-id').value,
+    id_slug:  document.getElementById('mt-id-slug')?.value.trim() || '',
+    nombre:   document.getElementById('mt-nombre').value.trim(),
+    ico:      document.getElementById('mt-ico').value.trim(),
+    desc:     document.getElementById('mt-desc').value.trim(),
   };
   if (!payload.nombre) { showToast('El nombre es obligatorio','error'); return; }
   try {
@@ -1066,7 +1106,7 @@ async function saveTag() {
 
 async function deleteTag(catId, tagId, nombre) {
   if (!confirm(`¿Eliminar la etiqueta "${nombre}"?`)) return;
-  const token = localStorage.getItem('admin_token');
+  const token = TOKEN;
   try {
     const res = await fetch('/api/admin-manage', {
       method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},

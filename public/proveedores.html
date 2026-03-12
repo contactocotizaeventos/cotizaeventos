@@ -59,18 +59,129 @@
     .ld-3{background:var(--bronze)}
     .ld-basic{background:var(--border2)}
 
-    /* SEARCH BAR */
-    .search-header{background:var(--white);border-bottom:1px solid var(--border);padding:16px 40px;position:sticky;top:60px;z-index:200}
-    .search-inner{max-width:1080px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-    .search-box{position:relative;flex:1;min-width:220px}
-    .search-box input{width:100%;padding:10px 14px 10px 40px;border:1.5px solid var(--border);border-radius:99px;font-family:'Outfit',sans-serif;font-size:.88rem;color:var(--ink);background:var(--bg);transition:.22s;outline:none}
-    .search-box input:focus{border-color:var(--coral);background:var(--coral-lt);box-shadow:0 0 0 3px rgba(232,84,42,.08)}
-    .search-box input::placeholder{color:var(--muted)}
-    .search-box .s-ico{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:.9rem;pointer-events:none}
-    .quick-filters{display:flex;flex-wrap:wrap;gap:6px}
-    .qf-btn{padding:6px 14px;border-radius:99px;font-size:.75rem;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--white);color:var(--muted);transition:.18s;white-space:nowrap}
-    .qf-btn:hover{border-color:var(--coral);color:var(--coral)}
-    .qf-btn.active{background:var(--coral-lt);border-color:var(--coral);color:var(--coral)}
+    /* ── SEARCH BAR ── */
+    .sticky-bar{
+      position:sticky;top:60px;z-index:200;
+      background:rgba(255,255,255,.97);
+      backdrop-filter:blur(12px);
+      border-bottom:1px solid var(--border);
+      transition:padding .28s var(--ease);
+    }
+
+    /* Row 1: search input */
+    .sb-search-row{
+      display:flex;align-items:center;gap:10px;
+      padding:10px 32px;
+      max-width:1200px;margin:0 auto;
+    }
+    /* Desktop: full-width input */
+    .sb-input-wrap{
+      position:relative;flex:1;
+    }
+    .sb-input-wrap input{
+      width:100%;padding:9px 14px 9px 38px;
+      border:1.5px solid var(--border);border-radius:99px;
+      font-family:'Outfit',sans-serif;font-size:.87rem;color:var(--ink);
+      background:var(--bg);outline:none;transition:.22s;
+    }
+    .sb-input-wrap input:focus{border-color:var(--coral);background:var(--coral-lt);box-shadow:0 0 0 3px rgba(232,84,42,.08)}
+    .sb-input-wrap input::placeholder{color:var(--muted)}
+    .sb-input-wrap .sb-lupa{
+      position:absolute;left:12px;top:50%;transform:translateY(-50%);
+      font-size:.9rem;pointer-events:none;
+    }
+    /* Mobile: lupa toggle button */
+    .sb-lupa-btn{
+      display:none;
+      width:38px;height:38px;border-radius:50%;
+      border:1.5px solid var(--border);background:var(--bg);
+      font-size:1rem;cursor:pointer;
+      align-items:center;justify-content:center;
+      flex-shrink:0;transition:.18s;
+    }
+    .sb-lupa-btn:hover{border-color:var(--coral);background:var(--coral-lt)}
+    .sb-lupa-btn.open{border-color:var(--coral);background:var(--coral);color:#fff}
+    /* Mobile expanded input */
+    .sb-input-expanded{
+      display:none;padding:0 16px 10px;
+      animation:slideDown .22s var(--ease);
+    }
+    .sb-input-expanded.open{display:block}
+    .sb-input-expanded input{
+      width:100%;padding:9px 14px 9px 38px;
+      border:1.5px solid var(--coral);border-radius:99px;
+      font-family:'Outfit',sans-serif;font-size:.87rem;color:var(--ink);
+      background:var(--coral-lt);outline:none;
+      box-shadow:0 0 0 3px rgba(232,84,42,.08);
+    }
+    .sb-input-expanded .sb-lupa{
+      position:absolute;left:26px;top:50%;transform:translateY(-50%);
+      font-size:.9rem;pointer-events:none;
+    }
+    @keyframes slideDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+
+    /* Row 2: category pills */
+    .sb-pills-row{
+      overflow-x:auto;
+      -webkit-overflow-scrolling:touch;
+      scrollbar-width:none;
+    }
+    .sb-pills-row::-webkit-scrollbar{display:none}
+    .sb-pills-inner{
+      display:flex;align-items:center;gap:0;
+      padding:6px 32px 10px;
+      white-space:nowrap;
+    }
+
+    /* Parent category pill */
+    .cat-pill{
+      display:inline-flex;align-items:center;gap:7px;
+      padding:7px 16px;border-radius:99px;
+      font-size:.82rem;font-weight:500;color:var(--ink2);
+      cursor:pointer;border:1.5px solid var(--border);background:var(--white);
+      transition:.18s;white-space:nowrap;flex-shrink:0;margin-right:6px;
+      user-select:none;
+    }
+    .cat-pill:hover{border-color:var(--coral-md);background:var(--coral-lt);color:var(--coral)}
+    .cat-pill.open{border-color:var(--coral);background:var(--coral);color:#fff}
+    .cat-pill .cp-arr{font-size:.65rem;transition:transform .2s;display:inline-block}
+    .cat-pill.open .cp-arr{transform:rotate(180deg)}
+
+    /* Sub-tag pills — injected inline after parent */
+    .tag-pill-group{
+      display:inline-flex;align-items:center;gap:5px;
+      margin-right:10px;
+      animation:fadeInPills .18s ease;
+    }
+    @keyframes fadeInPills{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:none}}
+    .tag-pill{
+      display:inline-flex;align-items:center;gap:5px;
+      padding:6px 13px;border-radius:99px;
+      font-size:.78rem;font-weight:500;color:var(--ink2);
+      cursor:pointer;border:1.5px solid var(--border2);background:var(--bg2);
+      transition:.15s;white-space:nowrap;flex-shrink:0;
+      user-select:none;
+    }
+    .tag-pill:hover{border-color:var(--coral);color:var(--coral);background:var(--coral-lt)}
+    .tag-pill.active{border-color:var(--coral);background:var(--coral-lt);color:var(--coral);font-weight:600}
+
+    /* Separator between parent group and tag group */
+    .pill-sep{color:var(--border2);font-size:.7rem;margin-right:6px;flex-shrink:0}
+
+    /* Responsive */
+    @media(max-width:600px){
+      .sb-search-row{padding:8px 14px}
+      .sb-input-wrap{display:none}
+      .sb-lupa-btn{display:inline-flex}
+      .sb-input-expanded .sb-lupa-pos{position:relative}
+      .sb-pills-inner{padding:5px 14px 9px}
+      .cat-pill{font-size:.76rem;padding:6px 12px}
+      .tag-pill{font-size:.72rem;padding:5px 10px}
+    }
+    @media(min-width:601px) and (max-width:860px){
+      .sb-search-row{padding:9px 20px}
+      .sb-pills-inner{padding:5px 20px 10px}
+    }
 
     /* LAYOUT — sin sidebar, full width */
     .page-body{max-width:1200px;margin:0 auto;padding:0 0 100px}
@@ -112,28 +223,7 @@
     .csb-count{font-size:.75rem;color:var(--muted);white-space:nowrap;flex-shrink:0}
     .csb-count strong{color:var(--coral)}
 
-    /* Scroll track */
-    .csb-track-wrap{
-      position:relative;
-    }
-    /* fade edges */
-    .csb-track-wrap::before,.csb-track-wrap::after{
-      content:'';position:absolute;top:0;bottom:0;width:40px;z-index:2;pointer-events:none;
-      transition:opacity .2s;
-    }
-    .csb-track-wrap::before{left:0;background:linear-gradient(to right,var(--white),transparent)}
-    .csb-track-wrap::after{right:0;background:linear-gradient(to left,var(--white),transparent)}
 
-    .csb-track{
-      display:flex;align-items:stretch;gap:0;
-      overflow-x:auto;
-      padding:10px 32px 12px;
-      scroll-behavior:smooth;
-      -webkit-overflow-scrolling:touch;
-    }
-    .csb-track::-webkit-scrollbar{height:3px}
-    .csb-track::-webkit-scrollbar-thumb{background:var(--coral-md);border-radius:99px}
-    .csb-track::-webkit-scrollbar-track{background:transparent}
 
     /* Group divider inside track */
     .csb-group-divider{
@@ -325,7 +415,7 @@
       .search-header{padding:8px 14px}
       .cat-scroll-bar{top:116px}
       .csb-search-row{padding:8px 16px 0}
-      .csb-track{padding:8px 16px 10px}
+
       .content-area{padding:20px 16px 0}
       .pos-card{flex-direction:column}
       .pos-cover{height:130px}
@@ -335,22 +425,7 @@
       .modal-info-grid{grid-template-columns:1fr}
       .modal-ctas{grid-template-columns:1fr}
     }
-    /* ── SEARCH RESPONSIVE ── */
-    @media(max-width:600px){
-      .search-header{padding:8px 12px !important}
-      .search-header > div { flex-direction:column; gap:8px; align-items:stretch !important; }
-      .search-box { flex:1 1 100% !important; min-width:unset !important; }
-      .search-box input { font-size:.8rem; padding:9px 12px 9px 36px; }
-      #csb-track { gap:5px !important; padding:1px 0 !important; }
-      .csb-pill { font-size:.72rem !important; padding:5px 10px !important; }
-      .csb-pill .cp-ico { font-size:.85rem !important; }
-    }
-    @media(min-width:601px) and (max-width:860px){
-      .search-header { padding:10px 16px !important; }
-      .search-box { flex:0 0 200px !important; }
-      .search-box input { font-size:.82rem; }
-      .csb-pill { font-size:.76rem !important; padding:6px 11px !important; }
-    }
+
   </style>
 </head>
 <body>
@@ -379,19 +454,35 @@
   </div>
 </div>
 
-<!-- BARRA ÚNICA: BUSCAR + CATEGORÍAS -->
-<div class="search-header" style="position:sticky;top:60px;z-index:100;background:rgba(255,255,255,.97);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)">
-  <div style="max-width:1080px;margin:0 auto;display:flex;gap:14px;align-items:center;flex-wrap:wrap">
-    <div class="search-box" style="flex:0 0 260px;min-width:180px">
-      <span class="s-ico">🔍</span>
+<!-- ── STICKY BAR: BUSCAR + CATEGORÍAS ── -->
+<div class="sticky-bar" id="sticky-bar">
+
+  <!-- Fila 1: buscador -->
+  <div class="sb-search-row">
+    <!-- Desktop: input visible siempre -->
+    <div class="sb-input-wrap">
+      <span class="sb-lupa">🔍</span>
       <input type="text" id="global-search" placeholder="Buscar proveedor o servicio..." oninput="handleSearch()" autocomplete="off" />
     </div>
-    <div style="flex:1;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch">
-      <div class="csb-track" id="csb-track" style="display:flex;gap:7px;white-space:nowrap;padding:2px 0">
-        <!-- categorías generadas por JS -->
-      </div>
+    <!-- Mobile: solo lupa, clickeable -->
+    <button class="sb-lupa-btn" id="sb-lupa-btn" onclick="toggleMobileSearch()" aria-label="Buscar">🔍</button>
+  </div>
+
+  <!-- Mobile expanded search (oculto por defecto) -->
+  <div class="sb-input-expanded" id="sb-input-expanded">
+    <div style="position:relative">
+      <span class="sb-lupa" style="position:absolute;left:12px;top:50%;transform:translateY(-50%)">🔍</span>
+      <input type="text" id="global-search-mobile" placeholder="Buscar proveedor o servicio..." oninput="handleSearchMobile()" autocomplete="off" style="padding-left:38px" />
     </div>
   </div>
+
+  <!-- Fila 2: pills de categorías (scroll horizontal) -->
+  <div class="sb-pills-row">
+    <div class="sb-pills-inner" id="cat-pills-track">
+      <!-- generado por JS -->
+    </div>
+  </div>
+
 </div>
 
 <div class="page-body">
@@ -469,190 +560,151 @@ const RANK = {
 };
 
 /* ═══════════════════════════════════════════
-   BUILD CATEGORY SCROLL BAR (once)
+   BUILD CATEGORY PILLS (parent categories only)
+   Sub-tags expand inline when parent is clicked
 ═══════════════════════════════════════════ */
+let openCatId = null;  // which parent cat is currently open
+
 function buildCatBar() {
-  const track = document.getElementById('csb-track');
+  const track = document.getElementById('cat-pills-track');
+  if (!track) return;
   track.innerHTML = '';
 
-  let total = 0;
-
-  GRUPOS.forEach((g, gi) => {
-    // Group label divider (except first)
-    if (gi > 0) {
-      track.innerHTML += `<div class="csb-group-divider"><span>${g.ico} ${g.nombre}</span></div>`;
-    } else {
-      track.innerHTML += `<div class="csb-group-divider"><span>${g.ico} ${g.nombre}</span></div>`;
-    }
-
+  GRUPOS.forEach(g => {
     g.categorias.forEach(cat => {
-      total++;
-      track.innerHTML += `
-        <a class="csb-pill" href="#${cat.id}"
-           data-cat="${cat.id}"
-           data-name="${cat.nombre.toLowerCase()}"
-           data-group="${g.id}"
-           onclick="pillClick(event, '${cat.id}')">
-          <span class="cp-ico">${cat.ico}</span>
-          ${cat.nombre}
-        </a>`;
+      // Parent pill
+      const pill = document.createElement('span');
+      pill.className = 'cat-pill';
+      pill.dataset.cat = cat.id;
+      pill.innerHTML = `<span>${cat.ico}</span>${cat.nombre}<span class="cp-arr">▾</span>`;
+      pill.addEventListener('click', e => { e.stopPropagation(); toggleCatPill(cat.id); });
+      track.appendChild(pill);
+
+      // Placeholder for sub-tags (injected right after parent)
+      const tagSlot = document.createElement('span');
+      tagSlot.id = `tag-slot-${cat.id}`;
+      track.appendChild(tagSlot);
     });
   });
 
-  updateCsbCount(total, total);
+  // Close pills when clicking outside
+  document.addEventListener('click', () => closeCatPill());
 }
 
-function updateCsbCount(visible, total) {
-  const el = document.getElementById('csb-count');
-  if (!el) return;
-  el.innerHTML = visible === total
-    ? `<strong>${total}</strong> categorías`
-    : `<strong>${visible}</strong> de ${total}`;
-}
-
-/* ═══════════════════════════════════════════
-   CATEGORY BAR SEARCH
-═══════════════════════════════════════════ */
-function filterCatBar(q) {
-  const swEl = document.getElementById('csb-sw'); if(swEl) swEl.classList.toggle('has-val', q.length > 0);
-  const query = q.toLowerCase().trim();
-  const pills = document.querySelectorAll('.csb-pill');
-  let vis = 0;
-  pills.forEach(p => {
-    const match = !query || p.dataset.name.includes(query);
-    p.classList.toggle('hidden', !match);
-    if (match) vis++;
-  });
-  // hide group dividers if all following pills are hidden
-  document.querySelectorAll('.csb-group-divider').forEach((div, i, all) => {
-    const nextDivider = all[i + 1];
-    let sibling = div.nextElementSibling;
-    let hasVis = false;
-    while (sibling && !sibling.classList.contains('csb-group-divider')) {
-      if (!sibling.classList.contains('hidden')) hasVis = true;
-      sibling = sibling.nextElementSibling;
-    }
-    div.style.display = hasVis ? '' : 'none';
-  });
-  updateCsbCount(vis, document.querySelectorAll('.csb-pill').length);
-}
-
-function clearCatSearch() {
-  const inp = document.getElementById('cat-search');
-  inp.value = '';
-  filterCatBar('');
-  inp.focus();
-}
-
-/* ═══════════════════════════════════════════
-   PILL CLICK — smooth scroll + active state
-═══════════════════════════════════════════ */
-function pillClick(e, catId) {
-  e.preventDefault();
-  document.querySelectorAll('.csb-pill').forEach(p => p.classList.remove('active'));
-  const pill = document.querySelector(`.csb-pill[data-cat="${catId}"]`);
-  if (pill) {
-    pill.classList.add('active');
-    // scroll pill into center of track
-    const track = document.getElementById('csb-track');
-    track.scrollTo({ left: pill.offsetLeft - track.clientWidth / 2 + pill.offsetWidth / 2, behavior: 'smooth' });
+function toggleCatPill(catId) {
+  if (openCatId === catId) {
+    closeCatPill();
+    return;
   }
+  closeCatPill();
+  openCatId = catId;
+
+  // Mark parent active
+  const pill = document.querySelector(`.cat-pill[data-cat="${catId}"]`);
+  if (pill) {
+    pill.classList.add('open');
+    // Scroll pill into view
+    const track = document.getElementById('cat-pills-track');
+    const pillLeft = pill.offsetLeft;
+    track.parentElement.scrollTo({ left: pillLeft - 32, behavior: 'smooth' });
+  }
+
+  // Build sub-tag pills in slot
+  const cat = CAT_INDEX[catId];
+  const slot = document.getElementById(`tag-slot-${catId}`);
+  if (!slot || !cat?.proveedores?.length) return;
+
+  // Get unique tag names from proveedores (or just use cat directly since cat = tag)
+  slot.innerHTML = '';
+  const sep = document.createElement('span');
+  sep.className = 'pill-sep';
+  sep.textContent = '›';
+  slot.appendChild(sep);
+
+  const group = document.createElement('span');
+  group.className = 'tag-pill-group';
+
+  // Cat IS the tag, so just one "all" tag = scroll to section
+  const allTag = document.createElement('span');
+  allTag.className = 'tag-pill active';
+  allTag.textContent = `Ver todos (${cat.proveedores.length})`;
+  allTag.addEventListener('click', e => {
+    e.stopPropagation();
+    scrollToSection(catId);
+  });
+  group.appendChild(allTag);
+
+  // If cat has sub-providers with tags, show individual ones
+  const tagMap = {};
+  cat.proveedores.forEach(p => {
+    if (p.tag) {
+      if (!tagMap[p.tag]) tagMap[p.tag] = { label: p.tag, count: 0 };
+      tagMap[p.tag].count++;
+    }
+  });
+  Object.values(tagMap).forEach(t => {
+    const tp = document.createElement('span');
+    tp.className = 'tag-pill';
+    tp.textContent = `${t.label} (${t.count})`;
+    tp.addEventListener('click', e => { e.stopPropagation(); scrollToSection(catId); });
+    group.appendChild(tp);
+  });
+
+  slot.appendChild(group);
+}
+
+function closeCatPill() {
+  if (!openCatId) return;
+  document.querySelector(`.cat-pill[data-cat="${openCatId}"]`)?.classList.remove('open');
+  const slot = document.getElementById(`tag-slot-${openCatId}`);
+  if (slot) slot.innerHTML = '';
+  openCatId = null;
+}
+
+function scrollToSection(catId) {
   const target = document.getElementById(catId);
   if (target) {
-    // offset = nav(60) + search(56) + catbar(~90)
-    const y = target.getBoundingClientRect().top + window.scrollY - 220;
-    window.scrollTo({ top: y, behavior: 'smooth' });
+    const offset = document.getElementById('sticky-bar')?.offsetHeight || 120;
+    window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - offset - 12, behavior: 'smooth' });
   }
 }
 
-/* ═══════════════════════════════════════════
-   RENDER CONTENT
-═══════════════════════════════════════════ */
-function render(groupFilter = 'all', searchQ = '') {
-  const area = document.getElementById('content-area');
-  area.innerHTML = '';
+/* ── MOBILE SEARCH TOGGLE ── */
+function toggleMobileSearch() {
+  const btn = document.getElementById('sb-lupa-btn');
+  const exp = document.getElementById('sb-input-expanded');
+  const isOpen = exp.classList.contains('open');
 
-  let anyVisible = false;
-
-  GRUPOS.forEach(g => {
-    const matchGroup = groupFilter === 'all' || groupFilter === g.id;
-    if (!matchGroup) return;
-
-    const matchedCats = g.categorias.filter(cat => {
-      if (!searchQ) return true;
-      const q = searchQ.toLowerCase();
-      return cat.nombre.toLowerCase().includes(q) ||
-             cat.desc.toLowerCase().includes(q) ||
-             cat.proveedores.some(p => p.nombre.toLowerCase().includes(q) || (p.tagline||'').toLowerCase().includes(q));
-    });
-    if (matchedCats.length === 0) return;
-    anyVisible = true;
-
-    const grpDiv = document.createElement('div');
-    grpDiv.className = 'group-section';
-    grpDiv.innerHTML = `
-      <div class="group-section-header">
-        <div class="group-section-icon">${g.ico}</div>
-        <div>
-          <h2>${g.nombre}</h2>
-          <p>${matchedCats.length} categoría${matchedCats.length!==1?'s':''}</p>
-        </div>
-      </div>`;
-
-    matchedCats.forEach(cat => {
-      const paid  = cat.proveedores.filter(p => p.pos <= 3).sort((a,b) => a.pos-b.pos);
-      // Básicos: sin rango (pos > 3 o sin pos), orden aleatorio en cada carga
-      const basicAll = cat.proveedores
-        .filter(p => p.pos > 3 || !p.pos)
-        .sort(() => Math.random() - 0.5);
-      const PREVIEW = 5;
-      const cid = cat.id;
-      const basicPreviewHTML = basicAll.slice(0, PREVIEW).map(basicHTML).join('');
-      const basicRestHTML    = basicAll.slice(PREVIEW).map(basicHTML).join('');
-      const hasMore          = basicAll.length > PREVIEW;
-
-      grpDiv.innerHTML += `
-        <div class="cat-section reveal" id="${cat.id}" style="scroll-margin-top:130px">
-          <div class="cat-header">
-            <div class="cat-icon">${cat.ico}</div>
-            <div>
-              <h3>${cat.nombre}</h3>
-              <p>${cat.desc}</p>
-            </div>
-            <span class="cat-badge">${cat.proveedores.length} opciones</span>
-          </div>
-          <div class="top-positions">${paid.map(paidCardHTML).join('')}</div>
-          <div class="upgrade-cta">
-            <p>¿Eres proveedor de <strong>${cat.nombre}</strong>? Consigue una de las <strong>3 posiciones destacadas</strong> y recibe contactos directos.</p>
-            <a href="form.html" class="btn btn-coral">Quiero destacarme →</a>
-          </div>
-          ${basicAll.length ? `
-          <div class="basic-section-label">Otras opciones disponibles</div>
-          <div class="basic-list" id="bl-${cid}">${basicPreviewHTML}</div>
-          ${hasMore ? `
-          <div id="bm-${cid}" style="display:none"><div class="basic-list">${basicRestHTML}</div></div>
-          <div style="text-align:center;margin:12px 0 4px">
-            <button class="btn btn-outline" id="bt-${cid}" onclick="toggleBasic('${cid}',${basicAll.length})" style="font-size:.78rem;padding:8px 22px">
-              Ver ${basicAll.length - PREVIEW} opciones más ↓
-            </button>
-          </div>` : ''}` : ''}
-        </div>`;
-    });
-
-    area.appendChild(grpDiv);
-  });
-
-  if (!anyVisible) {
-    area.innerHTML = `<div class="empty-state"><span class="emoji">🔍</span><h3>No encontramos resultados</h3><p>Intenta con otro término de búsqueda.</p></div>`;
+  if (isOpen) {
+    exp.classList.remove('open');
+    btn.classList.remove('open');
+  } else {
+    exp.classList.add('open');
+    btn.classList.add('open');
+    setTimeout(() => document.getElementById('global-search-mobile')?.focus(), 50);
   }
-
-  // Scroll reveal
-  const obs = new IntersectionObserver(es => es.forEach(e => {
-    if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
-  }), { threshold: 0.05 });
-  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 }
 
+// Close mobile search when clicking outside
+document.addEventListener('click', e => {
+  const bar  = document.getElementById('sticky-bar');
+  if (bar && !bar.contains(e.target)) {
+    document.getElementById('sb-input-expanded')?.classList.remove('open');
+    document.getElementById('sb-lupa-btn')?.classList.remove('open');
+  }
+});
+
+function handleSearchMobile() {
+  const q = document.getElementById('global-search-mobile').value;
+  document.getElementById('global-search').value = q;
+  currentSearch = q;
+  clearTimeout(filterTimeout);
+  filterTimeout = setTimeout(() => render(currentGroup, currentSearch), 200);
+}
+
+/* ─────────────────────────────────────────────
+   RENDER — categories → paid cards → upgrade CTA → basics
+───────────────────────────────────────────── */
 /* ═══════════════════════════════════════════
    ACTIVE PILL ON SCROLL
 ═══════════════════════════════════════════ */
@@ -662,13 +714,13 @@ function updateActivePill() {
     const el = document.getElementById(cat.id);
     if (el && window.scrollY + 240 >= el.offsetTop) cur = cat.id;
   });
-  document.querySelectorAll('.csb-pill').forEach(p => {
-    p.classList.toggle('active', p.dataset.cat === cur);
+  document.querySelectorAll('.cat-pill').forEach(p => {
+    if (!p.classList.contains('open')) p.classList.toggle('active', p.dataset.cat === cur);
   });
   // auto-scroll active pill into view
-  const active = document.querySelector('.csb-pill.active');
+  const active = document.querySelector('.cat-pill.open, .cat-pill.active');
   if (active) {
-    const track = document.getElementById('csb-track');
+    const track = document.getElementById('cat-pills-track')?.parentElement;
     if (track) {
       const left = active.offsetLeft - track.clientWidth / 2 + active.offsetWidth / 2;
       track.scrollTo({ left, behavior: 'smooth' });
@@ -686,7 +738,7 @@ let filterTimeout;
 function handleSearch() {
   const q = document.getElementById('global-search').value.toLowerCase().trim();
   // Filter category pills
-  document.querySelectorAll('.csb-pill').forEach(p => {
+  document.querySelectorAll('.cat-pill').forEach(p => {
     const match = !q || p.dataset.name.includes(q) || p.textContent.toLowerCase().includes(q);
     p.style.opacity = match ? '1' : '0.35';
   });
