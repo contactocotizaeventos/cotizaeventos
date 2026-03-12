@@ -1343,4 +1343,10 @@ function removeImage(type) {
   if (type === 'cover') {
     coverUrl = '';
     document.getElementById('cover-url-input').value = '';
-  } 
+  } else {
+    logoUrl = '';
+    document.getElementById('logo-url-input')?.value && (document.getElementById('logo-url-input').value = '');
+  }
+  document.getElementById(`${type}-preview-wrap`).style.display = 'none';
+  document.getElementById(`${type}-preview-img`).src = '';
+} 

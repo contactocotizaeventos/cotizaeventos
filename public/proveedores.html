@@ -426,6 +426,17 @@
       .modal-ctas{grid-template-columns:1fr}
     }
 
+
+    /* ── RENDER OUTPUT CSS ── */
+    .basics-section{margin-top:20px}
+    .basics-header{display:flex;align-items:center;justify-content:space-between;padding:8px 0;margin-bottom:8px;font-size:.78rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+    .expand-btn{width:100%;padding:10px;margin-top:8px;border:1.5px dashed var(--border);border-radius:10px;background:var(--bg);color:var(--muted);font-size:.82rem;font-weight:600;cursor:pointer;transition:.18s}
+    .expand-btn:hover{border-color:var(--coral);color:var(--coral);background:var(--coral-lt)}
+    .upgrade-inner{display:flex;align-items:center;gap:14px;flex-wrap:wrap;width:100%}
+    .upgrade-icon{font-size:1.8rem;flex-shrink:0}
+    .upgrade-title{font-size:.92rem;font-weight:700;color:var(--ink);margin-bottom:3px}
+    .upgrade-sub{font-size:.78rem;color:var(--muted)}
+    .upgrade-btn{margin-left:auto;padding:8px 18px;background:var(--coral);color:#fff;border-radius:99px;font-size:.8rem;font-weight:700;white-space:nowrap;flex-shrink:0}
   </style>
 </head>
 <body>
@@ -570,52 +581,49 @@ function buildCatBar() {
   if (!track) return;
   track.innerHTML = '';
 
+  // Pills = GRUPOS (parent categories, e.g. "Catering")
+  // On click → expand to show g.categorias (tags, e.g. "Pizzas", "Hamburguesas")
   GRUPOS.forEach(g => {
-    g.categorias.forEach(cat => {
-      // Parent pill
-      const pill = document.createElement('span');
-      pill.className = 'cat-pill';
-      pill.dataset.cat = cat.id;
-      pill.innerHTML = `<span>${cat.ico}</span>${cat.nombre}<span class="cp-arr">▾</span>`;
-      pill.addEventListener('click', e => { e.stopPropagation(); toggleCatPill(cat.id); });
-      track.appendChild(pill);
+    const pill = document.createElement('span');
+    pill.className = 'cat-pill';
+    pill.dataset.cat = g.id;
+    pill.innerHTML = `<span>${g.ico}</span>${g.nombre}<span class="cp-arr">▾</span>`;
+    pill.addEventListener('click', e => { e.stopPropagation(); toggleCatPill(g.id); });
+    track.appendChild(pill);
 
-      // Placeholder for sub-tags (injected right after parent)
-      const tagSlot = document.createElement('span');
-      tagSlot.id = `tag-slot-${cat.id}`;
-      track.appendChild(tagSlot);
-    });
+    // Slot where sub-tag pills appear when parent is opened
+    const tagSlot = document.createElement('span');
+    tagSlot.id = `tag-slot-${g.id}`;
+    track.appendChild(tagSlot);
   });
 
-  // Close pills when clicking outside
+  // Close when clicking anywhere outside the bar
   document.addEventListener('click', () => closeCatPill());
 }
 
-function toggleCatPill(catId) {
-  if (openCatId === catId) {
+function toggleCatPill(grupoId) {
+  if (openCatId === grupoId) {
     closeCatPill();
     return;
   }
   closeCatPill();
-  openCatId = catId;
+  openCatId = grupoId;
 
-  // Mark parent active
-  const pill = document.querySelector(`.cat-pill[data-cat="${catId}"]`);
+  // Mark parent pill active
+  const pill = document.querySelector(`.cat-pill[data-cat="${grupoId}"]`);
   if (pill) {
     pill.classList.add('open');
-    // Scroll pill into view
-    const track = document.getElementById('cat-pills-track');
-    const pillLeft = pill.offsetLeft;
-    track.parentElement.scrollTo({ left: pillLeft - 32, behavior: 'smooth' });
+    const row = document.getElementById('cat-pills-track')?.parentElement;
+    if (row) row.scrollTo({ left: pill.offsetLeft - 32, behavior: 'smooth' });
   }
 
-  // Build sub-tag pills in slot
-  const cat = CAT_INDEX[catId];
-  const slot = document.getElementById(`tag-slot-${catId}`);
-  if (!slot || !cat?.proveedores?.length) return;
+  // Build sub-tag pills (= g.categorias) in slot
+  const grupo = GRUPOS.find(g => g.id === grupoId);
+  const slot  = document.getElementById(`tag-slot-${grupoId}`);
+  if (!slot || !grupo) return;
 
-  // Get unique tag names from proveedores (or just use cat directly since cat = tag)
   slot.innerHTML = '';
+
   const sep = document.createElement('span');
   sep.className = 'pill-sep';
   sep.textContent = '›';
@@ -624,29 +632,17 @@ function toggleCatPill(catId) {
   const group = document.createElement('span');
   group.className = 'tag-pill-group';
 
-  // Cat IS the tag, so just one "all" tag = scroll to section
-  const allTag = document.createElement('span');
-  allTag.className = 'tag-pill active';
-  allTag.textContent = `Ver todos (${cat.proveedores.length})`;
-  allTag.addEventListener('click', e => {
-    e.stopPropagation();
-    scrollToSection(catId);
-  });
-  group.appendChild(allTag);
-
-  // If cat has sub-providers with tags, show individual ones
-  const tagMap = {};
-  cat.proveedores.forEach(p => {
-    if (p.tag) {
-      if (!tagMap[p.tag]) tagMap[p.tag] = { label: p.tag, count: 0 };
-      tagMap[p.tag].count++;
-    }
-  });
-  Object.values(tagMap).forEach(t => {
+  grupo.categorias.forEach(cat => {
     const tp = document.createElement('span');
     tp.className = 'tag-pill';
-    tp.textContent = `${t.label} (${t.count})`;
-    tp.addEventListener('click', e => { e.stopPropagation(); scrollToSection(catId); });
+    tp.textContent = `${cat.ico} ${cat.nombre} (${cat.proveedores.length})`;
+    tp.addEventListener('click', e => {
+      e.stopPropagation();
+      // Highlight active tag
+      slot.querySelectorAll('.tag-pill').forEach(t => t.classList.remove('active'));
+      tp.classList.add('active');
+      scrollToSection(cat.id);
+    });
     group.appendChild(tp);
   });
 
@@ -705,27 +701,120 @@ function handleSearchMobile() {
 /* ─────────────────────────────────────────────
    RENDER — categories → paid cards → upgrade CTA → basics
 ───────────────────────────────────────────── */
+function render(group, search) {
+  const area = document.getElementById('content-area');
+  const q = (search || '').toLowerCase().trim();
+  let html = '';
+  let totalVisible = 0;
+
+  // Which groups to render
+  const grupos = (group && group !== 'all')
+    ? GRUPOS.filter(g => g.id === group)
+    : GRUPOS;
+
+  grupos.forEach(g => {
+    let groupHtml = '';
+
+    g.categorias.forEach(cat => {
+      // Filter providers by search
+      const filtered = cat.proveedores.filter(p => {
+        if (!q) return true;
+        return (p.nombre||'').toLowerCase().includes(q)
+          || (p.tagline||'').toLowerCase().includes(q)
+          || (p.desc||'').toLowerCase().includes(q)
+          || (p.comunas||'').toLowerCase().includes(q);
+      });
+
+      if (filtered.length === 0) return;
+      totalVisible += filtered.length;
+
+      const paid   = filtered.filter(p => p.pos <= 3).sort((a,b) => a.pos - b.pos);
+      const basics = filtered.filter(p => p.pos > 3 || !p.pos);
+
+      groupHtml += `
+        <div class="cat-section" id="${cat.id}">
+          <div class="cat-header">
+            <div class="cat-icon">${cat.ico}</div>
+            <div>
+              <h3>${cat.nombre}</h3>
+              <p>${cat.desc||''}</p>
+            </div>
+            <div class="cat-badge">${filtered.length} proveedor${filtered.length!==1?'es':''}</div>
+          </div>
+
+          ${paid.length ? `<div class="top-positions">${paid.map(paidCardHTML).join('')}</div>` : ''}
+
+          ${paid.length < 3 ? `
+            <div class="upgrade-cta" onclick="window.location='/form.html'">
+              <div class="upgrade-inner">
+                <span class="upgrade-icon">🏆</span>
+                <div>
+                  <div class="upgrade-title">¿Tu negocio de ${cat.nombre}?</div>
+                  <div class="upgrade-sub">Ocupa una de las ${3-paid.length} posición${3-paid.length!==1?'es':''} destacada${3-paid.length!==1?'s':''} disponible${3-paid.length!==1?'s':''}</div>
+                </div>
+                <div class="upgrade-btn">Registrarme →</div>
+              </div>
+            </div>` : ''}
+
+          ${basics.length ? `
+            <div class="basics-section">
+              <div class="basics-header">
+                <span>📋 Listado básico</span>
+                <span style="color:var(--muted);font-size:.78rem">${basics.length} disponible${basics.length!==1?'s':''}</span>
+              </div>
+              <div id="bm-wrap-${cat.id}">
+                <div id="bm-top-${cat.id}">${basics.slice(0,5).map(basicHTML).join('')}</div>
+                ${basics.length > 5 ? `
+                  <div id="bm-${cat.id}" style="display:none">${basics.slice(5).map(basicHTML).join('')}</div>
+                  <button class="expand-btn" id="bt-${cat.id}" onclick="toggleBasic('${cat.id}',${basics.length})">
+                    Ver ${basics.length-5} opciones más ↓
+                  </button>` : ''}
+              </div>
+            </div>` : ''}
+        </div>`;
+    });
+
+    if (groupHtml) {
+      html += `<div class="group-section">
+        <div class="group-section-header">
+          <div class="group-section-icon">${g.ico}</div>
+          <div>
+            <h2>${g.nombre}</h2>
+          </div>
+        </div>
+        ${groupHtml}
+      </div>`;
+    }
+  });
+
+  if (!html) {
+    area.innerHTML = `<div style="text-align:center;padding:80px 24px;color:var(--muted)">
+      <span style="font-size:3rem;display:block;margin-bottom:14px">🔍</span>
+      <h3 style="color:var(--ink);margin-bottom:8px">Sin resultados</h3>
+      <p style="font-size:.88rem">Intenta con otro término de búsqueda</p>
+    </div>`;
+    return;
+  }
+
+  area.innerHTML = html;
+}
+
 /* ═══════════════════════════════════════════
    ACTIVE PILL ON SCROLL
 ═══════════════════════════════════════════ */
 function updateActivePill() {
+  // Find which GRUPO section is currently in viewport
   let cur = '';
-  Object.values(CAT_INDEX).forEach(cat => {
-    const el = document.getElementById(cat.id);
-    if (el && window.scrollY + 240 >= el.offsetTop) cur = cat.id;
+  GRUPOS.forEach(g => {
+    // Check any of the group's categorias sections
+    g.categorias.forEach(cat => {
+      const el = document.getElementById(cat.id);
+      if (el && window.scrollY + 200 >= el.offsetTop) cur = g.id;
+    });
   });
   document.querySelectorAll('.cat-pill').forEach(p => {
     if (!p.classList.contains('open')) p.classList.toggle('active', p.dataset.cat === cur);
   });
-  // auto-scroll active pill into view
-  const active = document.querySelector('.cat-pill.open, .cat-pill.active');
-  if (active) {
-    const track = document.getElementById('cat-pills-track')?.parentElement;
-    if (track) {
-      const left = active.offsetLeft - track.clientWidth / 2 + active.offsetWidth / 2;
-      track.scrollTo({ left, behavior: 'smooth' });
-    }
-  }
 }
 
 /* ═══════════════════════════════════════════
