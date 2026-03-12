@@ -275,7 +275,7 @@
 <!-- ══ LOGIN SCREEN ══ -->
 <div id="login-screen">
   <div class="login-box">
-    <div class="login-logo">Cotiza<span>TuFiesta</span>.cl</div>
+    <div class="login-logo">Cotiza<span>Eventos</span>.cl</div>
     <p class="login-sub">Panel de Administración</p>
     <div class="login-field">
       <label>Usuario</label>
@@ -294,7 +294,7 @@
 <div id="app">
   <!-- Top bar -->
   <div class="top-bar">
-    <div class="tb-logo">Cotiza<span>TuFiesta</span>.cl <span style="font-size:.7rem;font-family:'Outfit';font-weight:500;color:var(--muted);margin-left:6px">Admin</span></div>
+    <div class="tb-logo">Cotiza<span>Eventos</span>.cl <span style="font-size:.7rem;font-family:'Outfit';font-weight:500;color:var(--muted);margin-left:6px">Admin</span></div>
     <div class="tb-right">
       <span class="tb-badge" id="tb-pending-badge" style="display:none">0 pendientes</span>
       <a href="proveedores.html" target="_blank" class="btn btn-ghost btn-sm">Ver sitio →</a>
@@ -313,6 +313,9 @@
       <div class="nav-section-label">Directorio</div>
       <div class="nav-item" onclick="showSection('proveedores', this)">
         🍽️ Proveedores
+      </div>
+      <div class="nav-item" onclick="showSection('categorias', this)">
+        🏷️ Categorías y etiquetas
       </div>
     </nav>
 
@@ -341,6 +344,42 @@
           <button class="btn btn-outline btn-sm" onclick="loadProveedores()">↻ Actualizar</button>
         </div>
         <div id="prov-container"><div class="spinner"></div></div>
+      </section>
+
+      <!-- ── CATEGORÍAS ── -->
+      <section class="page-section" id="sec-categorias">
+        <div class="page-head">
+          <div>
+            <h2>Categorías y etiquetas</h2>
+            <p>Crea, edita y reorganiza categorías y etiquetas del directorio</p>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="loadCategorias()">↻ Actualizar</button>
+        </div>
+
+        <!-- Explicación -->
+        <div style="background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:12px;padding:16px 20px;margin-bottom:24px;font-size:.84rem;color:#1e3a5f;line-height:1.65">
+          <strong>¿Cómo funciona?</strong><br/>
+          Cada <strong>categoría</strong> es un grupo temático (ej: Catering, Entretenimiento). Dentro de cada categoría puedes crear <strong>etiquetas</strong> (ej: Pizzas, Hamburguesas, DJ). Los proveedores seleccionan una etiqueta al registrarse, y los clientes filtran por etiquetas en el directorio.
+        </div>
+
+        <div style="display:grid;grid-template-columns:280px 1fr;gap:20px;align-items:start" id="cat-layout">
+          <!-- Panel izquierdo: lista de categorías -->
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+              <strong style="font-size:.85rem">Categorías</strong>
+              <button class="btn btn-coral btn-sm" onclick="openNewCatModal()">+ Nueva</button>
+            </div>
+            <div id="cat-list" style="display:flex;flex-direction:column;gap:8px">
+              <div class="spinner"></div>
+            </div>
+          </div>
+          <!-- Panel derecho: etiquetas de la categoría seleccionada -->
+          <div id="tag-panel">
+            <div style="text-align:center;padding:48px 20px;color:var(--muted);font-size:.88rem;border:1.5px dashed var(--border);border-radius:12px">
+              👈 Selecciona una categoría para ver sus etiquetas
+            </div>
+          </div>
+        </div>
       </section>
 
     </main>
@@ -489,6 +528,7 @@ window.addEventListener('DOMContentLoaded', () => {
    NAVIGATION
 ══════════════════════════════════════════ */
 function showSection(id, el) {
+  if (id === 'categorias') loadCategorias();
   document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById(`sec-${id}`).classList.add('active');
@@ -840,6 +880,259 @@ function showToast(msg, type = 'info') {
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeEdit();
 });
+
+
+/* ══════════════════════════════════════
+   CATEGORÍAS Y ETIQUETAS
+══════════════════════════════════════ */
+let allCategorias = [];
+let selectedCatId = null;
+
+async function loadCategorias() {
+  const token = localStorage.getItem('admin_token');
+  try {
+    const res = await fetch('/api/admin-manage?action=categorias', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const data = await res.json();
+    allCategorias = data.categorias || [];
+    renderCatList();
+    if (selectedCatId) renderTagPanel(selectedCatId);
+  } catch(e) {
+    showToast('Error cargando categorías', 'error');
+  }
+}
+
+function renderCatList() {
+  const el = document.getElementById('cat-list');
+  if (!allCategorias.length) {
+    el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-size:.82rem">Sin categorías</div>';
+    return;
+  }
+  el.innerHTML = allCategorias.map(cat => `
+    <div class="cat-row${selectedCatId===cat.id?' cat-row-active':''}" onclick="selectCat('${cat.id}')"
+         style="display:flex;align-items:center;gap:8px;padding:12px 14px;border-radius:10px;border:1.5px solid var(--border);cursor:pointer;background:${selectedCatId===cat.id?'var(--coral-lt)':'var(--white)'};border-color:${selectedCatId===cat.id?'var(--coral-md)':'var(--border)'};transition:.18s">
+      <span style="font-size:1.2rem;flex-shrink:0">${cat.ico || '🏷️'}</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:.84rem;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${cat.nombre}</div>
+        <div style="font-size:.72rem;color:var(--muted)">${cat.etiquetas?.length || 0} etiquetas</div>
+      </div>
+      <div style="display:flex;gap:4px;flex-shrink:0">
+        <button class="btn btn-outline btn-sm" style="padding:4px 8px;font-size:.7rem" onclick="event.stopPropagation();openEditCatModal('${cat.id}')">✏️</button>
+        <button class="btn btn-sm" style="padding:4px 8px;font-size:.7rem;background:#fef2f2;color:var(--red);border:1.5px solid #fecaca" onclick="event.stopPropagation();deleteCat('${cat.id}','${cat.nombre}')">🗑️</button>
+      </div>
+    </div>`).join('');
+}
+
+function selectCat(catId) {
+  selectedCatId = catId;
+  renderCatList();
+  renderTagPanel(catId);
+}
+
+function renderTagPanel(catId) {
+  const cat = allCategorias.find(c => c.id === catId);
+  const panel = document.getElementById('tag-panel');
+  if (!cat) return;
+  panel.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <div>
+        <strong style="font-size:.95rem">${cat.ico || ''} ${cat.nombre}</strong>
+        <span style="font-size:.78rem;color:var(--muted);margin-left:8px">${cat.etiquetas?.length||0} etiquetas</span>
+      </div>
+      <button class="btn btn-coral btn-sm" onclick="openNewTagModal('${catId}')">+ Nueva etiqueta</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px" id="tag-list-${catId}">
+      ${!cat.etiquetas?.length
+        ? '<div style="text-align:center;padding:32px;color:var(--muted);font-size:.84rem;border:1.5px dashed var(--border);border-radius:10px">Sin etiquetas — crea la primera</div>'
+        : cat.etiquetas.map(tag => `
+          <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:10px;border:1.5px solid var(--border);background:var(--white)">
+            <span style="font-size:1.1rem">${tag.ico || '🏷️'}</span>
+            <div style="flex:1">
+              <div style="font-size:.85rem;font-weight:600">${tag.nombre}</div>
+              <div style="font-size:.74rem;color:var(--muted)">${tag.desc || 'Sin descripción'}</div>
+            </div>
+            <div style="font-size:.72rem;color:var(--muted);margin-right:8px">${tag.proveedores_count || 0} provs.</div>
+            <button class="btn btn-outline btn-sm" style="padding:4px 8px;font-size:.7rem" onclick="openEditTagModal('${catId}','${tag.id}')">✏️</button>
+            <button class="btn btn-sm" style="padding:4px 8px;font-size:.7rem;background:#fef2f2;color:var(--red);border:1.5px solid #fecaca" onclick="deleteTag('${catId}','${tag.id}','${tag.nombre}')">🗑️</button>
+          </div>`).join('')}
+    </div>`;
+}
+
+/* Modals */
+function openNewCatModal() {
+  showCatModal({ id:'', nombre:'', ico:'🍽️', desc:'' }, false);
+}
+function openEditCatModal(catId) {
+  const cat = allCategorias.find(c => c.id === catId);
+  if (!cat) return;
+  showCatModal(cat, true);
+}
+function showCatModal(cat, isEdit) {
+  const modal = document.getElementById('modal-cats');
+  document.getElementById('mc-title').textContent = isEdit ? 'Editar categoría' : 'Nueva categoría';
+  document.getElementById('mc-id').value = cat.id || '';
+  document.getElementById('mc-nombre').value = cat.nombre || '';
+  document.getElementById('mc-ico').value = cat.ico || '🍽️';
+  document.getElementById('mc-desc').value = cat.desc || '';
+  document.getElementById('mc-edit').value = isEdit ? '1' : '0';
+  modal.style.display = 'flex';
+}
+function openNewTagModal(catId) {
+  showTagModal({ id:'', nombre:'', ico:'🏷️', desc:'' }, catId, false);
+}
+function openEditTagModal(catId, tagId) {
+  const cat = allCategorias.find(c => c.id === catId);
+  const tag = cat?.etiquetas?.find(t => t.id === tagId);
+  if (!tag) return;
+  showTagModal(tag, catId, true);
+}
+function showTagModal(tag, catId, isEdit) {
+  const modal = document.getElementById('modal-tags');
+  document.getElementById('mt-title').textContent = isEdit ? 'Editar etiqueta' : 'Nueva etiqueta';
+  document.getElementById('mt-cat-id').value = catId;
+  document.getElementById('mt-id').value = tag.id || '';
+  document.getElementById('mt-nombre').value = tag.nombre || '';
+  document.getElementById('mt-ico').value = tag.ico || '🏷️';
+  document.getElementById('mt-desc').value = tag.desc || '';
+  document.getElementById('mt-edit').value = isEdit ? '1' : '0';
+  modal.style.display = 'flex';
+}
+
+async function saveCat() {
+  const token = localStorage.getItem('admin_token');
+  const isEdit = document.getElementById('mc-edit').value === '1';
+  const payload = {
+    action: isEdit ? 'update_categoria' : 'create_categoria',
+    id:     document.getElementById('mc-id').value,
+    nombre: document.getElementById('mc-nombre').value.trim(),
+    ico:    document.getElementById('mc-ico').value.trim(),
+    desc:   document.getElementById('mc-desc').value.trim(),
+  };
+  if (!payload.nombre) { showToast('El nombre es obligatorio','error'); return; }
+  try {
+    const res = await fetch('/api/admin-manage', {
+      method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+    document.getElementById('modal-cats').style.display='none';
+    showToast(isEdit?'Categoría actualizada':'Categoría creada','success');
+    loadCategorias();
+  } catch(e){ showToast('Error: '+e.message,'error'); }
+}
+
+async function deleteCat(catId, nombre) {
+  if (!confirm(`¿Eliminar la categoría "${nombre}"? Esto también eliminará todas sus etiquetas.`)) return;
+  const token = localStorage.getItem('admin_token');
+  try {
+    const res = await fetch('/api/admin-manage', {
+      method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+      body: JSON.stringify({ action:'delete_categoria', id: catId })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+    if (selectedCatId === catId) { selectedCatId=null; document.getElementById('tag-panel').innerHTML='<div style="text-align:center;padding:48px;color:var(--muted);font-size:.88rem;border:1.5px dashed var(--border);border-radius:12px">👈 Selecciona una categoría</div>'; }
+    showToast('Categoría eliminada','success');
+    loadCategorias();
+  } catch(e){ showToast('Error: '+e.message,'error'); }
+}
+
+async function saveTag() {
+  const token = localStorage.getItem('admin_token');
+  const isEdit = document.getElementById('mt-edit').value === '1';
+  const payload = {
+    action:    isEdit ? 'update_etiqueta' : 'create_etiqueta',
+    cat_id:    document.getElementById('mt-cat-id').value,
+    id:        document.getElementById('mt-id').value,
+    nombre:    document.getElementById('mt-nombre').value.trim(),
+    ico:       document.getElementById('mt-ico').value.trim(),
+    desc:      document.getElementById('mt-desc').value.trim(),
+  };
+  if (!payload.nombre) { showToast('El nombre es obligatorio','error'); return; }
+  try {
+    const res = await fetch('/api/admin-manage', {
+      method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+    document.getElementById('modal-tags').style.display='none';
+    showToast(isEdit?'Etiqueta actualizada':'Etiqueta creada','success');
+    loadCategorias();
+  } catch(e){ showToast('Error: '+e.message,'error'); }
+}
+
+async function deleteTag(catId, tagId, nombre) {
+  if (!confirm(`¿Eliminar la etiqueta "${nombre}"?`)) return;
+  const token = localStorage.getItem('admin_token');
+  try {
+    const res = await fetch('/api/admin-manage', {
+      method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+      body: JSON.stringify({ action:'delete_etiqueta', cat_id: catId, id: tagId })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+    showToast('Etiqueta eliminada','success');
+    loadCategorias();
+  } catch(e){ showToast('Error: '+e.message,'error'); }
+}
+
 </script>
+<!-- MODAL: CATEGORÍA -->
+<div id="modal-cats" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#fff;border-radius:18px;padding:28px;width:100%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,.2)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <h3 id="mc-title" style="font-size:1.1rem">Nueva categoría</h3>
+      <button onclick="document.getElementById('modal-cats').style.display='none'" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--muted)">✕</button>
+    </div>
+    <input type="hidden" id="mc-id"/><input type="hidden" id="mc-edit" value="0"/>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div><label style="font-size:.78rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:5px">Nombre *</label>
+        <input id="mc-nombre" placeholder="Ej: Catering" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:.88rem;font-family:'Outfit',sans-serif;outline:none"/></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div><label style="font-size:.78rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:5px">Emoji</label>
+          <input id="mc-ico" placeholder="🍽️" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:1.1rem;font-family:'Outfit',sans-serif;outline:none"/></div>
+        <div><label style="font-size:.78rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:5px">ID slug</label>
+          <input id="mc-id-slug" placeholder="catering" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:.88rem;font-family:'Outfit',sans-serif;outline:none" oninput="this.value=this.value.replace(/[^a-z0-9_-]/g,'')"/></div>
+      </div>
+      <div><label style="font-size:.78rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:5px">Descripción</label>
+        <input id="mc-desc" placeholder="Descripción breve" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:.88rem;font-family:'Outfit',sans-serif;outline:none"/></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:20px;justify-content:flex-end">
+      <button class="btn btn-outline btn-sm" onclick="document.getElementById('modal-cats').style.display='none'">Cancelar</button>
+      <button class="btn btn-coral btn-sm" onclick="saveCat()">Guardar categoría</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ETIQUETA -->
+<div id="modal-tags" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#fff;border-radius:18px;padding:28px;width:100%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,.2)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <h3 id="mt-title" style="font-size:1.1rem">Nueva etiqueta</h3>
+      <button onclick="document.getElementById('modal-tags').style.display='none'" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--muted)">✕</button>
+    </div>
+    <input type="hidden" id="mt-cat-id"/><input type="hidden" id="mt-id"/><input type="hidden" id="mt-edit" value="0"/>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div><label style="font-size:.78rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:5px">Nombre *</label>
+        <input id="mt-nombre" placeholder="Ej: Catering Pizzas" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:.88rem;font-family:'Outfit',sans-serif;outline:none"/></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div><label style="font-size:.78rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:5px">Emoji</label>
+          <input id="mt-ico" placeholder="🍕" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:1.1rem;font-family:'Outfit',sans-serif;outline:none"/></div>
+        <div><label style="font-size:.78rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:5px">ID slug</label>
+          <input id="mt-id-slug" placeholder="pizzas" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:.88rem;font-family:'Outfit',sans-serif;outline:none" oninput="this.value=this.value.replace(/[^a-z0-9_-]/g,'')"/></div>
+      </div>
+      <div><label style="font-size:.78rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:5px">Descripción</label>
+        <input id="mt-desc" placeholder="Ej: Pizzas al horno de leña para eventos" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:.88rem;font-family:'Outfit',sans-serif;outline:none"/></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:20px;justify-content:flex-end">
+      <button class="btn btn-outline btn-sm" onclick="document.getElementById('modal-tags').style.display='none'">Cancelar</button>
+      <button class="btn btn-coral btn-sm" onclick="saveTag()">Guardar etiqueta</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

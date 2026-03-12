@@ -3,7 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CotizaTuFiesta.cl – Arma tu evento perfecto</title>
+  <title>CotizaEventos.cl – Catering y Proveedores para Eventos en Santiago</title>
+  <meta name="description" content="Encuentra catering, banquetería, barra de tragos, DJ y más para tu evento en Santiago. Compara proveedores verificados y contrata directo. Gratis." />
+  <meta name="keywords" content="catering para eventos, proveedores para eventos, catering eventos santiago, cotizar catering, banquetería santiago, pizza para eventos, barra de tragos para eventos, catering para matrimonios, catering para cumpleaños, servicios para eventos santiago, food truck eventos, dj para eventos santiago" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://www.cotizaeventos.cl/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="CotizaEventos.cl – Proveedores de Catering y Eventos en Santiago" />
+  <meta property="og:description" content="Directorio de proveedores verificados para eventos en Santiago. Catering, banquetería, barra de tragos, pizzas, hamburguesas y más. Contacto directo, sin intermediarios." />
+  <meta property="og:url" content="https://www.cotizaeventos.cl/" />
+  <meta property="og:locale" content="es_CL" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"CotizaEventos.cl","url":"https://www.cotizaeventos.cl","description":"Directorio de proveedores de catering y servicios para eventos en Santiago de Chile"}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;0,900;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -90,7 +100,17 @@
       font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: 900; color: var(--ink);
     }
     .logo span { color: var(--coral); }
+    .nav-links { display:flex; align-items:center; gap:2px; }
+    .nav-link { font-size:.82rem; font-weight:500; color:var(--ink2); padding:7px 12px; border-radius:99px; transition:.18s; }
+    .nav-link:hover { background:var(--bg2); color:var(--ink); }
     .nav-right { display: flex; align-items: center; gap: 10px; }
+    .nav-ham { display:none; flex-direction:column; gap:5px; cursor:pointer; padding:8px; background:none; border:none; }
+    .nav-ham span { display:block; width:22px; height:2px; background:var(--ink); border-radius:2px; transition:.25s; }
+    .nav-mobile { display:none; position:fixed; inset:60px 0 0 0; background:#fff; z-index:199; padding:20px; flex-direction:column; gap:8px; border-top:1px solid var(--border); overflow-y:auto; }
+    .nav-mobile.open { display:flex; }
+    .nav-mobile a { font-size:.95rem; font-weight:500; color:var(--ink2); padding:14px 18px; border-radius:12px; border:1px solid var(--border); text-align:center; transition:.18s; }
+    .nav-mobile a:hover { background:var(--bg2); }
+    @media(max-width:860px){ .nav-links{display:none;} .nav-right .btn-ghost{display:none;} .nav-ham{display:flex;} nav{padding:0 20px;} }
 
     /* ── HERO ── */
     #hero {
@@ -535,33 +555,52 @@
 
 <!-- ══ NAV ══ -->
 <nav>
-  <div class="logo">Cotiza<span>TuFiesta</span>.cl</div>
+  <a href="/" class="logo">Cotiza<span>Eventos</span>.cl</a>
+  <div class="nav-links">
+    <a href="#hero" class="nav-link">Inicio</a>
+    <a href="proveedores.html" class="nav-link">Proveedores</a>
+    <a href="#como" class="nav-link">¿Cómo funciona?</a>
+    <a href="proveedores.html" class="nav-link">Cotizar gratis</a>
+    <a href="#nosotros" class="nav-link">Nosotros</a>
+    <a href="#contacto" class="nav-link">Contacto</a>
+  </div>
   <div class="nav-right">
-    <a href="proveedores.html" class="btn btn-ghost">Ver proveedores</a>
-    <a href="#cotizar" class="btn btn-primary">✦ Cotizar gratis</a>
+    <a href="form.html" class="btn btn-primary">✦ Publica tu negocio</a>
+    <button class="nav-ham" onclick="toggleNavMenu()" id="nav-ham" aria-label="Menú">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
+<div class="nav-mobile" id="nav-mobile">
+  <a href="#hero" onclick="toggleNavMenu()">🏠 Inicio</a>
+  <a href="proveedores.html">🔍 Proveedores</a>
+  <a href="#como" onclick="toggleNavMenu()">❓ ¿Cómo funciona?</a>
+  <a href="proveedores.html">✦ Cotizar gratis</a>
+  <a href="#nosotros" onclick="toggleNavMenu()">👋 Nosotros</a>
+  <a href="#contacto" onclick="toggleNavMenu()">📩 Contacto</a>
+  <a href="form.html" style="background:var(--coral);color:#fff;border-color:var(--coral)">🚀 Publica tu negocio</a>
+</div>
 
 <!-- ══ HERO ══ -->
 <section id="hero">
   <div class="hero-inner">
     <div>
-      <div class="tag hero-eyebrow">🎉 El evento de tus sueños, sin el estrés</div>
+      <div class="tag hero-eyebrow">🏆 El directorio premium de proveedores para eventos</div>
       <h1 class="hero-title">
-        Todo para tu fiesta<br/>
-        en <span class="accent">un clic</span>
+        Celebra con los<br/>
+        mejores de <span class="accent">Santiago</span>
       </h1>
       <p class="hero-sub">
-        Cuéntanos qué necesitas y te enviamos las mejores opciones de catering, DJ, iluminación y más — directo a tu WhatsApp o correo.
+        Catering, banquetería, barra de tragos, DJ y más — proveedores verificados con precios reales y contacto directo. Sin intermediarios.
       </p>
       <div class="hero-ctas">
-        <a href="#categorias" class="btn btn-primary btn-big">Ver proveedores</a>
-        <a href="#cotizar" class="btn btn-ghost btn-big">✦ Cotizar gratis</a>
+        <a href="proveedores.html" class="btn btn-primary btn-big">🔍 Explorar proveedores</a>
+        <a href="#como" class="btn btn-ghost btn-big">¿Cómo funciona?</a>
       </div>
       <div class="hero-trust">
-        <div class="trust-pill"><span>✅</span> 100% gratis</div>
-        <div class="trust-pill"><span>⚡</span> Respuesta rápida</div>
-        <div class="trust-pill"><span>💼</span> Proveedores verificados</div>
+        <div class="trust-pill"><span>✅</span> Proveedores verificados</div>
+        <div class="trust-pill"><span>💬</span> Contacto directo</div>
+        <div class="trust-pill"><span>⭐</span> Servicio premium</div>
       </div>
     </div>
 
@@ -594,25 +633,25 @@
 <section id="como">
   <div class="container">
     <div class="reveal" style="text-align:center; max-width:480px; margin:0 auto;">
-      <div class="tag">Súper simple</div>
-      <h2 style="font-size:clamp(1.5rem,2.8vw,2.2rem); margin-bottom:10px; color:var(--ink);">3 pasos y tu fiesta lista</h2>
-      <p style="color:var(--muted); font-size:.9rem;">Sin llamadas. Sin perder tiempo.</p>
+      <div class="tag">Directo y sin complicaciones</div>
+      <h2 style="font-size:clamp(1.5rem,2.8vw,2.2rem); margin-bottom:10px; color:var(--ink);">Pasos para contratar tu opción ideal</h2>
+      <p style="color:var(--muted); font-size:.9rem;">Contacta directo al proveedor, sin intermediarios.</p>
     </div>
     <div class="steps">
       <div class="step reveal" data-n="1">
-        <span class="step-ico">📋</span>
-        <h3>Cuéntanos qué necesitas</h3>
-        <p>Selecciona los servicios para tu fiesta en nuestra lista interactiva.</p>
+        <span class="step-ico">🍽️</span>
+        <h3>¿Qué quieres servir?</h3>
+        <p>Explora por categoría — catering, bebidas, música y más. Filtra según tu tipo de celebración.</p>
       </div>
       <div class="step reveal" data-n="2">
         <span class="step-ico">🔎</span>
-        <h3>Revisamos y preparamos</h3>
-        <p>Buscamos entre proveedores verificados y armamos tu cotización.</p>
+        <h3>Busca tu mejor opción</h3>
+        <p>Compara proveedores verificados, precios, zona de cobertura y qué incluye cada servicio.</p>
       </div>
       <div class="step reveal" data-n="3">
-        <span class="step-ico">📲</span>
-        <h3>Recibes en WhatsApp o correo</h3>
-        <p>Te enviamos todas las opciones, precios y contactos. Tú eliges.</p>
+        <span class="step-ico">🎉</span>
+        <h3>Contrata y celebra</h3>
+        <p>Contacta directo por WhatsApp. Tú eliges, tú contratas. Sin comisiones ni filas.</p>
       </div>
     </div>
   </div>
@@ -650,125 +689,47 @@
   </div>
 </section>
 
-<!-- ══ FORM ══ -->
-<section id="cotizar">
+<!-- ══ NOSOTROS ══ -->
+<section id="nosotros" style="padding:80px 0;background:var(--bg2);border-top:1px solid var(--border)">
   <div class="container">
-    <div class="reveal" style="text-align:center; max-width:480px; margin:0 auto 32px;">
-      <div class="tag">¡Es gratis!</div>
-      <h2 style="font-size:clamp(1.5rem,2.8vw,2.2rem); margin-bottom:10px; color:var(--ink);">Cotiza tu fiesta ahora</h2>
-      <p style="color:var(--muted); font-size:.88rem;">Solo toma 2 minutos. Marca lo que necesitas y te lo enviamos.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center" class="reveal">
+      <div>
+        <div class="tag">Quiénes somos</div>
+        <h2 style="font-size:clamp(1.5rem,2.8vw,2.2rem);margin-bottom:16px">El puente entre tus celebraciones y los mejores proveedores</h2>
+        <p style="font-size:.92rem;color:var(--ink2);line-height:1.75;margin-bottom:14px"><strong>CotizaEventos.cl</strong> es un directorio premium que conecta a personas que buscan servicios para sus eventos con los mejores proveedores de Santiago y la Región Metropolitana.</p>
+        <p style="font-size:.92rem;color:var(--ink2);line-height:1.75;margin-bottom:24px">Nuestra misión es simple: que cada celebración sea memorable. Por eso seleccionamos y verificamos a cada proveedor antes de publicarlo, garantizando calidad y profesionalismo.</p>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;align-items:flex-start;gap:12px"><span style="font-size:1.3rem;flex-shrink:0">🏆</span><div><strong style="font-size:.88rem">Proveedores seleccionados</strong><br/><span style="font-size:.8rem;color:var(--muted)">Revisamos y aprobamos cada negocio antes de publicarlo.</span></div></div>
+          <div style="display:flex;align-items:flex-start;gap:12px"><span style="font-size:1.3rem;flex-shrink:0">💬</span><div><strong style="font-size:.88rem">Contacto 100% directo</strong><br/><span style="font-size:.8rem;color:var(--muted)">Sin intermediarios. Tú eliges y contactas directamente al proveedor.</span></div></div>
+          <div style="display:flex;align-items:flex-start;gap:12px"><span style="font-size:1.3rem;flex-shrink:0">📍</span><div><strong style="font-size:.88rem">Foco en Santiago</strong><br/><span style="font-size:.8rem;color:var(--muted)">Proveedores que operan en la Región Metropolitana y sus alrededores.</span></div></div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div style="background:#fff;border:1px solid var(--border);border-radius:16px;padding:24px;text-align:center"><div style="font-family:'Fraunces',serif;font-size:2.2rem;font-weight:900;color:var(--coral)">+20</div><div style="font-size:.78rem;color:var(--muted);margin-top:4px">Categorías de servicios</div></div>
+        <div style="background:#fff;border:1px solid var(--border);border-radius:16px;padding:24px;text-align:center"><div style="font-family:'Fraunces',serif;font-size:2.2rem;font-weight:900;color:var(--coral)">100%</div><div style="font-size:.78rem;color:var(--muted);margin-top:4px">Proveedores verificados</div></div>
+        <div style="background:var(--coral-lt);border:1.5px solid var(--coral-md);border-radius:16px;padding:20px;text-align:center;grid-column:1/-1"><div style="font-size:1.4rem;margin-bottom:6px">🎊</div><div style="font-size:.86rem;font-weight:600;color:var(--coral);margin-bottom:4px">Cada evento es único</div><div style="font-size:.78rem;color:var(--ink2)">Por eso trabajamos con proveedores que se destacan por calidad y dedicación.</div></div>
+      </div>
     </div>
+  </div>
+</section>
 
-    <div class="form-shell reveal">
-      <div class="form-progress">
-        <div class="prog-step active" id="ps1"><span class="ps-num">1</span> Contacto</div>
-        <div class="prog-step"        id="ps2"><span class="ps-num">2</span> Servicios</div>
-        <div class="prog-step"        id="ps3"><span class="ps-num">3</span> Enviar</div>
-      </div>
-
-      <!-- PANEL 1 -->
-      <div class="form-panel active" id="panel1">
-        <div class="tag">Paso 1 de 3</div>
-        <h3 class="panel-title">¿Cómo te contactamos?</h3>
-        <p class="panel-sub">Elige cómo prefieres recibir tus cotizaciones</p>
-
-        <div class="channel-grid">
-          <div class="channel-btn selected" id="ch-wa" onclick="selectChannel('wa')">
-            <span class="ch-ico">💬</span>
-            <h4>WhatsApp</h4>
-            <p>Recibe el PDF en tu chat</p>
-          </div>
-          <div class="channel-btn" id="ch-email" onclick="selectChannel('email')">
-            <span class="ch-ico">📧</span>
-            <h4>Correo</h4>
-            <p>Te enviamos todo a tu email</p>
-          </div>
-        </div>
-
-        <div class="field-group" style="margin-bottom:14px;">
-          <div class="field">
-            <label class="lbl" for="f-nombre">Tu nombre *</label>
-            <input class="inp" type="text" id="f-nombre" placeholder="Ej: María González" />
-          </div>
-          <div class="field">
-            <label class="lbl" for="f-comuna">Tu comuna *</label>
-            <select class="inp" id="f-comuna">
-              <option value="" disabled selected>Selecciona...</option>
-              <optgroup label="Región Metropolitana">
-                <option>Santiago Centro</option><option>Providencia</option>
-                <option>Las Condes</option><option>Vitacura</option>
-                <option>Ñuñoa</option><option>La Florida</option>
-                <option>Maipú</option><option>Puente Alto</option>
-                <option>San Bernardo</option><option>Peñalolén</option>
-                <option>La Reina</option><option>Macul</option>
-                <option>San Miguel</option><option>Estación Central</option>
-                <option>Otro en RM</option>
-              </optgroup>
-              <optgroup label="Otras regiones">
-                <option>Valparaíso</option><option>Viña del Mar</option>
-                <option>Concepción</option><option>Temuco</option>
-                <option>La Serena</option><option>Antofagasta</option>
-                <option>Otra región</option>
-              </optgroup>
-            </select>
-          </div>
-        </div>
-
-        <div class="field-group" id="fields-wa" style="margin-bottom:8px;">
-          <div class="field">
-            <label class="lbl" for="f-wa">Tu WhatsApp *</label>
-            <input class="inp" type="tel" id="f-wa" placeholder="+56 9 XXXX XXXX" />
-          </div>
-          <div class="field" id="field-email-wrap" style="display:none;">
-            <label class="lbl" for="f-email">Tu correo *</label>
-            <input class="inp" type="email" id="f-email" placeholder="tucorreo@email.com" />
-          </div>
-        </div>
-
-        <label class="remember-row" for="cb-remember">
-          <input type="checkbox" id="cb-remember" />
-          <div class="custom-check"></div>
-          <span>Recordar mis datos para la próxima vez 🍪</span>
-        </label>
-      </div>
-
-      <!-- PANEL 2 -->
-      <div class="form-panel" id="panel2">
-        <div class="tag">Paso 2 de 3</div>
-        <h3 class="panel-title">¿Qué necesitas para tu fiesta?</h3>
-        <p class="panel-sub">Marca todos los servicios que te interesan cotizar</p>
-
-        <div class="search-wrap">
-          <span class="ico-search">🔍</span>
-          <input type="text" id="svc-search" placeholder="Buscar servicio... (ej: pizza, DJ, torta)" oninput="filterServices()" />
-        </div>
-
-        <div class="checklist-grid" id="checklist-grid"></div>
-        <div class="checklist-empty" id="checklist-empty">
-          😕 No encontramos ese servicio. Escríbelo en comentarios al enviar.
-        </div>
-        <div class="sel-count">Servicios seleccionados: <strong id="sel-num">0</strong></div>
-      </div>
-
-      <!-- PANEL 3 -->
-      <div class="form-panel" id="panel3">
-        <div class="tag">Paso 3 de 3</div>
-        <h3 class="panel-title">Confirma y envía</h3>
-        <p class="panel-sub">Revisa tu solicitud antes de enviarla</p>
-        <div id="resumen" style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:18px 20px;font-size:.86rem;color:var(--ink2);line-height:1.8;margin-bottom:22px;"></div>
-        <div class="field-group full" style="margin-bottom:0;">
-          <div class="field">
-            <label class="lbl" for="f-comentario">Comentario adicional (opcional)</label>
-            <textarea class="inp" id="f-comentario" rows="3" placeholder="Fecha aproximada, número de invitados, detalles especiales..." style="resize:vertical;"></textarea>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-nav">
-        <button class="btn btn-ghost" onclick="prevStep()" id="btn-prev" style="display:none;">← Atrás</button>
-        <span class="step-hint" id="step-hint">Paso 1 de 3</span>
-        <button class="btn btn-primary" onclick="nextStep()" id="btn-next">Continuar →</button>
-      </div>
+<!-- ══ CONTACTO ══ -->
+<section id="contacto" style="padding:80px 0;background:var(--white);border-top:1px solid var(--border)">
+  <div class="container">
+    <div style="text-align:center;max-width:540px;margin:0 auto 44px" class="reveal">
+      <div class="tag">Estamos aquí para ayudarte</div>
+      <h2 style="font-size:clamp(1.4rem,2.8vw,2.1rem);margin-bottom:12px">¿Tienes alguna consulta?</h2>
+      <p style="font-size:.9rem;color:var(--muted)">Tanto si buscas un servicio específico como si quieres publicar tu negocio, con gusto te ayudamos.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:580px;margin:0 auto" class="reveal">
+      <a href="mailto:contactocotizaeventos@gmail.com" style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:28px 20px;background:var(--bg2);border:1.5px solid var(--border);border-radius:18px;text-align:center;transition:.22s" onmouseover="this.style.borderColor='var(--coral)'" onmouseout="this.style.borderColor='var(--border)'">
+        <span style="font-size:2rem">📧</span>
+        <div><div style="font-size:.88rem;font-weight:700;margin-bottom:4px">Correo electrónico</div><div style="font-size:.75rem;color:var(--coral)">contactocotizaeventos@gmail.com</div></div>
+      </a>
+      <a href="https://wa.me/56991999301?text=Hola%2C%20tengo%20una%20consulta%20sobre%20CotizaEventos.cl" target="_blank" style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:28px 20px;background:#f0fdf4;border:1.5px solid #86efac;border-radius:18px;text-align:center;transition:.22s" onmouseover="this.style.borderColor='#22c55e'" onmouseout="this.style.borderColor='#86efac'">
+        <span style="font-size:2rem">💬</span>
+        <div><div style="font-size:.88rem;font-weight:700;margin-bottom:4px">WhatsApp</div><div style="font-size:.75rem;color:#16a34a">+56 9 9199 9301</div></div>
+      </a>
     </div>
   </div>
 </section>
@@ -778,59 +739,40 @@
   <div class="container">
     <div class="reveal">
       <h2>¿Eres proveedor de eventos?</h2>
-      <p>Aparece en nuestro directorio y recibe clientes directamente en tu WhatsApp.</p>
-      <a href="#cotizar" class="btn btn-primary btn-big">Quiero destacarme →</a>
+      <p>Aparece en nuestro directorio y recibe clientes directamente. Planes básicos y destacados disponibles.</p>
+      <a href="form.html" class="btn btn-primary btn-big">Registra tu negocio →</a>
     </div>
   </div>
 </section>
 
 <!-- ══ FOOTER ══ -->
 <footer>
-  <div class="logo">Cotiza<span>TuFiesta</span>.cl</div>
-  <p>© 2025 CotizaTuFiesta.cl — Todos los derechos reservados</p>
+  <a href="/" class="logo" style="text-decoration:none">Cotiza<span>Eventos</span>.cl</a>
+  <div style="display:flex;gap:20px;justify-content:center;margin:12px 0;flex-wrap:wrap">
+    <a href="proveedores.html" style="font-size:.8rem;color:var(--muted)">Proveedores</a>
+    <a href="form.html" style="font-size:.8rem;color:var(--muted)">Publica tu negocio</a>
+    <a href="terminos.html" style="font-size:.8rem;color:var(--muted)">Términos y condiciones</a>
+    <a href="#contacto" style="font-size:.8rem;color:var(--muted)">Contacto</a>
+  </div>
+  <p>© 2025 CotizaEventos.cl — Todos los derechos reservados · Santiago, Chile</p>
 </footer>
 
-<!-- ══ POPUP ══ -->
-<div id="popup-overlay">
-  <div class="popup-box">
-    <span class="popup-icon">🚀</span>
-    <h3>¡Listo para enviar!</h3>
-    <p>Se abrirá WhatsApp con tu solicitud lista. Solo envía el mensaje.</p>
-    <div class="popup-steps">
-      <div class="popup-step">
-        <div class="popup-step-n">1</div>
-        <div class="popup-step-txt">
-          <strong>Abre WhatsApp</strong>
-          <span>Se abrirá automáticamente con el mensaje preparado.</span>
-        </div>
-      </div>
-      <div class="popup-step">
-        <div class="popup-step-n">2</div>
-        <div class="popup-step-txt">
-          <strong>Envía el mensaje</strong>
-          <span>Toca el botón de enviar dentro de WhatsApp.</span>
-        </div>
-      </div>
-      <div class="popup-step">
-        <div class="popup-step-n">3</div>
-        <div class="popup-step-txt">
-          <strong>Recibe tu cotización</strong>
-          <span>Te responderemos con opciones personalizadas.</span>
-        </div>
-      </div>
-    </div>
-    <div class="popup-ctas">
-      <button class="btn btn-primary" onclick="confirmSend()">✦ Enviar por WhatsApp</button>
-      <button class="btn btn-ghost" onclick="closePopup()">Revisar primero</button>
-    </div>
-  </div>
-</div>
 
 <script>
 /* ══════════════════════════════════════════
    CONFIG
 ══════════════════════════════════════════ */
-const WA_NUMERO    = "56912345678";
+function toggleNavMenu(){
+  const m=document.getElementById('nav-mobile');
+  m.classList.toggle('open');
+}
+document.addEventListener('click',e=>{
+  const m=document.getElementById('nav-mobile');
+  const h=document.getElementById('nav-ham');
+  if(m&&h&&!m.contains(e.target)&&!h.contains(e.target))m.classList.remove('open');
+});
+
+const WA_NUMERO    = "56991999301";
 const EMAIL_DESTINO= "cotizaciones@cotizatufiesta.cl";
 
 /* ── Cargar categorías dinámicamente desde API ── */
@@ -1046,7 +988,7 @@ function confirmSend() {
       <p style="color:var(--muted); line-height:1.75; max-width:380px; margin:0 auto 24px; font-size:.9rem;">
         Se abrió WhatsApp con tu mensaje. Envíalo y en breve te enviamos tu cotización personalizada. 🥳
       </p>
-      <a href="#cotizar" onclick="location.reload()" class="btn btn-ghost">Hacer otra consulta</a>
+      <a href="proveedores.html" onclick="location.reload()" class="btn btn-ghost">Hacer otra consulta</a>
     </div>`;
 }
 

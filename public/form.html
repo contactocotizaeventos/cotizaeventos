@@ -3,10 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Registro de Proveedores – CotizaTuFiesta.cl</title>
+  <title>Registra tu negocio – CotizaEventos.cl</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;0,900;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <!-- reCAPTCHA v3 -->
+  <script src="https://www.google.com/recaptcha/api.js?render=6LdgJogsAAAAAAM6-p-baEifchagenBECvLT5Hzu"></script>
   <!-- SheetJS para generar Excel -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
@@ -239,6 +241,33 @@
     .success-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
 
     /* TOAST */
+    /* WA FLOTANTE */
+    .wa-float{
+      position:fixed;bottom:28px;right:28px;z-index:999;
+      display:flex;align-items:center;gap:10px;
+      background:#25D366;color:#fff;
+      padding:12px 20px;border-radius:99px;
+      font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:600;
+      box-shadow:0 8px 24px rgba(37,211,102,.35);
+      text-decoration:none;transition:.25s;
+      animation:wa-pulse 2.5s ease-in-out infinite;
+    }
+    .wa-float:hover{transform:scale(1.05);box-shadow:0 12px 32px rgba(37,211,102,.45)}
+    .wa-float-ico{font-size:1.3rem;flex-shrink:0}
+    .wa-float-badge{font-size:.7rem;background:rgba(255,255,255,.25);padding:2px 8px;border-radius:99px;white-space:nowrap}
+    @keyframes wa-pulse{0%,100%{box-shadow:0 8px 24px rgba(37,211,102,.35)}50%{box-shadow:0 8px 32px rgba(37,211,102,.55)}}
+    @media(max-width:540px){.wa-float{padding:12px 14px;gap:8px} .wa-float-badge{display:none}}
+
+    /* FAQ */
+    .faq-section{padding:60px 0 40px;border-top:1px solid var(--border);margin-top:20px}
+    .faq-item{border:1.5px solid var(--border);border-radius:14px;margin-bottom:10px;overflow:hidden;transition:.22s}
+    .faq-item:hover{border-color:var(--coral)}
+    .faq-q{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;cursor:pointer;font-weight:600;font-size:.88rem;color:var(--ink);background:var(--bg);gap:12px}
+    .faq-q span{color:var(--muted);font-size:1rem;transition:.22s;flex-shrink:0}
+    .faq-item.open .faq-q span{transform:rotate(45deg);color:var(--coral)}
+    .faq-a{display:none;padding:14px 20px 18px;font-size:.85rem;color:var(--ink2);line-height:1.7;background:var(--white)}
+    .faq-item.open .faq-a{display:block}
+
     .toast{
       position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);
       background:var(--ink);color:#fff;padding:12px 22px;border-radius:99px;
@@ -267,7 +296,7 @@
 
 <!-- NAV -->
 <nav>
-  <a href="index.html" class="logo">Cotiza<span>TuFiesta</span>.cl</a>
+  <a href="index.html" class="logo">Cotiza<span>Eventos</span>.cl</a>
   <div style="display:flex;align-items:center;gap:10px">
     <a href="proveedores.html" class="btn btn-outline">Ver directorio</a>
     <a href="index.html" class="btn btn-coral">← Inicio</a>
@@ -524,7 +553,7 @@
         <div class="field-grid">
           <div class="field">
             <label class="lbl">WhatsApp de contacto <span class="req">*</span></label>
-            <input class="inp" type="tel" id="whatsapp" placeholder="Ej: +56 9 1234 5678" />
+            <input class="inp" type="tel" id="whatsapp" placeholder="Ej: +56 9 9199 9301" />
             <div class="hint">Los clientes te escribirán directamente aquí.</div>
           </div>
           <div class="field">
@@ -739,7 +768,7 @@
     <div style="background:var(--coral-lt);border:1.5px solid var(--coral-md);border-radius:14px;padding:18px 22px;margin-bottom:20px">
       <p style="font-size:.87rem;color:var(--ink2);line-height:1.6;">
         ✅ Al confirmar, se descargará el <strong>archivo Excel</strong> con tus datos. 
-        Luego deberás enviarlo a <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="85e6eaebf1e4e6f1eae6eaf1ecffe4e0f3e0ebf1eaf6c5e2e8e4ece9abe6eae8">[email&#160;protected]</a></strong> o por WhatsApp al <strong>+56 9 1234 5678</strong> para completar tu registro.
+        Luego deberás enviarlo a <strong>contactocotizaeventos@gmail.com</strong> o por WhatsApp al <strong>+56 9 9199 9301</strong> para completar tu registro.
       </p>
     </div>
 
@@ -773,6 +802,54 @@
   </div>
 
 </div><!-- /form-wrap -->
+
+<!-- WA FLOTANTE -->
+<a href="https://wa.me/56991999301?text=Hola%2C%20tengo%20una%20consulta%20sobre%20registrar%20mi%20negocio%20en%20CotizaEventos.cl" target="_blank" class="wa-float">
+  <span class="wa-float-ico">💬</span>
+  <div>
+    <div>¿Dudas?</div>
+    <span class="wa-float-badge">Escríbenos</span>
+  </div>
+</a>
+
+<!-- FAQ -->
+<div class="faq-section">
+  <div class="form-wrap" style="max-width:720px">
+    <div style="text-align:center;margin-bottom:32px">
+      <div class="tag">Preguntas frecuentes</div>
+      <h2 style="font-size:1.6rem;margin-bottom:8px">¿Tienes dudas?</h2>
+      <p style="font-size:.88rem;color:var(--muted)">Aquí respondemos las consultas más comunes de nuestros proveedores.</p>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">¿Cuánto cuesta publicar mi negocio? <span>+</span></div>
+      <div class="faq-a">Registrarte es completamente <strong>gratis</strong>. Existen planes de posicionamiento destacado (Oro, Plata, Bronce) con mayor visibilidad, pero la publicación básica no tiene costo. Una vez enviado tu formulario, nuestro equipo revisará tu información y te contactará para explicarte las opciones disponibles.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">¿Cuánto tiempo tarda en aparecer mi negocio? <span>+</span></div>
+      <div class="faq-a">Revisamos todas las solicitudes en un plazo de <strong>24 a 48 horas hábiles</strong>. Una vez aprobado, tu negocio aparecerá inmediatamente en el directorio y estará visible para todos los clientes que busquen servicios como el tuyo.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">¿Qué pasa si no tengo logo ni foto de portada? <span>+</span></div>
+      <div class="faq-a">No es obligatorio, puedes dejar esos campos en blanco. Sin embargo, los proveedores con imágenes tienen <strong>mayor tasa de contacto</strong> por parte de los clientes. Te recomendamos subir al menos una foto representativa de tu servicio. Puedes actualizarla luego contactándonos directamente.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">¿Puedo cambiar mi información después de registrarme? <span>+</span></div>
+      <div class="faq-a">Sí. Para actualizar cualquier dato (precios, descripción, imágenes, redes sociales) solo debes contactarnos por WhatsApp o correo y con gusto actualizamos tu ficha. Próximamente también tendrás acceso a un panel propio para editarlo tú mismo.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">¿En qué categorías puedo aparecer? <span>+</span></div>
+      <div class="faq-a">Actualmente contamos con categorías de <strong>Catering</strong> (pizzas, hamburguesas, banquetería, churrascos, completos, tortas), <strong>Barra de tragos</strong>, y más. Si tu servicio no calza exactamente en ninguna categoría, indícalo en el formulario y evaluaremos la mejor opción para tu negocio.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">¿Los clientes me contactan directamente? <span>+</span></div>
+      <div class="faq-a">Sí, ese es el modelo de CotizaEventos.cl. Los clientes ven tu información, precios y servicios, y te contactan <strong>directo por WhatsApp o redes sociales</strong>. Nosotros no intermediamos ni cobramos comisión por cada contacto. Tu relación con el cliente es completamente directa.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">¿Qué es el "derecho de admisión" que mencionan en los términos? <span>+</span></div>
+      <div class="faq-a">CotizaEventos.cl se reserva el derecho de aceptar, rechazar o remover cualquier negocio del directorio sin necesidad de dar explicaciones. Esto nos permite garantizar estándares de calidad y proteger a los usuarios del directorio. Si tu solicitud es rechazada o tu negocio es removido, te notificaremos por el medio de contacto que indicaste.</div>
+    </div>
+  </div>
+</div>
 
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
@@ -1030,10 +1107,18 @@ async function submitForm() {
       comentarios:      v('comentarios'),
     };
 
+    // reCAPTCHA v3
+    const recaptchaToken = await new Promise((resolve, reject) => {
+      grecaptcha.ready(() => {
+        grecaptcha.execute('6LdgJogsAAAAAAM6-p-baEifchagenBECvLT5Hzu', { action: 'submit_form' })
+          .then(resolve).catch(reject);
+      });
+    });
+
     const res = await fetch('/api/submit-form', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({ ...payload, recaptcha_token: recaptchaToken }),
     });
 
     const result = await res.json();
@@ -1233,6 +1318,12 @@ function handleImageUrl(type, url) {
   }
 }
 
+function toggleFaq(item) {
+  const wasOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+  if (!wasOpen) item.classList.add('open');
+}
+
 function removeImage(type) {
   if (type === 'cover') {
     coverUrl = '';
@@ -1242,4 +1333,9 @@ function removeImage(type) {
     document.getElementById('logo-url').value = '';
   }
   document.getElementById(`${type}-preview-wrap`).style.display = 'none';
-  docume
+  document.getElementById(`${type}-preview-img`).src = '';
+}
+
+</script>
+</body>
+</html>

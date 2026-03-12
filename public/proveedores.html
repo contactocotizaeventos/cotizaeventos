@@ -76,17 +76,6 @@
     .page-body{max-width:1200px;margin:0 auto;padding:0 0 100px}
 
     /* ═══ CATEGORY SCROLL BAR ═══ */
-    .cat-scroll-bar{
-      background:var(--white);
-      border-bottom:1px solid var(--border);
-      position:sticky;
-      top:116px; /* nav 60px + search 56px */
-      z-index:150;
-      /* full bleed — salir del max-width */
-      width:100vw;
-      margin-left:calc(-50vw + 50%);
-    }
-
     /* Buscador dentro del cat-scroll-bar */
     .csb-search-row{
       display:flex;align-items:center;gap:14px;
@@ -351,10 +340,10 @@
 <body>
 
 <nav>
-  <a href="index.html" class="logo">Cotiza<span>TuFiesta</span>.cl</a>
+  <a href="index.html" class="logo">Cotiza<span>Eventos</span>.cl</a>
   <div class="nav-right">
     <a href="index.html" class="btn btn-outline">← Volver</a>
-    <a href="index.html#cotizar" class="btn btn-coral">✦ Cotizar gratis</a>
+    <a href="form.html" class="btn btn-coral">✦ Publica tu negocio</a>
   </div>
 </nav>
 
@@ -374,37 +363,17 @@
   </div>
 </div>
 
-<!-- SEARCH BAR -->
-<div class="search-header">
-  <div class="search-inner">
-    <div class="search-box">
+<!-- BARRA ÚNICA: BUSCAR + CATEGORÍAS -->
+<div class="search-header" style="position:sticky;top:60px;z-index:100;background:rgba(255,255,255,.97);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:10px 24px">
+  <div style="max-width:1080px;margin:0 auto;display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+    <div class="search-box" style="flex:0 0 260px;min-width:200px">
       <span class="s-ico">🔍</span>
-      <input type="text" id="global-search" placeholder="Buscar categoría... (ej: pizza, DJ, carpas)" oninput="handleSearch()" autocomplete="off" />
+      <input type="text" id="global-search" placeholder="Buscar proveedor o servicio..." oninput="handleSearch()" autocomplete="off" />
     </div>
-    <div class="quick-filters" id="quick-filters">
-      <button class="qf-btn active" onclick="filterGroup('all', this)">Todos</button>
-      <button class="qf-btn" onclick="filterGroup('catering', this)">🍽️ Catering</button>
-      <button class="qf-btn" onclick="filterGroup('entretenimiento', this)">🎵 Entretenimiento</button>
-      <button class="qf-btn" onclick="filterGroup('produccion', this)">⚙️ Producción</button>
-    </div>
-  </div>
-</div>
-
-<!-- CATEGORY SCROLL BAR — full width, sticky -->
-<div class="cat-scroll-bar" id="cat-scroll-bar">
-  <!-- Buscador de categorías -->
-  <div class="csb-search-row">
-    <div class="csb-search-wrap" id="csb-sw">
-      <span class="css-ico">🔍</span>
-      <input type="text" id="cat-search" placeholder="Buscar categoría..." autocomplete="off" oninput="filterCatBar(this.value)" />
-      <button class="css-clear" onclick="clearCatSearch()">✕</button>
-    </div>
-    <div class="csb-count" id="csb-count"></div>
-  </div>
-  <!-- Pills de categorías -->
-  <div class="csb-track-wrap">
-    <div class="csb-track" id="csb-track">
-      <!-- generado por JS -->
+    <div style="flex:1;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch">
+      <div class="csb-track" id="csb-track" style="display:flex;gap:7px;white-space:nowrap;padding:2px 0">
+        <!-- categorías generadas por JS -->
+      </div>
     </div>
   </div>
 </div>
@@ -431,6 +400,17 @@
 let GRUPOS = [];
 let CAT_INDEX = {};
 let PROV_INDEX = {};
+
+function toggleBasic(catId, total) {
+  const moreDiv = document.getElementById('bm-' + catId);
+  const btn     = document.getElementById('bt-' + catId);
+  if (!moreDiv || !btn) return;
+  const isOpen  = moreDiv.style.display !== 'none';
+  moreDiv.style.display = isOpen ? 'none' : 'block';
+  btn.textContent = isOpen
+    ? 'Ver ' + (total - 5) + ' opciones más ↓'
+    : 'Mostrar menos ↑';
+}
 
 function buildIndex() {
   CAT_INDEX = {};
@@ -518,7 +498,7 @@ function updateCsbCount(visible, total) {
    CATEGORY BAR SEARCH
 ═══════════════════════════════════════════ */
 function filterCatBar(q) {
-  document.getElementById('csb-sw').classList.toggle('has-val', q.length > 0);
+  const swEl = document.getElementById('csb-sw'); if(swEl) swEl.classList.toggle('has-val', q.length > 0);
   const query = q.toLowerCase().trim();
   const pills = document.querySelectorAll('.csb-pill');
   let vis = 0;
@@ -605,10 +585,18 @@ function render(groupFilter = 'all', searchQ = '') {
 
     matchedCats.forEach(cat => {
       const paid  = cat.proveedores.filter(p => p.pos <= 3).sort((a,b) => a.pos-b.pos);
-      const basic = cat.proveedores.filter(p => p.pos > 3).sort((a,b) => a.pos-b.pos);
+      // Básicos: sin rango (pos > 3 o sin pos), orden aleatorio en cada carga
+      const basicAll = cat.proveedores
+        .filter(p => p.pos > 3 || !p.pos)
+        .sort(() => Math.random() - 0.5);
+      const PREVIEW = 5;
+      const cid = cat.id;
+      const basicPreviewHTML = basicAll.slice(0, PREVIEW).map(basicHTML).join('');
+      const basicRestHTML    = basicAll.slice(PREVIEW).map(basicHTML).join('');
+      const hasMore          = basicAll.length > PREVIEW;
 
       grpDiv.innerHTML += `
-        <div class="cat-section reveal" id="${cat.id}" style="scroll-margin-top:220px">
+        <div class="cat-section reveal" id="${cat.id}" style="scroll-margin-top:130px">
           <div class="cat-header">
             <div class="cat-icon">${cat.ico}</div>
             <div>
@@ -618,12 +606,20 @@ function render(groupFilter = 'all', searchQ = '') {
             <span class="cat-badge">${cat.proveedores.length} opciones</span>
           </div>
           <div class="top-positions">${paid.map(paidCardHTML).join('')}</div>
-          <div class="basic-section-label">Otras opciones disponibles</div>
-          <div class="basic-list">${basic.map(basicHTML).join('')}</div>
           <div class="upgrade-cta">
             <p>¿Eres proveedor de <strong>${cat.nombre}</strong>? Consigue una de las <strong>3 posiciones destacadas</strong> y recibe contactos directos.</p>
             <a href="form.html" class="btn btn-coral">Quiero destacarme →</a>
           </div>
+          ${basicAll.length ? `
+          <div class="basic-section-label">Otras opciones disponibles</div>
+          <div class="basic-list" id="bl-${cid}">${basicPreviewHTML}</div>
+          ${hasMore ? `
+          <div id="bm-${cid}" style="display:none"><div class="basic-list">${basicRestHTML}</div></div>
+          <div style="text-align:center;margin:12px 0 4px">
+            <button class="btn btn-outline" id="bt-${cid}" onclick="toggleBasic('${cid}',${basicAll.length})" style="font-size:.78rem;padding:8px 22px">
+              Ver ${basicAll.length - PREVIEW} opciones más ↓
+            </button>
+          </div>` : ''}` : ''}
         </div>`;
     });
 
@@ -672,6 +668,12 @@ let currentSearch = '';
 let filterTimeout;
 
 function handleSearch() {
+  const q = document.getElementById('global-search').value.toLowerCase().trim();
+  // Filter category pills
+  document.querySelectorAll('.csb-pill').forEach(p => {
+    const match = !q || p.dataset.name.includes(q) || p.textContent.toLowerCase().includes(q);
+    p.style.opacity = match ? '1' : '0.35';
+  });
   currentSearch = document.getElementById('global-search').value;
   clearTimeout(filterTimeout);
   filterTimeout = setTimeout(() => render(currentGroup, currentSearch), 200);
@@ -783,7 +785,7 @@ function openModal(id) {
       </div>`:''}
       <div class="modal-ctas">
         <a class="btn btn-wa" href="https://wa.me/${p.wa}?text=${waMsg}" target="_blank">💬 Contactar por WhatsApp</a>
-        <a class="btn btn-outline" href="index.html#cotizar">📋 Cotización completa</a>
+        <a class="btn btn-outline" href="form.html">📋 Cotización completa</a>
       </div>
     </div>`;
   document.getElementById('modal-overlay').classList.add('open');
@@ -814,7 +816,7 @@ function openModalBasic(id) {
       </div>
       <div class="modal-ctas">
         <a class="btn btn-wa" href="https://wa.me/${p.wa}?text=${waMsg}" target="_blank">💬 Contactar por WhatsApp</a>
-        <a class="btn btn-outline" href="index.html#cotizar">📋 Cotización completa</a>
+        <a class="btn btn-outline" href="form.html">📋 Cotización completa</a>
       </div>
     </div>`;
   document.getElementById('modal-overlay').classList.add('open');
