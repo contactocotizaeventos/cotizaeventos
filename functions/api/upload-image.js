@@ -1,92 +1,84 @@
-// netlify/functions/upload-image.js
-// Recibe una imagen en base64 y la sube a Supabase Storage
-// Devuelve la URL pública de la imagen
+// functions/api/upload-image.js
+// Acepta tanto JSON (base64) como FormData (móvil nativo)
 
-const { createClient } = require('@supabase/supabase-js');
+import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY
-);
-
-const BUCKET = 'portadas'; // Nombre del bucket en Supabase Storage
-const MAX_SIZE_MB = 50;
-
-exports.handler = async (event) => {
-  if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 204, headers: corsHeaders() };
-  }
-
-  if (event.httpMethod !== 'POST') {
-    return respond(405, { error: 'Método no permitido' });
-  }
-
-  try {
-    const { imageBase64, fileName, mimeType } = JSON.parse(event.body);
-
-    if (!imageBase64 || !fileName || !mimeType) {
-      return respond(400, { error: 'Faltan campos: imageBase64, fileName, mimeType' });
-    }
-
-    // Validar tipo de archivo
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-    if (!allowedTypes.includes(mimeType)) {
-      return respond(400, { error: 'Tipo de archivo no permitido. Usa JPG, PNG o WebP.' });
-    }
-
-    // Convertir base64 a Buffer
-    const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
-    const buffer = Buffer.from(base64Data, 'base64');
-
-    // Validar tamaño
-    const sizeMB = buffer.length / (1024 * 1024);
-    if (sizeMB > MAX_SIZE_MB) {
-      return respond(400, { error: `La imagen supera los ${MAX_SIZE_MB}MB permitidos.` });
-    }
-
-    // Generar nombre único para evitar colisiones
-    const ext = fileName.split('.').pop().toLowerCase();
-    const uniqueName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-    const filePath = `proveedores/${uniqueName}`;
-
-    // Subir a Supabase Storage
-    const { error: uploadError } = await supabase.storage
-      .from(BUCKET)
-      .upload(filePath, buffer, {
-        contentType: mimeType,
-        upsert: false,
-      });
-
-    if (uploadError) throw uploadError;
-
-    // Obtener URL pública
-    const { data: urlData } = supabase.storage
-      .from(BUCKET)
-      .getPublicUrl(filePath);
-
-    return respond(200, {
-      ok: true,
-      url: urlData.publicUrl,
-    });
-
-  } catch (err) {
-    console.error('upload-image error:', err);
-    return respond(500, { error: 'Error al subir imagen', detail: err.message });
-  }
+const CORS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
-function corsHeaders() {
-  return {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  };
+const BUCKET   = 'portadas';
+const MAX_MB   = 50;
+const ALLOWED  = ['jpeg','jpg','png','webp','heic','heif'];
+
+function jsonRes(body, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...CORS, 'Content-Type': 'application/json' },
+  });
 }
 
-function respond(statusCode, body) {
-  return {
-    statusCode,
-    headers: { 'Content-Type': 'application/json', ...corsHeaders() },
-    body: JSON.stringify(body),
-  };
+export async function onRequestPost(ctx) {
+  const supabase = createClient(ctx.env.SUPABASE_URL, ctx.env.SUPABASE_SERVICE_KEY);
+
+  try {
+    const ct = (ctx.request.headers.get('content-type') || '').toLowerCase();
+    let bytes, mimeType, fileName;
+
+    if (ct.includes('multipart/form-data')) {
+      // ── FormData (móvil nativo) ──
+      const form = await ctx.request.formData();
+      const file = form.get('file');
+      if (!file || !file.name) return jsonRes({ error: 'No se recibió archivo.' }, 400);
+      mimeType = file.type || 'image/jpeg';
+      fileName = file.name;
+      bytes    = new Uint8Array(await file.arrayBuffer());
+    } else {
+      // ── JSON con base64 (desktop) ──
+      let body;
+      try { body = await ctx.request.json(); }
+      catch { return jsonRes({ error: 'Cuerpo no válido.' }, 400); }
+
+      const { imageBase64, fileName: fn, mimeType: mt } = body;
+      if (!imageBase64 || !fn || !mt) return jsonRes({ error: 'Faltan campos.' }, 400);
+
+      mimeType = mt;
+      fileName = fn;
+      const b64 = imageBase64.replace(/^data:image\/[^;]+;base64,/, '');
+      try {
+        const s = atob(b64);
+        bytes = new Uint8Array(s.length);
+        for (let i = 0; i < s.length; i++) bytes[i] = s.charCodeAt(i);
+      } catch { return jsonRes({ error: 'Error decodificando base64.' }, 400); }
+    }
+
+    const rawExt = (fileName.split('.').pop() || 'jpg').toLowerCase();
+    if (!ALLOWED.includes(rawExt) && !ALLOWED.includes(mimeType.split('/')[1])) {
+      return jsonRes({ error: 'Tipo no permitido. Usa JPG, PNG o WebP.' }, 400);
+    }
+    if (bytes.length / (1024 * 1024) > MAX_MB) {
+      return jsonRes({ error: `La imagen supera los ${MAX_MB}MB.` }, 400);
+    }
+
+    const extMap = { jpeg:'jpg', jpg:'jpg', png:'png', webp:'webp', heic:'jpg', heif:'jpg' };
+    const ext      = extMap[rawExt] || 'jpg';
+    const saveMime = ext === 'jpg' ? 'image/jpeg' : `image/${ext}`;
+    const path     = `proveedores/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+
+    const { error: upErr } = await supabase.storage.from(BUCKET).upload(path, bytes, { contentType: saveMime, upsert: false });
+    if (upErr) throw upErr;
+
+    const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(path);
+    return jsonRes({ ok: true, url: urlData.publicUrl });
+
+  } catch (err) {
+    console.error('upload-image:', err);
+    return jsonRes({ error: err.message || 'Error interno.' }, 500);
+  }
+}
+
+export async function onRequestOptions() {
+  return new Response(null, { status: 204, headers: CORS });
 }
