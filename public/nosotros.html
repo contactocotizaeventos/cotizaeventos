@@ -269,6 +269,23 @@
   </div>
 </section>
 
+<!-- ══ GALERÍA VISUAL ══ -->
+<!-- ADMIN: Para activar las imágenes, reemplaza cada data-src con la URL de tu foto.
+     Deja data-src="" para mostrar el ícono de placeholder. -->
+<div style="overflow:hidden;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--ink)">
+  <div style="display:flex;height:200px">
+    <div class="nos-img-tile" data-src="" style="flex:1;background:linear-gradient(135deg,#1A1410,#2D1810);display:flex;align-items:center;justify-content:center;font-size:3rem;color:rgba(255,255,255,.15);overflow:hidden;cursor:pointer;transition:flex .4s">🎊</div>
+    <div class="nos-img-tile" data-src="" style="flex:1;background:linear-gradient(135deg,#1A1410,#2D1810);display:flex;align-items:center;justify-content:center;font-size:3rem;color:rgba(255,255,255,.15);overflow:hidden;cursor:pointer;transition:flex .4s;border-left:1px solid rgba(255,255,255,.07)">📍</div>
+    <div class="nos-img-tile" data-src="" style="flex:1;background:linear-gradient(135deg,#1A1410,#2D1810);display:flex;align-items:center;justify-content:center;font-size:3rem;color:rgba(255,255,255,.15);overflow:hidden;cursor:pointer;transition:flex .4s;border-left:1px solid rgba(255,255,255,.07)">🎵</div>
+    <div class="nos-img-tile" data-src="" style="flex:1;background:linear-gradient(135deg,#1A1410,#2D1810);display:flex;align-items:center;justify-content:center;font-size:3rem;color:rgba(255,255,255,.15);overflow:hidden;cursor:pointer;transition:flex .4s;border-left:1px solid rgba(255,255,255,.07)">🥂</div>
+  </div>
+</div>
+<style>
+  .nos-img-tile:hover{flex:1.7 !important}
+  .nos-img-tile img{width:100%;height:100%;object-fit:cover;display:block}
+  @media(max-width:600px){.nos-img-tile:nth-child(n+3){display:none}}
+</style>
+
 <!-- ══ SOBRE EL CREADOR ══ -->
 <section class="creator-section">
   <div class="container">
@@ -298,7 +315,7 @@
               Elimina los que no uses.
             -->
             <a href="https://wa.me/56991999301" target="_blank" class="creator-social-btn">💬 WhatsApp</a>
-            <a href="mailto:contactocotizaeventos@gmail.com" class="creator-social-btn">📧 Email</a>
+            <a href="/cdn-cgi/l/email-protection#d8bbb7b6acb9bbacb7bbb7acb1a2b9bdaebdb6acb7ab98bfb5b9b1b4f6bbb7b5" class="creator-social-btn">📧 Email</a>
           </div>
         </div>
       </div>
@@ -370,6 +387,27 @@
   </div>
 </section>
 
+<!-- ══ MISIÓN + FOTO CONTEXTUAL ══ -->
+<!-- ADMIN: Para agregar una foto de fondo, reemplaza el background del section -->
+<section style="padding:72px 0;background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;max-width:880px;margin:0 auto" class="reveal">
+      <!-- Foto contextual (evento/celebración) -->
+      <!-- ADMIN: reemplaza el emoji con <img src="URL" style="width:100%;height:100%;object-fit:cover;border-radius:20px"> -->
+      <div style="aspect-ratio:4/3;background:linear-gradient(135deg,var(--coral-lt),var(--bg2));border-radius:20px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:5rem;overflow:hidden">
+        🎉
+      </div>
+      <div>
+        <div class="tag">Nuestra misión</div>
+        <h2 style="font-size:clamp(1.4rem,2.5vw,1.9rem);margin-bottom:16px;line-height:1.2">Que organizar un evento sea fácil, rápido y confiable</h2>
+        <p style="font-size:.9rem;color:var(--ink2);line-height:1.8;margin-bottom:16px">Creamos un espacio donde quienes buscan servicios para eventos pueden encontrar opciones reales, con precios transparentes y contacto directo. Sin formularios largos, sin esperas, sin intermediarios.</p>
+        <p style="font-size:.9rem;color:var(--ink2);line-height:1.8">Cada proveedor en nuestro directorio fue seleccionado porque creemos en la calidad de su servicio.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<style>@media(max-width:700px){.nos-mission-grid{grid-template-columns:1fr!important}}</style>
+
 <!-- ══ CTA ══ -->
 <section class="cta-section">
   <div class="container">
@@ -397,7 +435,19 @@
   <p>© 2025 CotizaEventos.cl — Todos los derechos reservados · Santiago, Chile</p>
 </footer>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+/* Gallery images — replace URLs to activate */
+document.querySelectorAll('.nos-img-tile').forEach(tile => {
+  const src = tile.dataset.src;
+  if (src) {
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = '';
+    tile.innerHTML = '';
+    tile.appendChild(img);
+  }
+});
+
 /* Scroll reveal */
 const obs = new IntersectionObserver(es => es.forEach(e => {
   if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
@@ -407,9 +457,4 @@ document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 /* Mobile nav */
 document.addEventListener('click', e => {
   const m = document.getElementById('nm');
-  const h = document.getElementById('nav-ham');
-  if (m && h && !m.contains(e.target) && !h.contains(e.target)) m.classList.remove('open');
-});
-</script>
-</body>
-</html>
+  const 

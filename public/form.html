@@ -162,8 +162,9 @@
 
     /* CHECKBOX GRID */
     .check-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}
+    .check-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:8px}
     .check-pill{
-      display:flex;align-items:center;gap:9px;
+      display:flex;align-items:center;gap:8px;
       padding:10px 13px;border-radius:10px;
       border:1.5px solid var(--border);background:var(--bg);
       cursor:pointer;transition:.18s;user-select:none;
@@ -171,13 +172,15 @@
     .check-pill:hover{border-color:var(--coral-md);background:var(--coral-lt)}
     .check-pill input{display:none}
     .check-pill.checked{border-color:var(--coral);background:var(--coral-lt)}
+    /* Checkmark: hidden by default, visible when checked */
     .pill-box{
       width:20px;height:20px;border-radius:6px;flex-shrink:0;
-      border:1.5px solid var(--border2);
-      display:flex;align-items:center;justify-content:center;
+      display:none; /* oculto hasta seleccionar */
+      align-items:center;justify-content:center;
       font-size:.72rem;transition:.18s;
+      background:var(--coral);border:1.5px solid var(--coral);color:#fff;
     }
-    .check-pill.checked .pill-box{background:var(--coral);border-color:var(--coral);color:#fff}
+    .check-pill.checked .pill-box{display:flex}
     .pill-label{font-size:.83rem;font-weight:500;color:var(--ink2);line-height:1.2}
     .pill-ico{font-size:1.1rem;flex-shrink:0}
 
@@ -364,11 +367,11 @@
           </div>
           <div class="field">
             <label class="lbl">Nombre del dueño / responsable <span class="req">*</span></label>
-            <input class="inp" type="text" id="responsable" placeholder="Ej: Juan Pérez" />
+            <input class="inp" type="text" id="responsable" placeholder="Ej: Juan Pérez" maxlength="80" />
           </div>
           <div class="field">
             <label class="lbl">RUT del negocio (si tiene)</label>
-            <input class="inp" type="text" id="rut" placeholder="Ej: 76.123.456-7" />
+            <input class="inp" type="text" id="rut" placeholder="Ej: 76.123.456-7" maxlength="12" />
           </div>
           <div class="field span-2">
             <label class="lbl">Descripción del negocio <span class="req">*</span></label>
@@ -423,31 +426,11 @@
         </div>
       </div>
       <div class="form-card-body">
-        <p style="font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:10px">🍽️ Catering</p>
-        <div class="check-grid" style="margin-bottom:20px">
-          <label class="check-pill" onclick="togglePill(this)"><input type="checkbox" value="Banquetería"><div class="pill-box">✓</div><span class="pill-ico">🍽️</span><span class="pill-label">Banquetería</span></label>
-          <label class="check-pill" onclick="togglePill(this)"><input type="checkbox" value="Catering Pizzas"><div class="pill-box">✓</div><span class="pill-ico">🍕</span><span class="pill-label">Catering Pizzas</span></label>
-          <label class="check-pill" onclick="togglePill(this)"><input type="checkbox" value="Catering Hamburguesas"><div class="pill-box">✓</div><span class="pill-ico">🍔</span><span class="pill-label">Hamburguesas</span></label>
-          <label class="check-pill" onclick="togglePill(this)"><input type="checkbox" value="Catering Churrascos"><div class="pill-box">✓</div><span class="pill-ico">🥩</span><span class="pill-label">Churrascos</span></label>
-          <label class="check-pill" onclick="togglePill(this)"><input type="checkbox" value="Catering Completos"><div class="pill-box">✓</div><span class="pill-ico">🌭</span><span class="pill-label">Completos</span></label>
-          <label class="check-pill" onclick="togglePill(this)"><input type="checkbox" value="Torta y Postres"><div class="pill-box">✓</div><span class="pill-ico">🎂</span><span class="pill-label">Torta y Postres</span></label>
-          <label class="check-pill" onclick="togglePill(this)"><input type="checkbox" value="Barra de Tragos"><div class="pill-box">✓</div><span class="pill-ico">🍹</span><span class="pill-label">Barra de Tragos</span></label>
+        <!-- Cargado dinámicamente desde API -->
+        <div id="cats-loading" style="padding:24px;text-align:center;color:var(--muted);font-size:.87rem">
+          Cargando categorías... ⏳
         </div>
-        <p style="font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:10px">🎵 Entretenimiento</p>
-        <div class="check-grid" style="margin-bottom:20px">
-          <label class="check-pill" onclick="togglePill(this)"><input type="checkbox" value="DJ"><div class="pill-box">✓</div><span class="pill-ico">🎵</span><span class="pill-label">DJ</span></label>
-          <label class="check-pill" onclick="togglePill(this)"><input type="checkbox" value="Animación y Shows"><div class="pill-box">✓</div><span class="pill-ico">🎪</span><span class="pill-label">Animación y Shows</span></label>
-          <label class="check-pill" onclick="togglePill(this)"><input type="checkbox" value="Fotografía y Video"><div class="pill-box">✓</div><span class="pill-ico">📸</span><span class="pill-label">Fotografía y Video</span></label>
-        </div>
-        <p style="font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:10px">⚙️ Producción y Logística</p>
-        <div class="check-grid">
-          <label class="check-pill" onclick="togglePill(this)"><input type="checkbox" value="Iluminación"><div class="pill-box">✓</div><span class="pill-ico">💡</span><span class="pill-label">Iluminación</span></label>
-          <label class="check-pill" onclick="togglePill(this)"><input type="checkbox" value="Sonido y Amplificación"><div class="pill-box">✓</div><span class="pill-ico">🎙️</span><span class="pill-label">Sonido</span></label>
-          <label class="check-pill" onclick="togglePill(this)"><input type="checkbox" value="Carpas y Toldos"><div class="pill-box">✓</div><span class="pill-ico">⛺</span><span class="pill-label">Carpas y Toldos</span></label>
-          <label class="check-pill" onclick="togglePill(this)"><input type="checkbox" value="Mesas y Sillas"><div class="pill-box">✓</div><span class="pill-ico">🪑</span><span class="pill-label">Mesas y Sillas</span></label>
-          <label class="check-pill" onclick="togglePill(this)"><input type="checkbox" value="Decoración"><div class="pill-box">✓</div><span class="pill-ico">🌸</span><span class="pill-label">Decoración</span></label>
-          <label class="check-pill" onclick="togglePill(this)"><input type="checkbox" value="Transporte"><div class="pill-box">✓</div><span class="pill-ico">🚌</span><span class="pill-label">Transporte</span></label>
-        </div>
+        <div id="cats-container" style="display:none"></div>
       </div>
     </div>
 
@@ -460,12 +443,22 @@
         </div>
       </div>
       <div class="form-card-body">
-        <div class="field-grid cols-1">
-          <div class="field">
-            <label class="lbl">Comunas donde operas <span class="req">*</span></label>
-            <input class="inp" type="text" id="comunas" placeholder="Ej: Las Condes, Providencia, Vitacura, RM completa..." />
-            <div class="hint">Separa las comunas con comas. Si cubres toda la RM, escribe "RM completa".</div>
+        <div class="field">
+          <label class="lbl">Comunas donde operas <span class="req">*</span></label>
+          <div style="margin-bottom:8px;display:flex;gap:8px;flex-wrap:wrap">
+            <button type="button" class="btn btn-outline" style="padding:5px 12px;font-size:.75rem" onclick="toggleAllComunas(true)">✅ Toda la RM</button>
+            <button type="button" class="btn btn-outline" style="padding:5px 12px;font-size:.75rem" onclick="toggleAllComunas(false)">✕ Limpiar</button>
           </div>
+          <div id="comunas-grid" style="
+            max-height:240px;overflow-y:auto;
+            border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;
+            display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px 8px;
+            background:var(--bg);
+          ">
+            <!-- generado por JS -->
+          </div>
+          <input type="hidden" id="comunas" />
+          <div class="hint">Selecciona las comunas donde puedes operar.</div>
         </div>
       </div>
     </div>
@@ -491,21 +484,21 @@
         <div class="field-grid">
           <div class="field">
             <label class="lbl">Precio mínimo (servicio base) <span class="req">*</span></label>
-            <input class="inp" type="text" id="precio-min" placeholder="Ej: $150.000" />
+            <input class="inp" type="text" id="precio-min" placeholder="Ej: $150.000" maxlength="12" />
             <div class="hint">El precio de tu servicio más básico.</div>
           </div>
           <div class="field">
             <label class="lbl">Precio máximo (servicio completo) <span class="req">*</span></label>
-            <input class="inp" type="text" id="precio-max" placeholder="Ej: $800.000" />
+            <input class="inp" type="text" id="precio-max" placeholder="Ej: $800.000" maxlength="12" />
             <div class="hint">Tu precio más alto para evento completo.</div>
           </div>
           <div class="field span-2">
             <label class="lbl">¿Qué incluye tu servicio? <span class="req">*</span></label>
-            <textarea class="inp" id="incluye" placeholder="Ej: Traslado de equipos, montaje, desmontaje, personal uniformado, emision de boleta..."></textarea>
+            <textarea class="inp" id="incluye" maxlength="600" placeholder="Ej: Traslado de equipos, montaje, desmontaje, personal uniformado, emision de boleta..."></textarea>
           </div>
           <div class="field span-2">
             <label class="lbl">¿Qué NO incluye o tiene costo adicional?</label>
-            <textarea class="inp" id="no-incluye" placeholder="Ej: Gasolina fuera de Santiago, horas extra sobre las 6 hrs..."></textarea>
+            <textarea class="inp" id="no-incluye" maxlength="400" placeholder="Ej: Gasolina fuera de Santiago, horas extra sobre las 6 hrs..."></textarea>
           </div>
           <div class="field">
             <label class="lbl">Tiempo de anticipación mínimo para reservar</label>
@@ -591,23 +584,23 @@
         <div class="field-grid">
           <div class="field">
             <label class="lbl">Instagram</label>
-            <input class="inp" type="text" id="instagram" placeholder="@minegocio" />
+            <input class="inp" type="text" id="instagram" placeholder="@minegocio" maxlength="50" />
           </div>
           <div class="field">
             <label class="lbl">Facebook</label>
-            <input class="inp" type="text" id="facebook" placeholder="minegocio o URL completa" />
+            <input class="inp" type="text" id="facebook" placeholder="minegocio o URL completa" maxlength="100" />
           </div>
           <div class="field">
             <label class="lbl">TikTok (opcional)</label>
-            <input class="inp" type="text" id="tiktok" placeholder="@minegocio" />
+            <input class="inp" type="text" id="tiktok" placeholder="@minegocio" maxlength="50" />
           </div>
           <div class="field">
             <label class="lbl">YouTube (opcional)</label>
-            <input class="inp" type="url" id="youtube" placeholder="https://youtube.com/..." />
+            <input class="inp" type="url" id="youtube" placeholder="https://youtube.com/..." maxlength="200" />
           </div>
           <div class="field span-2">
             <label class="lbl">Dirección física (si aplica)</label>
-            <input class="inp" type="text" id="direccion" placeholder="Ej: Av. Providencia 1234, Providencia (si tienes local físico)" />
+            <input class="inp" type="text" id="direccion" maxlength="200" placeholder="Ej: Av. Providencia 1234, Providencia (si tienes local físico)" />
           </div>
         </div>
       </div>
@@ -637,28 +630,28 @@
             <span class="pos-badge pb-gold">★★★ Más visible</span>
             <span class="pos-ico">🥇</span>
             <div class="pos-name">Posición #1 Oro</div>
-            <div class="pos-price">Top del listado<br/><strong style="color:var(--coral)">$50.000/mes</strong></div>
+            <div class="pos-price">Top del listado<br/><strong style="color:var(--teal)">Gratis ahora</strong> <s style="font-size:.73rem;color:var(--muted)">$50.000/mes</s></div>
           </label>
           <label class="pos-option" onclick="selectPos(this, 'Posición Plata #2')">
             <input type="radio" name="posicion" value="Posición Plata #2" />
             <span class="pos-badge pb-silver">★★☆</span>
             <span class="pos-ico">🥈</span>
             <div class="pos-name">Posición #2 Plata</div>
-            <div class="pos-price">Segundo destacado<br/><strong style="color:var(--coral)">$30.000/mes</strong></div>
+            <div class="pos-price">Segundo destacado<br/><strong style="color:var(--teal)">Gratis ahora</strong> <s style="font-size:.73rem;color:var(--muted)">$30.000/mes</s></div>
           </label>
           <label class="pos-option" onclick="selectPos(this, 'Posición Bronce #3')">
             <input type="radio" name="posicion" value="Posición Bronce #3" />
             <span class="pos-badge pb-bronze">★☆☆</span>
             <span class="pos-ico">🥉</span>
             <div class="pos-name">Posición #3 Bronce</div>
-            <div class="pos-price">Tercer destacado<br/><strong style="color:var(--coral)">$20.000/mes</strong></div>
+            <div class="pos-price">Tercer destacado<br/><strong style="color:var(--teal)">Gratis ahora</strong> <s style="font-size:.73rem;color:var(--muted)">$20.000/mes</s></div>
           </label>
           <label class="pos-option" onclick="selectPos(this, 'Listado Básico')">
             <input type="radio" name="posicion" value="Listado Básico" />
             <span class="pos-badge pb-basic">Básico</span>
             <span class="pos-ico">📋</span>
             <div class="pos-name">Listado Básico</div>
-            <div class="pos-price">Visibilidad básica<br/><strong style="color:var(--teal)">Gratis</strong></div>
+            <div class="pos-price">Visibilidad básica<br/><strong style="color:var(--teal)">Siempre gratis</strong></div>
           </label>
         </div>
 
@@ -809,9 +802,9 @@
         </p>
       </div>
 
-      <div class="success-actions">
-        <a href="proveedores.html" class="btn btn-teal btn-big">Ver directorio →</a>
-        <a href="index.html" class="btn btn-outline btn-big">Volver al inicio</a>
+      <div class="success-actions" style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:24px">
+        <a href="proveedores.html" class="btn btn-teal btn-big" style="min-width:160px;justify-content:center">Ver directorio →</a>
+        <a href="index.html" class="btn btn-outline btn-big" style="min-width:160px;justify-content:center">← Inicio</a>
       </div>
     </div>
   </div>
@@ -875,6 +868,84 @@
 ═══════════════════════════════════════ */
 let currentStep = 1;
 const TOTAL_STEPS = 6;
+
+/* ── COMUNAS RM ── */
+const COMUNAS_RM = [
+  'Alhué','Buin','Calera de Tango','Cerrillos','Cerro Navia','Colina','Conchalí','Curacaví',
+  'El Bosque','El Monte','Estación Central','Huechuraba','Independencia','Isla de Maipo',
+  'La Cisterna','La Florida','La Granja','La Pintana','La Reina','Lampa','Las Condes',
+  'Lo Barnechea','Lo Espejo','Lo Prado','Macul','Maipú','María Pinto','Melipilla',
+  'Padre Hurtado','Paine','Pedro Aguirre Cerda','Peñaflor','Peñalolén','Pirque',
+  'Providencia','Pudahuel','Puente Alto','Quilicura','Quinta Normal','Recoleta','Renca',
+  'San Bernardo','San Joaquín','San José de Maipo','San Miguel','San Pedro','Santiago',
+  'Talagante','Tiltil','Vitacura'
+];
+
+function buildComunasGrid() {
+  const grid = document.getElementById('comunas-grid');
+  if (!grid) return;
+  grid.innerHTML = COMUNAS_RM.map(com => `
+    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:.82rem;padding:3px 0">
+      <input type="checkbox" class="comuna-cb" value="${com}" onchange="updateComunasHidden()"
+        style="width:15px;height:15px;accent-color:var(--coral);cursor:pointer" />
+      ${com}
+    </label>
+  `).join('');
+}
+
+function updateComunasHidden() {
+  const sel = [...document.querySelectorAll('.comuna-cb:checked')].map(cb => cb.value);
+  document.getElementById('comunas').value = sel.join(', ');
+}
+
+function toggleAllComunas(select) {
+  document.querySelectorAll('.comuna-cb').forEach(cb => { cb.checked = select; });
+  updateComunasHidden();
+}
+
+/* ── LOAD CATEGORIES FROM API ── */
+async function loadFormCategories() {
+  try {
+    const res = await fetch('/api/get-providers');
+    if (!res.ok) throw new Error('API error');
+    const data = await res.json();
+    const grupos = data.grupos || [];
+    renderFormCategories(grupos);
+  } catch (e) {
+    console.warn('No se cargaron categorías:', e.message);
+    document.getElementById('cats-loading').textContent = 'Error al cargar categorías. Intenta recargando la página.';
+  }
+}
+
+function renderFormCategories(grupos) {
+  const container = document.getElementById('cats-container');
+  const loading   = document.getElementById('cats-loading');
+  if (!container) return;
+
+  if (!grupos.length) {
+    loading.textContent = 'No hay categorías disponibles aún.';
+    return;
+  }
+
+  container.innerHTML = grupos.map(g => `
+    <div style="margin-bottom:20px">
+      <p style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:8px">${g.ico} ${g.nombre}</p>
+      <div class="check-grid">
+        ${g.categorias.map(cat => `
+          <label class="check-pill" onclick="togglePill(this)">
+            <input type="checkbox" value="${cat.nombre}" />
+            <div class="pill-box">✓</div>
+            <span class="pill-ico">${cat.ico}</span>
+            <span class="pill-label">${cat.nombre}</span>
+          </label>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+
+  loading.style.display = 'none';
+  container.style.display = 'block';
+}
 let lastExcelData = null;
 
 /* ═══════════════════════════════════════
@@ -1079,11 +1150,26 @@ function buildSummary() {
 /* ═══════════════════════════════════════
    SUBMIT — envía a Netlify Function + Excel de respaldo
 ═══════════════════════════════════════ */
-async function submitForm() {
+function openConfirmPopup() {
+  const overlay = document.getElementById('confirm-overlay');
+  overlay.style.display = 'flex';
+}
+function closeConfirmPopup() {
+  document.getElementById('confirm-overlay').style.display = 'none';
+}
+
+// Close popup if clicking outside
+document.getElementById('confirm-overlay')?.addEventListener('click', e => {
+  if (e.target === document.getElementById('confirm-overlay')) closeConfirmPopup();
+});
+
+async function doSubmitForm() {
+  document.getElementById('confirm-send-btn').disabled = true;
+  document.getElementById('confirm-send-btn').textContent = 'Enviando...';
   const data = getData();
   lastExcelData = data;
 
-  const btn = document.querySelector('[onclick="submitForm()"]');
+  const btn = document.getElementById('confirm-send-btn');
   if (btn) { btn.disabled = true; btn.textContent = 'Enviando...'; }
 
   try {
@@ -1146,7 +1232,8 @@ async function submitForm() {
     generateExcel(data);
     setTimeout(() => goToStep(TOTAL_STEPS + 1), 1800);
   } finally {
-    if (btn) { btn.disabled = false; btn.textContent = '✦ Confirmar y enviar'; }
+    if (btn) { btn.disabled = false; btn.textContent = '✦ Enviar solicitud'; }
+    closeConfirmPopup();
   }
 }
 
@@ -1285,41 +1372,54 @@ async function handleImageUpload(type, input) {
   if (file.size > 50 * 1024 * 1024) {
     showToast('La imagen supera los 50MB.', 'error'); return;
   }
+
+  // Show local preview immediately
   const reader = new FileReader();
-  reader.onload = async (e) => {
-    const base64 = e.target.result;
-    // Preview local inmediato
-    document.getElementById(`${type}-preview-img`).src = base64;
+  reader.onload = e => {
+    document.getElementById(`${type}-preview-img`).src = e.target.result;
     document.getElementById(`${type}-preview-wrap`).style.display = 'block';
-    document.getElementById(`${type}-upload-status`).textContent = 'Subiendo...';
-    document.getElementById(`${type}-upload-idle`).style.display = 'none';
-    document.getElementById(`${type}-upload-loading`).style.display = 'block';
-    try {
-      const res = await fetch('/api/upload-image', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageBase64: base64, fileName: file.name, mimeType: file.type }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      if (type === 'cover') {
-        coverUrl = data.url;
-        document.getElementById('cover-url-input').value = coverUrl;
-      } else {
-        logoUrl = data.url;
-        document.getElementById('logo-url').value = logoUrl;
-      }
-      document.getElementById(`${type}-upload-status`).textContent = '✅ Imagen subida';
-      showToast(`✅ ${type === 'cover' ? 'Portada' : 'Logo'} listo`, 'success');
-    } catch (err) {
-      document.getElementById(`${type}-upload-status`).textContent = '⚠️ Error. Pega la URL manualmente.';
-      showToast('Error: ' + err.message, 'error');
-    } finally {
-      document.getElementById(`${type}-upload-idle`).style.display = 'block';
-      document.getElementById(`${type}-upload-loading`).style.display = 'none';
-    }
   };
   reader.readAsDataURL(file);
+
+  document.getElementById(`${type}-upload-status`).textContent = 'Subiendo...';
+  document.getElementById(`${type}-upload-idle`).style.display = 'none';
+  document.getElementById(`${type}-upload-loading`).style.display = 'block';
+
+  try {
+    // Use FormData — much more reliable on mobile (avoids large JSON base64)
+    const form = new FormData();
+    form.append('file', file, file.name);
+
+    const res = await fetch('/api/upload-image', { method: 'POST', body: form });
+
+    // Safe JSON parse — guard against HTML error pages
+    let data;
+    const ct = res.headers.get('content-type') || '';
+    if (ct.includes('application/json')) {
+      data = await res.json();
+    } else {
+      const text = await res.text();
+      throw new Error(text.slice(0, 120) || `Error ${res.status}`);
+    }
+
+    if (!res.ok) throw new Error(data?.error || `Error ${res.status}`);
+
+    if (type === 'cover') {
+      coverUrl = data.url;
+      document.getElementById('cover-url-input').value = coverUrl;
+    } else {
+      logoUrl = data.url;
+      document.getElementById('logo-url').value = logoUrl;
+    }
+    document.getElementById(`${type}-upload-status`).textContent = '✅ Imagen subida';
+    showToast(`✅ ${type === 'cover' ? 'Portada' : 'Logo'} listo`, 'success');
+  } catch (err) {
+    document.getElementById(`${type}-upload-status`).textContent = '⚠️ Error. Pega la URL manualmente.';
+    showToast('Error al subir: ' + err.message, 'error');
+  } finally {
+    document.getElementById(`${type}-upload-idle`).style.display = 'block';
+    document.getElementById(`${type}-upload-loading`).style.display = 'none';
+  }
 }
 
 function handleImageUrl(type, url) {
