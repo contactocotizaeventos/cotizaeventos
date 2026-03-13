@@ -292,14 +292,23 @@
 
     .pos-card{background:var(--white);border-radius:20px;box-shadow:0 4px 24px rgba(0,0,0,.08);transition:.3s var(--ease);cursor:pointer;position:relative;display:flex;flex-direction:column}
     .pos-card:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,0,0,.14)}
-    .pos-card.pos-1{border:2px solid var(--gold-bd);grid-column:1/-1;flex-direction:row}
+    .pos-card.pos-1{
+      border:2.5px solid var(--gold-bd);
+      grid-column:1/-1;flex-direction:row;
+      box-shadow:0 8px 40px rgba(184,134,11,.18), 0 2px 0 0 #E8C84A inset;
+      background:linear-gradient(135deg,#FFFDF5 0%,#FFFFFF 60%);
+    }
+    .pos-card.pos-1:hover{
+      transform:translateY(-5px);
+      box-shadow:0 20px 60px rgba(184,134,11,.22), 0 2px 0 0 #E8C84A inset;
+    }
     .pos-card.pos-2{border:1.5px solid #C0C0C0}
     .pos-card.pos-3{border:1.5px solid #CD7F32}
 
     /* COVER PHOTO */
     .pos-cover{position:relative;width:100%;height:170px;flex-shrink:0;overflow:hidden;border-radius:18px 18px 0 0}
     /* Oro horizontal: portada a la izquierda */
-    .pos-card.pos-1 .pos-cover{width:260px;height:100%;flex-shrink:0;min-height:200px;border-radius:18px 0 0 18px}
+    .pos-card.pos-1 .pos-cover{width:300px;height:100%;flex-shrink:0;min-height:220px;border-radius:18px 0 0 18px}
     .pos-card.pos-1 .pos-cover-img{width:260px;height:100%}
     .pos-card.pos-1 .pos-cover-placeholder{width:260px;height:100%;min-height:200px}
     .pos-cover-img{width:100%;height:170px;object-fit:cover;display:block;transition:transform .4s var(--ease);border-radius:0}
@@ -317,21 +326,23 @@
 
     /* RIBBON sobre la foto */
     .pos-ribbon{position:absolute;top:12px;left:0;z-index:3;display:inline-flex;align-items:center;gap:5px;padding:5px 14px 5px 12px;border-radius:0 99px 99px 0;font-size:.63rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;box-shadow:0 3px 12px rgba(0,0,0,.18)}
-    .pos-1 .pos-ribbon{background:linear-gradient(90deg,#8B6914,#D4A017,#E8C84A);color:#fff}
+    .pos-1 .pos-ribbon{background:linear-gradient(90deg,#7A5C12,#C8930A,#E8C84A);color:#fff;box-shadow:0 2px 12px rgba(232,200,74,.45);font-size:.66rem;letter-spacing:.12em}
     .pos-2 .pos-ribbon{background:linear-gradient(90deg,#555,#888,#ADADAD);color:#fff}
     .pos-3 .pos-ribbon{background:linear-gradient(90deg,#6B3E10,#9C6B2E,#C88840);color:#fff}
 
     /* LOGO flotante */
     .pos-logo-wrap{position:absolute;top:12px;right:12px;z-index:4}
     .pos-logo-circle{width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;box-shadow:0 4px 16px rgba(0,0,0,.15);overflow:hidden;background:#fff}
-    .pos-1 .pos-logo-circle{background:#fff;border:2.5px solid var(--gold-bd)}
+    .pos-1 .pos-logo-circle{background:#fff;border:2.5px solid var(--gold-bd);width:62px;height:62px}
     .pos-2 .pos-logo-circle{background:#fff;border:2.5px solid #C0C0C0}
     .pos-3 .pos-logo-circle{background:#fff;border:2.5px solid #CD7F32}
 
     /* CARD BODY */
-    .pos-body{padding:16px 20px 14px;flex:1;display:flex;flex-direction:column;gap:10px}
+    .pos-body{padding:20px 22px 16px;flex:1;display:flex;flex-direction:column;gap:10px}
     .pos-header-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
     .pos-name{font-size:1.08rem;font-weight:700;color:var(--ink);font-family:'Outfit',sans-serif;line-height:1.2}
+    .pos-1 .pos-name{font-size:1.22rem}
+    .pos-1 .pos-tagline{font-size:.84rem}
     .pos-tagline{font-size:.78rem;color:var(--muted);margin-top:2px;line-height:1.4}
     .pos-stars{font-size:.72rem;letter-spacing:1px;margin-top:3px}
     .pos-1 .pos-stars{color:var(--gold)}
@@ -375,9 +386,14 @@
     .basic-wa:hover{background:#1db954;transform:scale(1.06)}
     .basic-detail{padding:3px 10px;font-size:.68rem;font-weight:600;border-radius:99px;border:1.5px solid var(--border2);background:var(--bg);color:var(--muted);cursor:pointer;transition:.18s;white-space:nowrap}
     .basic-detail:hover{border-color:var(--coral);color:var(--coral)}
-    @media(max-width:500px){
+    @media(max-width:560px){
+      /* En móvil: quitar precio pero MANTENER diff y tagline */
       .basic-price{display:none}
-      .basic-diff{display:none}
+      .basic-item{padding:11px 13px;gap:10px}
+      .basic-ico{width:40px;height:40px;font-size:1.2rem}
+      .basic-name{font-size:.86rem}
+      .basic-tagline{white-space:normal;-webkit-line-clamp:2;display:-webkit-box;-webkit-box-orient:vertical}
+      .basic-diff{white-space:normal;-webkit-line-clamp:1;display:-webkit-box;-webkit-box-orient:vertical}
     }
     .upgrade-cta{background:linear-gradient(135deg,var(--coral-lt),#FFF);border:1.5px dashed var(--coral-md);border-radius:12px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:14px;flex-wrap:wrap}
     .upgrade-cta p{font-size:.82rem;color:var(--ink2);line-height:1.5;flex:1}
@@ -484,15 +500,26 @@
     /* CAT TILES */
     .ct-tile{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 10px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);text-decoration:none;text-align:center;transition:.18s;cursor:pointer}
     .ct-tile:hover{border-color:var(--coral-md);background:var(--coral-lt);transform:translateY(-2px)}
+    .ct-tile.active{border-color:var(--coral);background:var(--coral-lt);box-shadow:0 0 0 3px var(--coral-lt)}
     .ct-ico{font-size:1.7rem;display:block}
     .ct-name{font-size:.78rem;font-weight:600;color:var(--ink);line-height:1.2}
     .ct-count{font-size:.62rem;color:var(--muted)}
-    /* CAT TILES */
-    .ct-tile{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 10px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);text-decoration:none;text-align:center;transition:.18s;cursor:pointer}
-    .ct-tile:hover{border-color:var(--coral-md);background:var(--coral-lt);transform:translateY(-2px)}
-    .ct-ico{font-size:1.7rem;display:block}
-    .ct-name{font-size:.78rem;font-weight:600;color:var(--ink);line-height:1.2}
-    .ct-count{font-size:.62rem;color:var(--muted)}
+
+    /* GOLD GALLERY */
+    .gold-gallery{margin-top:52px;padding-top:28px;border-top:1px solid var(--border)}
+    .gold-gallery-header{margin-bottom:16px}
+    .gold-gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+    .gg-card{background:var(--white);border:1px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:.2s;display:flex;flex-direction:column}
+    .gg-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.1);border-color:var(--gold-bd)}
+    .gg-cover{height:110px;overflow:hidden;flex-shrink:0}
+    .gg-body{padding:10px 12px 6px;flex:1}
+    .gg-cat{font-size:.65rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+    .gg-name{font-size:.88rem;font-weight:700;color:var(--ink);line-height:1.2;margin-bottom:2px}
+    .gg-tagline{font-size:.7rem;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .gg-footer{padding:8px 12px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+    .gg-price{font-size:.75rem;font-weight:600;color:var(--coral)}
+    .gg-wa{width:28px;height:28px;border-radius:50%;background:#25D366;color:#fff;display:flex;align-items:center;justify-content:center;font-size:.8rem;text-decoration:none;flex-shrink:0}
+    @media(max-width:560px){.gold-gallery-grid{grid-template-columns:1fr 1fr}}
     .upgrade-inner{display:flex;align-items:center;gap:14px;flex-wrap:wrap;width:100%}
     .upgrade-icon{font-size:1.8rem;flex-shrink:0}
     .upgrade-title{font-size:.92rem;font-weight:700;color:var(--ink);margin-bottom:3px}
@@ -581,22 +608,16 @@
 
 <script>
 /* ═══════════════════════════════════════════
-   DATA — cargado dinámicamente desde Netlify Function
+   DATA
 ═══════════════════════════════════════════ */
 let GRUPOS = [];
 let CAT_INDEX = {};
 let PROV_INDEX = {};
 
-function toggleBasic(catId, total) {
-  const moreDiv = document.getElementById('bm-' + catId);
-  const btn     = document.getElementById('bt-' + catId);
-  if (!moreDiv || !btn) return;
-  const isOpen  = moreDiv.style.display !== 'none';
-  moreDiv.style.display = isOpen ? 'none' : 'block';
-  btn.textContent = isOpen
-    ? 'Ver ' + (total - 5) + ' opciones más ↓'
-    : 'Mostrar menos ↑';
-}
+// Current filter state: mode = 'cat' | 'group' | 'all'
+let VIEW = { mode: 'cat', groupId: null, catId: null };
+let currentSearch = '';
+let filterTimeout;
 
 function buildIndex() {
   CAT_INDEX = {};
@@ -608,6 +629,9 @@ function buildIndex() {
   }));
 }
 
+/* ═══════════════════════════════════════════
+   LOAD
+═══════════════════════════════════════════ */
 async function loadProviders() {
   const area = document.getElementById('content-area');
   area.innerHTML = '<div style="text-align:center;padding:60px 0"><div style="width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--coral);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 14px"></div><p style="color:var(--muted);font-size:.88rem">Cargando proveedores...</p></div>';
@@ -619,14 +643,19 @@ async function loadProviders() {
     GRUPOS = data.grupos || [];
     buildIndex();
     buildCatBar();
+    // Default: first category whose name includes 'pizza', else first cat of first group
+    const defaultCat = (() => {
+      for (const g of GRUPOS) {
+        for (const cat of g.categorias) {
+          if (cat.nombre.toLowerCase().includes('pizza')) return { mode: 'cat', groupId: g.id, catId: cat.id };
+        }
+      }
+      if (GRUPOS[0]?.categorias[0]) return { mode: 'cat', groupId: GRUPOS[0].id, catId: GRUPOS[0].categorias[0].id };
+      return { mode: 'all', groupId: null, catId: null };
+    })();
+    VIEW = defaultCat;
     render();
     window.addEventListener('scroll', updateActivePill, { passive: true });
-    if (location.hash) {
-      setTimeout(() => {
-        const el = document.querySelector(location.hash);
-        if (el) { const y = el.getBoundingClientRect().top + window.scrollY - 220; window.scrollTo({ top: y, behavior: 'smooth' }); }
-      }, 400);
-    }
   } catch (e) {
     area.innerHTML = `<div style="text-align:center;padding:60px 24px;color:var(--muted)"><span style="font-size:3rem;display:block;margin-bottom:14px">⚠️</span><h3 style="font-size:1.2rem;color:var(--ink);margin-bottom:8px">Error al cargar proveedores</h3><p style="font-size:.88rem">${e.message}</p></div>`;
   }
@@ -639,10 +668,8 @@ const RANK = {
 };
 
 /* ═══════════════════════════════════════════
-   BUILD CATEGORY PILLS (parent categories only)
-   Sub-tags expand inline when parent is clicked
+   PILLS BAR
 ═══════════════════════════════════════════ */
-
 function buildCatBar() {
   const track = document.getElementById('cat-pills-track');
   if (!track) return;
@@ -650,36 +677,28 @@ function buildCatBar() {
 
   // "Todos" pill
   const allPill = document.createElement('span');
-  allPill.className = 'cat-pill active';
-  allPill.dataset.cat = 'all';
+  allPill.className = 'cat-pill';
+  allPill.id = 'pill-all';
   allPill.innerHTML = '✦ Todos';
-  allPill.addEventListener('click', () => {
-    document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
-    allPill.classList.add('active');
-    currentGroup = 'all';
-    render(currentGroup, currentSearch);
-  });
+  allPill.addEventListener('click', () => setView({ mode: 'all' }));
   track.appendChild(allPill);
 
   // One pill per GRUPO (parent)
   GRUPOS.forEach(g => {
     const pill = document.createElement('span');
     pill.className = 'cat-pill';
-    pill.dataset.cat = g.id;
-    pill.dataset.name = g.nombre.toLowerCase();
+    pill.id = 'pill-g-' + g.id;
     pill.innerHTML = g.ico + ' ' + g.nombre;
-    pill.addEventListener('click', () => {
-      document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
-      pill.classList.add('active');
-      scrollToSection(g.categorias[0]?.id || g.id);
-    });
+    pill.addEventListener('click', () => setView({ mode: 'group', groupId: g.id }));
     track.appendChild(pill);
   });
 
-  // Build cat tiles section (like index)
   buildCatTiles();
 }
 
+/* ═══════════════════════════════════════════
+   CAT TILES GRID
+═══════════════════════════════════════════ */
 function buildCatTiles() {
   const section   = document.getElementById('cat-tiles-section');
   const container = document.getElementById('cat-tiles-container');
@@ -691,9 +710,9 @@ function buildCatTiles() {
         ${g.ico} ${g.nombre}
         <span style="flex:1;height:1px;background:var(--border);display:inline-block"></span>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px">
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px">
         ${g.categorias.map(cat => `
-          <a class="ct-tile" href="#${cat.id}" onclick="scrollToSection('${cat.id}');return false">
+          <a class="ct-tile" id="ct-${cat.id}" onclick="setView({mode:'cat',groupId:'${g.id}',catId:'${cat.id}'});return false" href="#">
             <span class="ct-ico">${cat.ico}</span>
             <span class="ct-name">${cat.nombre}</span>
             <span class="ct-count">${cat.proveedores.length} proveedor${cat.proveedores.length!==1?'es':''}</span>
@@ -704,145 +723,125 @@ function buildCatTiles() {
   `).join('');
 
   section.style.display = 'block';
+  syncActiveTile();
 }
 
-
-
-
-function scrollToSection(catId) {
-  const target = document.getElementById(catId);
-  if (target) {
-    const offset = document.getElementById('sticky-bar')?.offsetHeight || 120;
-    window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - offset - 12, behavior: 'smooth' });
-  }
-}
-
-/* ── MOBILE SEARCH TOGGLE ── */
-function toggleMobileSearch() {
-  const btn = document.getElementById('sb-lupa-btn');
-  const exp = document.getElementById('sb-input-expanded');
-  const isOpen = exp.classList.contains('open');
-
-  if (isOpen) {
-    exp.classList.remove('open');
-    btn.classList.remove('open');
-  } else {
-    exp.classList.add('open');
-    btn.classList.add('open');
-    setTimeout(() => document.getElementById('global-search-mobile')?.focus(), 50);
-  }
-}
-
-// Close mobile search when clicking outside
-document.addEventListener('click', e => {
-  const bar  = document.getElementById('sticky-bar');
-  if (bar && !bar.contains(e.target)) {
-    document.getElementById('sb-input-expanded')?.classList.remove('open');
-    document.getElementById('sb-lupa-btn')?.classList.remove('open');
-  }
-});
-
-function handleSearchMobile() {
-  const q = document.getElementById('global-search-mobile').value;
-  document.getElementById('global-search').value = q;
-  currentSearch = q;
-  clearTimeout(filterTimeout);
-  filterTimeout = setTimeout(() => render(currentGroup, currentSearch), 200);
-}
-
-/* ─────────────────────────────────────────────
-   RENDER — categories → paid cards → upgrade CTA → basics
-───────────────────────────────────────────── */
-function render(group, search) {
+/* ═══════════════════════════════════════════
+   VIEW STATE MANAGER
+═══════════════════════════════════════════ */
+function setView(v) {
+  VIEW = { mode: v.mode, groupId: v.groupId || null, catId: v.catId || null };
+  syncActivePillToView();
+  syncActiveTile();
+  render();
+  // Scroll to top of content area
   const area = document.getElementById('content-area');
-  const q = (search || '').toLowerCase().trim();
+  if (area) {
+    const y = area.getBoundingClientRect().top + window.scrollY - 130;
+    window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+  }
+}
+
+function syncActivePillToView() {
+  document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+  if (VIEW.mode === 'all') {
+    document.getElementById('pill-all')?.classList.add('active');
+  } else if (VIEW.mode === 'group' && VIEW.groupId) {
+    document.getElementById('pill-g-' + VIEW.groupId)?.classList.add('active');
+  } else if (VIEW.mode === 'cat' && VIEW.groupId) {
+    document.getElementById('pill-g-' + VIEW.groupId)?.classList.add('active');
+  }
+}
+
+function syncActiveTile() {
+  document.querySelectorAll('.ct-tile').forEach(t => t.classList.remove('active'));
+  if (VIEW.mode === 'cat' && VIEW.catId) {
+    document.getElementById('ct-' + VIEW.catId)?.classList.add('active');
+  }
+}
+
+/* ═══════════════════════════════════════════
+   RENDER
+═══════════════════════════════════════════ */
+function render() {
+  const area = document.getElementById('content-area');
+  const q = currentSearch.toLowerCase().trim();
   let html = '';
   let totalVisible = 0;
 
-  // Which groups to render
-  const grupos = (group && group !== 'all')
-    ? GRUPOS.filter(g => g.id === group)
-    : GRUPOS;
-
-  grupos.forEach(g => {
-    let groupHtml = '';
-
-    g.categorias.forEach(cat => {
-      // Filter providers by search
-      const filtered = cat.proveedores.filter(p => {
-        if (!q) return true;
-        return (p.nombre||'').toLowerCase().includes(q)
-          || (p.tagline||'').toLowerCase().includes(q)
-          || (p.desc||'').toLowerCase().includes(q)
-          || (p.comunas||'').toLowerCase().includes(q);
-      });
-
-      if (filtered.length === 0) return;
-      totalVisible += filtered.length;
-
-      const gold    = filtered.find(p => p.pos === 1);
-      const silver  = filtered.find(p => p.pos === 2);
-      const bronze  = filtered.find(p => p.pos === 3);
-      const secondary = [silver, bronze].filter(Boolean);
-      const basics  = filtered.filter(p => p.pos > 3 || !p.pos);
-      const paidCount = [gold, silver, bronze].filter(Boolean).length;
-
-      groupHtml += `
-        <div class="cat-section" id="${cat.id}">
-          <div class="cat-header">
-            <div class="cat-icon">${cat.ico}</div>
-            <div>
-              <h3>${cat.nombre}</h3>
-              <p>${cat.desc||''}</p>
-            </div>
-            <div class="cat-badge">${filtered.length} proveedor${filtered.length!==1?'es':''}</div>
-          </div>
-
-          ${gold ? `<div class="top-positions">${paidCardHTML(gold)}</div>` : ''}
-
-          ${secondary.length ? `<div class="top-positions-secondary">${secondary.map(paidCardHTML).join('')}</div>` : ''}
-
-          ${basics.length ? `
-            <div class="basics-section">
-              <div class="basics-header">
-                <span>📋 Listado básico</span>
-                <span style="color:var(--muted);font-size:.78rem">${basics.length} disponible${basics.length!==1?'s':''}</span>
-              </div>
-              <div id="bm-wrap-${cat.id}">
-                <div id="bm-top-${cat.id}">${basics.slice(0,5).map(basicHTML).join('')}</div>
-                ${basics.length > 5 ? `
-                  <div id="bm-${cat.id}" style="display:none">${basics.slice(5).map(basicHTML).join('')}</div>
-                  <button class="expand-btn" id="bt-${cat.id}" onclick="toggleBasic('${cat.id}',${basics.length})">
-                    Ver ${basics.length-5} opciones más ↓
-                  </button>` : ''}
-              </div>
-            </div>` : ''}
-
-          ${paidCount < 3 ? `
-            <div class="upgrade-cta" onclick="window.location='/form.html'" style="margin-top:16px">
-              <div class="upgrade-inner">
-                <span class="upgrade-icon">🏆</span>
-                <div>
-                  <div class="upgrade-title">¿Tu negocio aquí?</div>
-                  <div class="upgrade-sub">${3-paidCount} posición${3-paidCount!==1?'es':''} destacada${3-paidCount!==1?'s':''} disponible${3-paidCount!==1?'s':''}</div>
-                </div>
-                <div class="upgrade-btn">Registrarme →</div>
-              </div>
-            </div>` : ''}
-        </div>`;
-    });
-
-    if (groupHtml) {
-      html += `<div class="group-section">
-        <div class="group-section-header">
-          <div class="group-section-icon">${g.ico}</div>
-          <div>
-            <h2>${g.nombre}</h2>
-          </div>
-        </div>
-        ${groupHtml}
-      </div>`;
+  // Which cats to show
+  let catsToShow = [];
+  if (VIEW.mode === 'all') {
+    GRUPOS.forEach(g => g.categorias.forEach(cat => catsToShow.push({ g, cat })));
+  } else if (VIEW.mode === 'group' && VIEW.groupId) {
+    const g = GRUPOS.find(g => g.id === VIEW.groupId);
+    if (g) g.categorias.forEach(cat => catsToShow.push({ g, cat }));
+  } else if (VIEW.mode === 'cat' && VIEW.catId) {
+    for (const g of GRUPOS) {
+      const cat = g.categorias.find(c => c.id === VIEW.catId);
+      if (cat) { catsToShow = [{ g, cat }]; break; }
     }
+  }
+
+  catsToShow.forEach(({ g, cat }) => {
+    let filtered = cat.proveedores.filter(p => {
+      if (!q) return true;
+      return (p.nombre||'').toLowerCase().includes(q)
+        || (p.tagline||'').toLowerCase().includes(q)
+        || (p.desc||'').toLowerCase().includes(q);
+    });
+    if (!filtered.length) return;
+    totalVisible += filtered.length;
+
+    const gold   = filtered.find(p => p.pos === 1);
+    const silver = filtered.find(p => p.pos === 2);
+    const bronze = filtered.find(p => p.pos === 3);
+    const secondary = [silver, bronze].filter(Boolean);
+    const paidCount = [gold,silver,bronze].filter(Boolean).length;
+
+    // Basics: shuffle, show 3 random
+    const allBasics = filtered.filter(p => p.pos > 3 || !p.pos);
+    const basics = shuffle([...allBasics]).slice(0, 3);
+
+    html += `
+      <div class="cat-section" id="${cat.id}">
+        <div class="cat-header">
+          <div class="cat-icon">${cat.ico}</div>
+          <div>
+            <h3>${cat.nombre}</h3>
+            <p>${cat.desc||''}</p>
+          </div>
+          <div class="cat-badge">${filtered.length} proveedor${filtered.length!==1?'es':''}</div>
+        </div>
+
+        ${gold ? `<div class="top-positions">${paidCardHTML(gold)}</div>` : ''}
+        ${secondary.length ? `<div class="top-positions-secondary">${secondary.map(paidCardHTML).join('')}</div>` : ''}
+
+        ${basics.length ? `
+          <div class="basics-section">
+            <div class="basics-header">
+              <span>📋 Listado básico</span>
+              <span style="color:var(--muted);font-size:.78rem">${allBasics.length} disponible${allBasics.length!==1?'s':''}</span>
+            </div>
+            <div class="basic-list">${basics.map(basicHTML).join('')}</div>
+            ${allBasics.length > 3 ? `
+              <button class="expand-btn" onclick="showAllBasics(this, '${cat.id}')">
+                Ver todos los ${allBasics.length} disponibles ↓
+              </button>` : ''}
+          </div>` : ''}
+
+        ${paidCount < 3 ? `
+          <div class="upgrade-cta" onclick="window.location='/form.html'" style="margin-top:16px">
+            <div class="upgrade-inner">
+              <span class="upgrade-icon">🏆</span>
+              <div>
+                <div class="upgrade-title">¿Tu negocio aquí?</div>
+                <div class="upgrade-sub">${3-paidCount} posición${3-paidCount!==1?'es':''} disponible${3-paidCount!==1?'s':''}</div>
+              </div>
+              <div class="upgrade-btn">Registrarme →</div>
+            </div>
+          </div>` : ''}
+      </div>`;
   });
 
   if (!html) {
@@ -854,102 +853,170 @@ function render(group, search) {
     return;
   }
 
+  // ── Gold gallery at bottom ──
+  html += buildGoldGallery(catsToShow.map(x => x.cat.id));
+
   area.innerHTML = html;
+  syncActiveTile();
 }
 
 /* ═══════════════════════════════════════════
-   ACTIVE PILL ON SCROLL
+   SHOW ALL BASICS
 ═══════════════════════════════════════════ */
-function updateActivePill() {
-  // Find which GRUPO section is currently in viewport
-  let cur = '';
-  GRUPOS.forEach(g => {
-    // Check any of the group's categorias sections
-    g.categorias.forEach(cat => {
-      const el = document.getElementById(cat.id);
-      if (el && window.scrollY + 200 >= el.offsetTop) cur = g.id;
-    });
-  });
-  document.querySelectorAll('.cat-pill').forEach(p => {
-    if (!p.classList.contains('open')) p.classList.toggle('active', p.dataset.cat === cur);
-  });
+function showAllBasics(btn, catId) {
+  const cat = CAT_INDEX[catId];
+  if (!cat) return;
+  const allBasics = cat.proveedores.filter(p => p.pos > 3 || !p.pos);
+  const listEl = btn.previousElementSibling;
+  listEl.innerHTML = allBasics.map(basicHTML).join('');
+  btn.remove();
 }
 
 /* ═══════════════════════════════════════════
-   GLOBAL SEARCH (top bar)
+   GOLD GALLERY (bottom of page)
 ═══════════════════════════════════════════ */
-let currentGroup = 'all';
-let currentSearch = '';
-let filterTimeout;
+function buildGoldGallery(shownCatIds) {
+  // Collect all gold providers NOT in the current shown cats (if mode=cat/group)
+  // If mode=all, collect all gold
+  let golds = [];
+  GRUPOS.forEach(g => g.categorias.forEach(cat => {
+    if (VIEW.mode === 'all' || !shownCatIds.includes(cat.id)) {
+      const p = cat.proveedores.find(p => p.pos === 1);
+      if (p) golds.push({ ...p, catNombre: cat.nombre, catIco: cat.ico });
+    }
+  }));
+  // If all are shown (mode=cat, same cat), still show from other cats
+  if (!golds.length) {
+    GRUPOS.forEach(g => g.categorias.forEach(cat => {
+      const p = cat.proveedores.find(p => p.pos === 1);
+      if (p) golds.push({ ...p, catNombre: cat.nombre, catIco: cat.ico });
+    }));
+  }
+  if (!golds.length) return '';
 
+  const picks = shuffle([...golds]).slice(0, 6);
+  return `
+    <div class="gold-gallery">
+      <div class="gold-gallery-header">
+        <span style="font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">⭐ También te puede interesar</span>
+      </div>
+      <div class="gold-gallery-grid">
+        ${picks.map(p => {
+          const waMsg = encodeURIComponent('Hola ' + p.nombre + '! Los vi en CotizaEventos.cl y me interesa cotizar sus servicios.');
+          const cover = p.cover_url
+            ? `<img src="${p.cover_url}" style="width:100%;height:100%;object-fit:cover" loading="lazy">`
+            : `<div style="width:100%;height:100%;background:#111;display:flex;align-items:center;justify-content:center;font-size:2rem;color:rgba(255,255,255,.2)">img</div>`;
+          return `<div class="gg-card" onclick="openModal('${p.id}')">
+            <div class="gg-cover">${cover}</div>
+            <div class="gg-body">
+              <div class="gg-cat">${p.catIco} ${p.catNombre}</div>
+              <div class="gg-name">${p.nombre}</div>
+              <div class="gg-tagline">${p.tagline || ''}</div>
+            </div>
+            <div class="gg-footer">
+              <span class="gg-price">Desde ${p.minimo || '—'}</span>
+              <a class="gg-wa" href="https://wa.me/${p.wa}?text=${waMsg}" target="_blank" onclick="event.stopPropagation()">💬</a>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+}
+
+/* ═══════════════════════════════════════════
+   UTILS
+═══════════════════════════════════════════ */
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+/* ═══════════════════════════════════════════
+   SCROLL → ACTIVE PILL
+═══════════════════════════════════════════ */
+function updateActivePill() { /* no-op when filtering by cat */ }
+
+/* ═══════════════════════════════════════════
+   SEARCH
+═══════════════════════════════════════════ */
 function handleSearch() {
-  const q = document.getElementById('global-search').value.toLowerCase().trim();
-  // Filter category pills
-  document.querySelectorAll('.cat-pill').forEach(p => {
-    const match = !q || p.dataset.name.includes(q) || p.textContent.toLowerCase().includes(q);
-    p.style.opacity = match ? '1' : '0.35';
-  });
   currentSearch = document.getElementById('global-search').value;
   clearTimeout(filterTimeout);
-  filterTimeout = setTimeout(() => render(currentGroup, currentSearch), 200);
+  filterTimeout = setTimeout(render, 220);
 }
-
-function filterGroup(group, btn) {
-  currentGroup = group;
-  document.querySelectorAll('.qf-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  render(currentGroup, currentSearch);
+function handleSearchMobile() {
+  const q = document.getElementById('global-search-mobile').value;
+  document.getElementById('global-search').value = q;
+  currentSearch = q;
+  clearTimeout(filterTimeout);
+  filterTimeout = setTimeout(render, 220);
 }
 
 /* ═══════════════════════════════════════════
-   INIT
+   MOBILE SEARCH TOGGLE
 ═══════════════════════════════════════════ */
-window.addEventListener('DOMContentLoaded', () => {
-  loadProviders();
+function toggleMobileSearch() {
+  const btn = document.getElementById('sb-lupa-btn');
+  const exp = document.getElementById('sb-input-expanded');
+  const isOpen = exp.classList.contains('open');
+  exp.classList.toggle('open', !isOpen);
+  btn.classList.toggle('open', !isOpen);
+  if (!isOpen) setTimeout(() => document.getElementById('global-search-mobile')?.focus(), 50);
+}
+document.addEventListener('click', e => {
+  const bar = document.getElementById('sticky-bar');
+  if (bar && !bar.contains(e.target)) {
+    document.getElementById('sb-input-expanded')?.classList.remove('open');
+    document.getElementById('sb-lupa-btn')?.classList.remove('open');
+  }
 });
 
-/* CSS para el spinner de carga */
+/* CSS spinner */
 const _spinStyle = document.createElement('style');
 _spinStyle.textContent = '@keyframes spin{to{transform:rotate(360deg)}}';
 document.head.appendChild(_spinStyle);
+
 /* ═══════════════════════════════════════════
    CARD HTML HELPERS
 ═══════════════════════════════════════════ */
 function paidCardHTML(p) {
   const r = RANK[p.pos];
-  const waMsg = encodeURIComponent('Hola ' + p.nombre + '! Los vi en CotizaTuFiesta.cl y me interesa cotizar sus servicios.');
+  const waMsg = encodeURIComponent('Hola ' + p.nombre + '! Los vi en CotizaEventos.cl y me interesa cotizar sus servicios.');
   const coverHTML = p.cover_url
     ? `<img class="pos-cover-img" src="${p.cover_url}" alt="${p.nombre}" loading="lazy" />`
-    : `<div class="pos-cover-placeholder">${p.logo}</div>`;
+    : `<div class="pos-cover-placeholder">${p.logo || ''}</div>`;
   return `<div class="pos-card ${r.cls}" onclick="openModal('${p.id}')">
     <div class="pos-cover">
       ${coverHTML}
       <div class="pos-cover-overlay"></div>
       <div class="pos-ribbon">${r.stars} ${r.label}</div>
       <div class="pos-logo-wrap">
-        <div class="pos-logo-circle">${p.logo_url ? `<img src="${p.logo_url}" style="width:100%;height:100%;object-fit:cover;border-radius:12px" />` : p.logo}</div>
+        <div class="pos-logo-circle">${p.logo_url ? `<img src="${p.logo_url}" style="width:100%;height:100%;object-fit:cover;border-radius:12px" />` : (p.logo || '🏢')}</div>
       </div>
     </div>
     <div class="pos-body">
       <div class="pos-header-row">
         <div>
           <div class="pos-name">${p.nombre}</div>
-          <div class="pos-tagline">${p.tagline}</div>
+          <div class="pos-tagline">${p.tagline || ''}</div>
           <div class="pos-stars">${r.stars}</div>
         </div>
         <div class="pos-price-badge">
           <div class="pb-label">Desde</div>
-          <div class="pb-min">${p.minimo}</div>
-          <div class="pb-max">hasta ${p.maximo}</div>
+          <div class="pb-min">${p.minimo || '—'}</div>
+          <div class="pb-max">hasta ${p.maximo || '—'}</div>
         </div>
       </div>
-      <div class="pos-diff">✦ ${p.diff}</div>
-      <div class="pos-desc">${p.desc||''}</div>
+      <div class="pos-diff">✦ ${p.diff || ''}</div>
+      <div class="pos-desc">${p.desc || ''}</div>
     </div>
     <div class="pos-footer">
       <div class="pos-meta">
         <div class="pos-meta-item">📍 ${(p.comunas||'').split(',')[0].trim()}</div>
-        ${p.instagram?`<div class="pos-meta-item">📸 ${p.instagram}</div>`:''}
+        ${p.instagram ? `<div class="pos-meta-item">📸 ${p.instagram}</div>` : ''}
       </div>
       <div class="pos-cta-group">
         <a class="btn btn-wa" href="https://wa.me/${p.wa}?text=${waMsg}" target="_blank" onclick="event.stopPropagation()">💬 WhatsApp</a>
@@ -963,15 +1030,15 @@ function basicHTML(p) {
   const waMsg = encodeURIComponent('Hola ' + p.nombre + '! Los vi en CotizaEventos.cl y quiero más información.');
   const logoHtml = p.logo_url
     ? `<img src="${p.logo_url}" style="width:100%;height:100%;object-fit:cover;border-radius:8px" />`
-    : p.logo || '🏢';
+    : (p.logo || '🏢');
   return `<div class="basic-item" onclick="openModalBasic('${p.id}')">
     <div class="basic-ico">${logoHtml}</div>
     <div class="basic-info">
       <div class="basic-name">${p.nombre}</div>
-      <div class="basic-tagline">${p.tagline||''}</div>
+      <div class="basic-tagline">${p.tagline || ''}</div>
       <div class="basic-diff">${p.diff ? '✦ ' + p.diff : ''}</div>
     </div>
-    <div class="basic-price">${p.minimo||'—'} – ${p.maximo||'—'}<span>Precio estimado</span></div>
+    <div class="basic-price">${p.minimo || '—'} – ${p.maximo || '—'}<span>Precio estimado</span></div>
     <div class="basic-actions">
       <a class="basic-wa" href="https://wa.me/${p.wa}?text=${waMsg}" target="_blank" onclick="event.stopPropagation()" title="WhatsApp">💬</a>
       <button class="basic-detail" onclick="event.stopPropagation();openModalBasic('${p.id}')">Ver</button>
@@ -979,31 +1046,34 @@ function basicHTML(p) {
   </div>`;
 }
 
+/* ═══════════════════════════════════════════
+   MODALS
+═══════════════════════════════════════════ */
 function openModal(id) {
   const p = PROV_INDEX[id];
   if (!p || p.pos > 3) return;
   const r = RANK[p.pos];
-  const waMsg = encodeURIComponent('Hola ' + p.nombre + '! Los vi en CotizaTuFiesta.cl y quiero cotizar sus servicios para mi evento.');
+  const waMsg = encodeURIComponent('Hola ' + p.nombre + '! Los vi en CotizaEventos.cl y quiero cotizar sus servicios para mi evento.');
   document.getElementById('modal-inner').innerHTML = `
     <div class="modal-band ${r.cls}"></div>
     <div class="modal-inner">
       ${p.cover_url ? `<div style="width:100%;height:180px;overflow:hidden;border-radius:12px;margin-bottom:16px"><img src="${p.cover_url}" style="width:100%;height:100%;object-fit:cover" /></div>` : ''}
       <div class="modal-top-row">
-        <div class="modal-logo ${r.cls}">${p.logo_url ? `<img src="${p.logo_url}" style="width:100%;height:100%;object-fit:cover;border-radius:14px" />` : p.logo}</div>
+        <div class="modal-logo ${r.cls}">${p.logo_url ? `<img src="${p.logo_url}" style="width:100%;height:100%;object-fit:cover;border-radius:14px" />` : (p.logo||'🏢')}</div>
         <div class="modal-name-block">
           <div class="modal-position-tag ${r.tag}">${r.stars} ${r.label}</div>
           <h3 class="modal-name">${p.nombre}</h3>
-          <div class="modal-tagline">${p.tagline}</div>
+          <div class="modal-tagline">${p.tagline||''}</div>
         </div>
       </div>
       <div class="modal-diff ${r.cls}">${p.diff||''}</div>
       <p class="modal-desc">${p.desc||''}</p>
       <div class="modal-info-grid">
-        <div class="mig-box"><div class="mig-label">Precio mínimo</div><div class="mig-val price">${p.minimo}</div></div>
-        <div class="mig-box"><div class="mig-label">Precio máximo</div><div class="mig-val price">${p.maximo}</div></div>
-        ${p.comunas?`<div class="mig-box" style="grid-column:1/-1"><div class="mig-label">📍 Comunas donde opera</div><div class="mig-val">${p.comunas}</div></div>`:''}
+        <div class="mig-box"><div class="mig-label">Precio mínimo</div><div class="mig-val price">${p.minimo||'—'}</div></div>
+        <div class="mig-box"><div class="mig-label">Precio máximo</div><div class="mig-val price">${p.maximo||'—'}</div></div>
+        ${p.comunas?`<div class="mig-box" style="grid-column:1/-1"><div class="mig-label">📍 Comunas</div><div class="mig-val">${p.comunas}</div></div>`:''}
       </div>
-      ${(p.instagram||p.facebook||p.web)?`<div class="modal-socials-row">
+      ${(p.instagram||p.web)?`<div class="modal-socials-row">
         ${p.instagram?`<a class="soc-chip" href="https://instagram.com/${p.instagram.replace('@','')}" target="_blank">📸 ${p.instagram}</a>`:''}
         ${p.web?`<a class="soc-chip" href="${p.web}" target="_blank">🌐 ${p.web.replace('https://','')}</a>`:''}
       </div>`:''}
@@ -1021,29 +1091,29 @@ function openModal(id) {
 function openModalBasic(id) {
   const p = PROV_INDEX[id];
   if (!p) return;
-  const waMsg = encodeURIComponent('Hola ' + p.nombre + '! Los vi en CotizaTuFiesta.cl y quiero más información.');
+  const waMsg = encodeURIComponent('Hola ' + p.nombre + '! Los vi en CotizaEventos.cl y quiero más información.');
   document.getElementById('modal-inner').innerHTML = `
-    <div class="modal-band basic"></div>
+    <div class="modal-band" style="background:var(--border);height:4px"></div>
     <div class="modal-inner">
       <div class="modal-top-row">
-        <div class="modal-logo basic">${p.logo}</div>
+        <div class="modal-logo" style="font-size:2rem">${p.logo_url ? `<img src="${p.logo_url}" style="width:100%;height:100%;object-fit:cover;border-radius:14px" />` : (p.logo||'🏢')}</div>
         <div class="modal-name-block">
-          <div class="modal-position-tag pt-b">Listado básico</div>
+          <div style="font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Listado básico</div>
           <h3 class="modal-name">${p.nombre}</h3>
           <div class="modal-tagline">${p.tagline||''}</div>
         </div>
       </div>
+      ${p.diff?`<div class="modal-diff" style="border-color:var(--border2);color:var(--ink2)">${p.diff}</div>`:''}
+      <p class="modal-desc">${p.desc||''}</p>
       <div class="modal-info-grid">
-        <div class="mig-box"><div class="mig-label">Precio mínimo</div><div class="mig-val price">${p.minimo}</div></div>
-        <div class="mig-box"><div class="mig-label">Precio máximo</div><div class="mig-val price">${p.maximo}</div></div>
-      </div>
-      <div style="background:var(--coral-lt);border:1.5px dashed var(--coral-md);border-radius:12px;padding:18px 20px;margin-bottom:18px;">
-        <p style="font-size:.83rem;color:var(--ink2);line-height:1.6;">Este proveedor está en el <strong>listado básico</strong>. Para ver información completa, el proveedor debe contratar una <strong style="color:var(--coral)">posición destacada</strong>.</p>
+        <div class="mig-box"><div class="mig-label">Precio mínimo</div><div class="mig-val price">${p.minimo||'—'}</div></div>
+        <div class="mig-box"><div class="mig-label">Precio máximo</div><div class="mig-val price">${p.maximo||'—'}</div></div>
+        ${p.comunas?`<div class="mig-box" style="grid-column:1/-1"><div class="mig-label">📍 Comunas</div><div class="mig-val">${p.comunas}</div></div>`:''}
       </div>
       <div class="modal-ctas">
         <a class="btn btn-wa" href="https://wa.me/${p.wa}?text=${waMsg}" target="_blank">💬 Contactar por WhatsApp</a>
-        <a class="btn btn-outline" href="form.html">📋 Cotización completa</a>
       </div>
+      <p style="font-size:.72rem;color:var(--muted);text-align:center;margin-top:10px">Este proveedor tiene un listado básico. <a href="form.html" style="color:var(--coral)">¿Eres este negocio? Mejora tu perfil →</a></p>
     </div>`;
   document.getElementById('modal-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -1051,14 +1121,21 @@ function openModalBasic(id) {
   document.body.style.width = '100%';
 }
 
-function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); document.body.style.overflow = ''; document.body.style.position = ''; document.body.style.width = ''; }
-function handleOverlayClick(e) { if (e.target === document.getElementById('modal-overlay')) closeModal(); }
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+  document.body.style.position = '';
+  document.body.style.width = '';
+}
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+}
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
 /* ═══════════════════════════════════════════
    INIT
 ═══════════════════════════════════════════ */
-// Init is handled above by loadProviders()
+window.addEventListener('DOMContentLoaded', () => { loadProviders(); });
 </script>
 </body>
 </html>

@@ -691,43 +691,14 @@
       <a href="#como" class="btn btn-ghost btn-big hero-ghost-btn">¿Cómo funciona?</a>
     </div>
     <div class="hero-trust">
-      <div class="trust-pill"><span>✅</span> Proveedores verificados</div>
-      <div class="trust-pill"><span>💬</span> Contacto directo</div>
-      <div class="trust-pill"><span>⭐</span> Gratis para clientes</div>
-      <div class="trust-pill"><span>📍</span> Región Metropolitana</div>
+      <div class="trust-pill">Proveedores verificados</div>
+      <div class="trust-pill">Contacto directo</div>
+      <div class="trust-pill">Gratis para clientes</div>
+      <div class="trust-pill">Región Metropolitana</div>
     </div>
   </div>
   <div class="hero-scroll-hint">Explorar</div>
 </section>
-
-<!-- ══ CÓMO FUNCIONA ══ -->
-<section id="como">
-  <div class="container">
-    <div class="reveal" style="text-align:center; max-width:480px; margin:0 auto;">
-      <div class="tag">Directo y sin complicaciones</div>
-      <h2 style="font-size:clamp(1.5rem,2.8vw,2.2rem); margin-bottom:10px; color:var(--ink);">Pasos para contratar tu opción ideal</h2>
-      <p style="color:var(--muted); font-size:.9rem;">Contacta directo al proveedor, sin intermediarios.</p>
-    </div>
-    <div class="steps">
-      <div class="step reveal" data-n="1">
-        <span class="step-ico">🍽️</span>
-        <h3>¿Qué quieres servir?</h3>
-        <p>Explora por categoría — catering, bebidas, música y más. Filtra según tu tipo de celebración.</p>
-      </div>
-      <div class="step reveal" data-n="2">
-        <span class="step-ico">🔎</span>
-        <h3>Busca tu mejor opción</h3>
-        <p>Compara proveedores verificados, precios, zona de cobertura y qué incluye cada servicio.</p>
-      </div>
-      <div class="step reveal" data-n="3">
-        <span class="step-ico">🎉</span>
-        <h3>Contrata y celebra</h3>
-        <p>Contacta directo por WhatsApp. Tú eliges, tú contratas. Sin comisiones ni filas.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- ══ GALERÍA DE IMÁGENES (admin: reemplaza las URLs) ══ -->
 <div id="img-strip" style="overflow:hidden;border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
   <div style="display:flex;height:220px">
@@ -806,6 +777,35 @@
     </div>
   </div>
 </section>
+
+<!-- ══ CÓMO FUNCIONA ══ -->
+<section id="como">
+  <div class="container">
+    <div class="reveal" style="text-align:center; max-width:480px; margin:0 auto;">
+      <div class="tag">Directo y sin complicaciones</div>
+      <h2 style="font-size:clamp(1.5rem,2.8vw,2.2rem); margin-bottom:10px; color:var(--ink);">Pasos para contratar tu opción ideal</h2>
+      <p style="color:var(--muted); font-size:.9rem;">Contacta directo al proveedor, sin intermediarios.</p>
+    </div>
+    <div class="steps">
+      <div class="step reveal" data-n="1">
+        <span class="step-ico">🍽️</span>
+        <h3>¿Qué quieres servir?</h3>
+        <p>Explora por categoría — catering, bebidas, música y más. Filtra según tu tipo de celebración.</p>
+      </div>
+      <div class="step reveal" data-n="2">
+        <span class="step-ico">🔎</span>
+        <h3>Busca tu mejor opción</h3>
+        <p>Compara proveedores verificados, precios, zona de cobertura y qué incluye cada servicio.</p>
+      </div>
+      <div class="step reveal" data-n="3">
+        <span class="step-ico">🎉</span>
+        <h3>Contrata y celebra</h3>
+        <p>Contacta directo por WhatsApp. Tú eliges, tú contratas. Sin comisiones ni filas.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 
 <!-- ══ NOSOTROS PREVIEW ══ -->
 <section style="padding:64px 0;background:var(--bg2);border-top:1px solid var(--border)">
@@ -941,7 +941,7 @@ async function loadCategories() {
         desc: cat.desc || '',
       });
     }));
-    renderChecklist(); // re-render el checklist con datos actualizados
+    if (document.getElementById('checklist-grid')) renderChecklist(); // re-render el checklist con datos actualizados
 
     // ── Carrusel: Oro (pos=1) + Plata (pos=2), orden aleatorio ──
     const carProviders = [];
@@ -1223,7 +1223,7 @@ function carMove(dir) { carGoTo(_carIdx + dir); }
 window.addEventListener('DOMContentLoaded', () => {
   loadCategories();
   loadCookies();
-  renderChecklist();
+  if (document.getElementById('checklist-grid')) renderChecklist();
   initHeroBg();
   initImageStrip();
 });
@@ -1251,7 +1251,7 @@ function initImageStrip() {
   });
 }
 
-document.getElementById('popup-overlay').addEventListener('click', e => {
+document.getElementById('popup-overlay')?.addEventListener('click', e => {
   if (e.target === document.getElementById('popup-overlay')) closePopup();
 });
 </script>
