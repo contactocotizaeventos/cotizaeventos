@@ -161,6 +161,24 @@
       position: relative; height: 340px;
       animation: fadeUp .6s .15s ease both;
     }
+    /* ── ADMIN: Hero background image ──
+       Cambia HERO_BG_URL para actualizar la imagen.
+       Déjala en '' para desactivar. */
+    .hero-visual-bg {
+      position: absolute; inset: -40px -24px -40px 0;
+      border-radius: 24px;
+      background-image: var(--hero-bg-img, none);
+      background-size: cover;
+      background-position: center;
+      z-index: 0;
+    }
+    .hero-visual-bg::after {
+      content: '';
+      position: absolute; inset: 0;
+      border-radius: 24px;
+      background: linear-gradient(to right, var(--white) 0%, rgba(255,255,255,.55) 38%, transparent 72%);
+    }
+    .hero-visual > *:not(.hero-visual-bg) { position: relative; z-index: 1; }
     .float-card {
       position: absolute;
       background: var(--white);
@@ -571,6 +589,32 @@
   .feat-cat{font-size:.72rem;color:var(--muted);flex:1}
   .feat-wa{padding:6px 14px;background:#25D366;color:#fff;border-radius:99px;font-size:.74rem;font-weight:700;text-decoration:none;white-space:nowrap}
   .feat-wa:hover{background:#1db954}
+
+  /* ── IMAGE STRIP ── */
+  .img-strip-tile {
+    flex: 1; position: relative; overflow: hidden;
+    background: var(--bg2);
+    transition: flex .4s var(--ease);
+    cursor: default;
+  }
+  .img-strip-tile:hover { flex: 1.6; }
+  .img-strip-tile.has-img {
+    background-size: cover;
+    background-position: center;
+  }
+  .img-strip-tile::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,.35) 0%, transparent 60%);
+    opacity: 0; transition: opacity .3s;
+  }
+  .img-strip-tile:hover::after { opacity: 1; }
+  .img-strip-ph {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3rem; color: var(--border2);
+  }
+  .img-strip-tile.has-img .img-strip-ph { display: none; }
+  @media(max-width:600px) { #img-strip { display: none; } }
   </style>
 </head>
 <body>
@@ -583,7 +627,7 @@
     <a href="proveedores.html" class="nav-link">Proveedores</a>
     <a href="#como" class="nav-link">¿Cómo funciona?</a>
     <a href="proveedores.html" class="nav-link">Cotizar gratis</a>
-    <a href="#nosotros" class="nav-link">Nosotros</a>
+    <a href="nosotros.html" class="nav-link">Nosotros</a>
     <a href="#contacto" class="nav-link">Contacto</a>
   </div>
   <div class="nav-right">
@@ -598,7 +642,7 @@
   <a href="proveedores.html">🔍 Proveedores</a>
   <a href="#como" onclick="toggleNavMenu()">❓ ¿Cómo funciona?</a>
   <a href="proveedores.html">✦ Cotizar gratis</a>
-  <a href="#nosotros" onclick="toggleNavMenu()">👋 Nosotros</a>
+  <a href="nosotros.html" onclick="toggleNavMenu()">👋 Nosotros</a>
   <a href="#contacto" onclick="toggleNavMenu()">📩 Contacto</a>
   <a href="form.html" style="background:var(--coral);color:#fff;border-color:var(--coral)">🚀 Publica tu negocio</a>
 </div>
@@ -627,6 +671,8 @@
     </div>
 
     <div class="hero-visual">
+      <!-- ADMIN: eliminar id y src si no quieres imagen de fondo -->
+      <div class="hero-visual-bg" id="hero-bg"></div>
       <div class="float-card fc1">
         <span class="fc-icon">🍕</span>
         <div><div>Catering de pizzas</div><div class="fc-sub">Disponible para tu fecha</div></div>
@@ -679,6 +725,29 @@
   </div>
 </section>
 
+<!-- ══ GALERÍA DE IMÁGENES (admin: reemplaza las URLs) ══ -->
+<div id="img-strip" style="overflow:hidden;border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+  <div style="display:flex;height:220px">
+    <!--
+      ADMIN: Reemplaza cada src con la URL de tu imagen.
+      Puedes agregar o quitar <div> según cuántas quieras.
+      Si no tienes imagen aún, deja el emoji de placeholder.
+    -->
+    <div class="img-strip-tile" style="--bg:''" data-src="">
+      <div class="img-strip-ph">🎉</div>
+    </div>
+    <div class="img-strip-tile" style="--bg:''" data-src="">
+      <div class="img-strip-ph">🍽️</div>
+    </div>
+    <div class="img-strip-tile" style="--bg:''" data-src="">
+      <div class="img-strip-ph">🎵</div>
+    </div>
+    <div class="img-strip-tile" style="--bg:''" data-src="">
+      <div class="img-strip-ph">🎊</div>
+    </div>
+  </div>
+</div>
+
 <!-- ══ CATEGORÍAS ══ -->
 <section id="categorias">
   <div class="container">
@@ -727,25 +796,30 @@
   </div>
 </section>
 
-<!-- ══ NOSOTROS ══ -->
-<section id="nosotros" style="padding:80px 0;background:var(--bg2);border-top:1px solid var(--border)">
+<!-- ══ NOSOTROS PREVIEW ══ -->
+<section style="padding:64px 0;background:var(--bg2);border-top:1px solid var(--border)">
   <div class="container">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center" class="reveal">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;max-width:900px;margin:0 auto" class="reveal">
       <div>
         <div class="tag">Quiénes somos</div>
-        <h2 style="font-size:clamp(1.5rem,2.8vw,2.2rem);margin-bottom:16px">El puente entre tus celebraciones y los mejores proveedores</h2>
-        <p style="font-size:.92rem;color:var(--ink2);line-height:1.75;margin-bottom:14px"><strong>CotizaEventos.cl</strong> es un directorio premium que conecta a personas que buscan servicios para sus eventos con los mejores proveedores de Santiago y la Región Metropolitana.</p>
-        <p style="font-size:.92rem;color:var(--ink2);line-height:1.75;margin-bottom:24px">Nuestra misión es simple: que cada celebración sea memorable. Por eso seleccionamos y verificamos a cada proveedor antes de publicarlo, garantizando calidad y profesionalismo.</p>
-        <div style="display:flex;flex-direction:column;gap:14px">
-          <div style="display:flex;align-items:flex-start;gap:12px"><span style="font-size:1.3rem;flex-shrink:0">🏆</span><div><strong style="font-size:.88rem">Proveedores seleccionados</strong><br/><span style="font-size:.8rem;color:var(--muted)">Revisamos y aprobamos cada negocio antes de publicarlo.</span></div></div>
-          <div style="display:flex;align-items:flex-start;gap:12px"><span style="font-size:1.3rem;flex-shrink:0">💬</span><div><strong style="font-size:.88rem">Contacto 100% directo</strong><br/><span style="font-size:.8rem;color:var(--muted)">Sin intermediarios. Tú eliges y contactas directamente al proveedor.</span></div></div>
-          <div style="display:flex;align-items:flex-start;gap:12px"><span style="font-size:1.3rem;flex-shrink:0">📍</span><div><strong style="font-size:.88rem">Foco en Santiago</strong><br/><span style="font-size:.8rem;color:var(--muted)">Proveedores que operan en la Región Metropolitana y sus alrededores.</span></div></div>
-        </div>
+        <h2 style="font-size:clamp(1.4rem,2.6vw,2rem);margin-bottom:14px;line-height:1.2">El puente entre tus celebraciones y los mejores proveedores</h2>
+        <p style="font-size:.9rem;color:var(--ink2);line-height:1.75;margin-bottom:20px">Soy emprendedor con años de experiencia en el mundo de los eventos. Creé <strong>CotizaEventos.cl</strong> para simplificar el proceso de buscar servicios confiables, reuniendo opciones seleccionadas en cada categoría.</p>
+        <a href="nosotros.html" class="btn btn-ghost" style="display:inline-flex;align-items:center;gap:6px">Conocer más sobre nosotros →</a>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-        <div style="background:#fff;border:1px solid var(--border);border-radius:16px;padding:24px;text-align:center"><div style="font-family:'Fraunces',serif;font-size:2.2rem;font-weight:900;color:var(--coral)">+20</div><div style="font-size:.78rem;color:var(--muted);margin-top:4px">Categorías de servicios</div></div>
-        <div style="background:#fff;border:1px solid var(--border);border-radius:16px;padding:24px;text-align:center"><div style="font-family:'Fraunces',serif;font-size:2.2rem;font-weight:900;color:var(--coral)">100%</div><div style="font-size:.78rem;color:var(--muted);margin-top:4px">Proveedores verificados</div></div>
-        <div style="background:var(--coral-lt);border:1.5px solid var(--coral-md);border-radius:16px;padding:20px;text-align:center;grid-column:1/-1"><div style="font-size:1.4rem;margin-bottom:6px">🎊</div><div style="font-size:.86rem;font-weight:600;color:var(--coral);margin-bottom:4px">Cada evento es único</div><div style="font-size:.78rem;color:var(--ink2)">Por eso trabajamos con proveedores que se destacan por calidad y dedicación.</div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div style="background:#fff;border:1px solid var(--border);border-radius:16px;padding:22px;text-align:center">
+          <div style="font-family:'Fraunces',serif;font-size:2.2rem;font-weight:900;color:var(--coral)">+20</div>
+          <div style="font-size:.76rem;color:var(--muted);margin-top:3px">Categorías de servicios</div>
+        </div>
+        <div style="background:#fff;border:1px solid var(--border);border-radius:16px;padding:22px;text-align:center">
+          <div style="font-family:'Fraunces',serif;font-size:2.2rem;font-weight:900;color:var(--coral)">100%</div>
+          <div style="font-size:.76rem;color:var(--muted);margin-top:3px">Proveedores verificados</div>
+        </div>
+        <div style="background:var(--coral-lt);border:1.5px solid var(--coral-md);border-radius:16px;padding:18px;text-align:center;grid-column:1/-1">
+          <div style="font-size:1.3rem;margin-bottom:5px">🎊</div>
+          <div style="font-size:.84rem;font-weight:600;color:var(--coral);margin-bottom:3px">Cada evento es único</div>
+          <div style="font-size:.76rem;color:var(--ink2)">Proveedores que se destacan por calidad y dedicación.</div>
+        </div>
       </div>
     </div>
   </div>
@@ -790,6 +864,7 @@
     <a href="proveedores.html" style="font-size:.8rem;color:var(--muted)">Proveedores</a>
     <a href="form.html" style="font-size:.8rem;color:var(--muted)">Publica tu negocio</a>
     <a href="terminos.html" style="font-size:.8rem;color:var(--muted)">Términos y condiciones</a>
+    <a href="nosotros.html" style="font-size:.8rem;color:var(--muted)">Nosotros</a>
     <a href="#contacto" style="font-size:.8rem;color:var(--muted)">Contacto</a>
   </div>
   <p>© 2025 CotizaEventos.cl — Todos los derechos reservados · Santiago, Chile</p>
@@ -1093,12 +1168,51 @@ const obs = new IntersectionObserver(es => es.forEach(e => {
 }), { threshold: 0.08 });
 document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 
+/* ── ADMIN CONFIG ── */
+/* Para cambiar la imagen del hero: reemplaza la URL abajo.
+   Pon '' para desactivarla. */
+const HERO_BG_URL = '';
+
+/* Para activar el image strip: llena este array con URLs de imágenes.
+   Máximo 4 imágenes. Deja el array vacío [] para ocultar el strip. */
+const STRIP_IMAGES = [
+  // 'https://tu-imagen-1.jpg',
+  // 'https://tu-imagen-2.jpg',
+  // 'https://tu-imagen-3.jpg',
+  // 'https://tu-imagen-4.jpg',
+];
+
 /* ── Init ── */
 window.addEventListener('DOMContentLoaded', () => {
   loadCategories();
   loadCookies();
   renderChecklist();
+  initHeroBg();
+  initImageStrip();
 });
+
+function initHeroBg() {
+  if (!HERO_BG_URL) return;
+  const el = document.getElementById('hero-bg');
+  if (el) el.style.backgroundImage = `url('${HERO_BG_URL}')`;
+}
+
+function initImageStrip() {
+  const strip = document.getElementById('img-strip');
+  if (!strip || !STRIP_IMAGES.length) {
+    if (strip) strip.style.display = 'none';
+    return;
+  }
+  const tiles = strip.querySelectorAll('.img-strip-tile');
+  tiles.forEach((tile, i) => {
+    if (STRIP_IMAGES[i]) {
+      tile.style.backgroundImage = `url('${STRIP_IMAGES[i]}')`;
+      tile.classList.add('has-img');
+    } else {
+      tile.style.display = 'none';
+    }
+  });
+}
 
 document.getElementById('popup-overlay').addEventListener('click', e => {
   if (e.target === document.getElementById('popup-overlay')) closePopup();
