@@ -450,9 +450,9 @@
             <button type="button" class="btn btn-outline" style="padding:5px 12px;font-size:.75rem" onclick="toggleAllComunas(false)">✕ Limpiar</button>
           </div>
           <div id="comunas-grid" style="
-            max-height:240px;overflow-y:auto;
+            max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch;
             border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;
-            display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px 8px;
+            display:grid;grid-template-columns:1fr 1fr;gap:4px 8px;
             background:var(--bg);
           ">
             <!-- generado por JS -->
@@ -804,7 +804,7 @@
 
       <div class="success-actions" style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:24px">
         <a href="proveedores.html" class="btn btn-teal btn-big" style="min-width:160px;justify-content:center">Ver directorio →</a>
-        <a href="index.html" class="btn btn-outline btn-big" style="min-width:160px;justify-content:center">← Inicio</a>
+        <a href="index.html" class="btn btn-outline btn-big" title="Ir al inicio" style="min-width:unset;padding:10px 18px;font-size:1.1rem">🏠</a>
       </div>
     </div>
   </div>
@@ -1163,6 +1163,12 @@ document.getElementById('confirm-overlay')?.addEventListener('click', e => {
   if (e.target === document.getElementById('confirm-overlay')) closeConfirmPopup();
 });
 
+/* ── INIT ── */
+window.addEventListener('DOMContentLoaded', () => {
+  loadFormCategories();
+  buildComunasGrid();
+});
+
 async function doSubmitForm() {
   document.getElementById('confirm-send-btn').disabled = true;
   document.getElementById('confirm-send-btn').textContent = 'Enviando...';
@@ -1450,6 +1456,12 @@ function removeImage(type) {
   document.getElementById(`${type}-preview-wrap`).style.display = 'none';
   document.getElementById(`${type}-preview-img`).src = '';
 }
+
+/* ── INIT ── */
+window.addEventListener('DOMContentLoaded', () => {
+  loadFormCategories();
+  buildComunasGrid();
+});
 </script>
 </body>
 </html>
