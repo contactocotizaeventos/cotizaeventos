@@ -205,7 +205,9 @@
       font-size:.6rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
       padding:2px 8px;border-radius:99px;white-space:nowrap;
     }
-    .pb-dest{background:var(--coral-lt);color:var(--coral);border:1px solid var(--coral-md)}
+    .pb-gold{background:#FFF3CC;color:#B8860B;border:1px solid #E8C84A}
+    .pb-silver{background:#F3F4F6;color:#6B7280;border:1px solid #C0C0C0}
+    .pb-bronze{background:#FDF3E6;color:#9C6B2E;border:1px solid #CD7F32}
     .pb-basic{background:var(--bg2);color:var(--muted);border:1px solid var(--border2)}
 
     /* PRICE RANGE */
@@ -621,31 +623,34 @@
         </div>
       </div>
       <div class="form-card-body">
-        <div class="pos-grid" style="grid-template-columns:1fr 1fr">
-          <!-- Destacado -->
-          <label class="pos-option pos-dest-option" onclick="selectPos(this, 'Destacado')">
-            <input type="radio" name="posicion" value="Destacado" />
-            <span class="pos-badge pb-dest">✦ Recomendado</span>
-            <span class="pos-ico">🏆</span>
-            <div class="pos-name">Destacado</div>
-            <div class="pos-price">
-              Tarjeta grande con foto, descripción completa y botón directo.<br/>
-              Apareces en el carrusel del inicio.<br/>
-              <strong style="color:var(--teal)">Gratis ahora</strong>
-              <s style="font-size:.73rem;color:var(--muted)">$30.000/mes</s>
-            </div>
+        <div class="pos-grid">
+          <label class="pos-option" onclick="selectPos(this, 'Posición Oro #1')">
+            <input type="radio" name="posicion" value="Posición Oro #1" />
+            <span class="pos-badge pb-gold">★★★ Más visible</span>
+            <span class="pos-ico">🥇</span>
+            <div class="pos-name">Posición #1 Oro</div>
+            <div class="pos-price">Top del listado<br/><strong style="color:var(--teal)">Gratis ahora</strong> <s style="font-size:.73rem;color:var(--muted)">$50.000/mes</s></div>
           </label>
-          <!-- Básico -->
+          <label class="pos-option" onclick="selectPos(this, 'Posición Plata #2')">
+            <input type="radio" name="posicion" value="Posición Plata #2" />
+            <span class="pos-badge pb-silver">★★☆</span>
+            <span class="pos-ico">🥈</span>
+            <div class="pos-name">Posición #2 Plata</div>
+            <div class="pos-price">Segundo destacado<br/><strong style="color:var(--teal)">Gratis ahora</strong> <s style="font-size:.73rem;color:var(--muted)">$30.000/mes</s></div>
+          </label>
+          <label class="pos-option" onclick="selectPos(this, 'Posición Bronce #3')">
+            <input type="radio" name="posicion" value="Posición Bronce #3" />
+            <span class="pos-badge pb-bronze">★☆☆</span>
+            <span class="pos-ico">🥉</span>
+            <div class="pos-name">Posición #3 Bronce</div>
+            <div class="pos-price">Tercer destacado<br/><strong style="color:var(--teal)">Gratis ahora</strong> <s style="font-size:.73rem;color:var(--muted)">$20.000/mes</s></div>
+          </label>
           <label class="pos-option" onclick="selectPos(this, 'Listado Básico')">
             <input type="radio" name="posicion" value="Listado Básico" />
             <span class="pos-badge pb-basic">Básico</span>
             <span class="pos-ico">📋</span>
             <div class="pos-name">Listado Básico</div>
-            <div class="pos-price">
-              Apareces en el listado simple de tu categoría.<br/>
-              Sin foto de portada ni descripción destacada.<br/>
-              <strong style="color:var(--teal)">Siempre gratis</strong>
-            </div>
+            <div class="pos-price">Visibilidad básica<br/><strong style="color:var(--teal)">Siempre gratis</strong></div>
           </label>
         </div>
 
@@ -832,7 +837,7 @@
             <div style="width:26px;height:26px;border-radius:50%;background:#F9D849;color:#8B6914;font-size:.78rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">4</div>
             <div>
               <div style="font-size:.82rem;font-weight:700;color:var(--ink);margin-bottom:3px">Mándanos el link cuando lo tengas</div>
-              <div style="font-size:.76rem;color:var(--muted);line-height:1.5">Una vez tengas tu ficha configurada, mándanos el link de Google Maps a <a href="/cdn-cgi/l/email-protection#99faf6f7edf8faedf6faf6edf0e3f8fceffcf7edf6ead9fef4f8f0f5b7faf6f4" style="color:var(--coral);font-weight:600"><span class="__cf_email__" data-cfemail="395a56574d585a4d565a564d5043585c4f5c574d564a795e54585055175a5654">[email&#160;protected]</span></a> y nosotros vinculamos las reseñas a tu perfil. ¡Sin que tengas que hacer nada técnico!</div>
+              <div style="font-size:.76rem;color:var(--muted);line-height:1.5">Una vez tengas tu ficha configurada, mándanos el link de Google Maps a <a href="mailto:contactocotizaeventos@gmail.com" style="color:var(--coral);font-weight:600">contactocotizaeventos@gmail.com</a> y nosotros vinculamos las reseñas a tu perfil. ¡Sin que tengas que hacer nada técnico!</div>
             </div>
           </div>
         </div>
@@ -892,7 +897,7 @@
         <p style="font-size:.85rem;color:var(--ink2);line-height:1.7">
           ✅ <strong>¿Qué pasa ahora?</strong><br/>
           Nuestro equipo revisará tu información y te contactará en 48 horas para activar tu publicación.<br/>
-          Si necesitas hacer cambios, escríbenos a <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fc9f9392889d9f88939f938895869d998a999288938fbc9b919d9590d29f9391">[email&#160;protected]</a></strong>
+          Si necesitas hacer cambios, escríbenos a <strong>contactocotizaeventos@gmail.com</strong>
         </p>
       </div>
 
@@ -935,7 +940,7 @@
     </div>
     <div class="faq-item" onclick="toggleFaq(this)">
       <div class="faq-q">¿Cuánto cuesta publicar mi negocio? <span>+</span></div>
-      <div class="faq-a">Registrarte es completamente <strong>gratis</strong>. Existe un plan Destacado con mayor visibilidad, pero la publicación básica no tiene costo. Una vez enviado tu formulario, nuestro equipo revisará tu información y te contactará para explicarte las opciones disponibles.</div>
+      <div class="faq-a">Registrarte es completamente <strong>gratis</strong>. Existen planes de posicionamiento destacado (Oro, Plata, Bronce) con mayor visibilidad, pero la publicación básica no tiene costo. Una vez enviado tu formulario, nuestro equipo revisará tu información y te contactará para explicarte las opciones disponibles.</div>
     </div>
     <div class="faq-item" onclick="toggleFaq(this)">
       <div class="faq-q">¿Cuánto tiempo tarda en aparecer mi negocio? <span>+</span></div>
@@ -967,7 +972,7 @@
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 /* ═══════════════════════════════════════
    STATE
 ═══════════════════════════════════════ */
@@ -1567,4 +1572,17 @@ function toggleFaq(item) {
 }
 
 function removeImage(type) {
-  if (type
+  if (type === 'cover') {
+    coverUrl = '';
+    document.getElementById('cover-url-input').value = '';
+  } else {
+    logoUrl = '';
+    document.getElementById('logo-url-input')?.value && (document.getElementById('logo-url-input').value = '');
+  }
+  document.getElementById(`${type}-preview-wrap`).style.display = 'none';
+  document.getElementById(`${type}-preview-img`).src = '';
+}
+
+</script>
+</body>
+</html>
