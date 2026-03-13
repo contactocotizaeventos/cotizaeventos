@@ -115,73 +115,89 @@
     /* ── HERO (dark full-width image style) ── */
     #hero {
       position: relative; overflow: hidden;
-      min-height: 88vh;
-      display: flex; align-items: center;
-      /* ADMIN: reemplaza esta URL con tu imagen de fondo */
+      min-height: 100svh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
       background-image: var(--hero-bg, linear-gradient(160deg,#1A1410 0%,#2D1810 100%));
       background-size: cover; background-position: center;
     }
     #hero::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: linear-gradient(
-        to bottom,
-        rgba(10,8,6,.72) 0%,
-        rgba(10,8,6,.55) 50%,
-        rgba(10,8,6,.78) 100%
-      );
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(to bottom,rgba(10,8,6,.7) 0%,rgba(10,8,6,.5) 50%,rgba(10,8,6,.75) 100%);
       z-index: 0;
     }
     .hero-inner {
       position: relative; z-index: 1;
       max-width: 760px; margin: 0 auto;
-      padding: 80px 32px 72px;
+      padding: 100px 28px 24px;
       width: 100%; text-align: center;
+      display: flex; flex-direction: column; align-items: center; gap: 0;
+    }
+    .hero-eyebrow-wrap { margin-bottom: 28px; }
+    .hero-eyebrow {
+      background: rgba(255,255,255,.12) !important;
+      color: rgba(255,255,255,.85) !important;
+      border-color: rgba(255,255,255,.18) !important;
+      backdrop-filter: blur(4px);
     }
     .hero-title {
-      font-size: clamp(2.6rem, 5.5vw, 4.4rem); font-weight: 900;
-      color: #fff; margin-bottom: 20px; line-height: 1.08;
+      font-size: clamp(2.4rem, 5.5vw, 4.4rem); font-weight: 900;
+      color: #fff; margin-bottom: 18px; line-height: 1.08;
       animation: fadeUp .5s ease both;
     }
-    .hero-title .accent { color: var(--coral2); font-style: italic; }
+    .hero-title .accent { color: var(--coral2, #FF7A54); font-style: italic; }
     .hero-sub {
-      font-size: clamp(.95rem, 1.8vw, 1.12rem); color: rgba(255,255,255,.8);
-      font-weight: 400; max-width: 560px; margin: 0 auto 16px;
+      font-size: clamp(.93rem, 1.8vw, 1.08rem); color: rgba(255,255,255,.8);
+      font-weight: 400; max-width: 520px; margin-bottom: 10px;
       line-height: 1.7; animation: fadeUp .5s .1s ease both;
     }
     .hero-sub2 {
-      font-size: .9rem; color: rgba(255,255,255,.55);
-      max-width: 500px; margin: 0 auto 32px; line-height: 1.65;
+      font-size: .86rem; color: rgba(255,255,255,.5);
+      max-width: 480px; margin-bottom: 0; line-height: 1.65;
       animation: fadeUp .5s .15s ease both;
     }
     .hero-ctas {
+      margin-top: 36px;
       display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;
       animation: fadeUp .5s .2s ease both;
     }
+    .hero-ghost-btn { color:#fff !important; border-color:rgba(255,255,255,.3) !important; background:rgba(255,255,255,.08) !important; }
     .hero-trust {
-      margin-top: 36px; display: flex; flex-wrap: wrap; align-items: center;
-      gap: 20px; justify-content: center;
+      margin-top: 40px;
+      display: flex; flex-wrap: wrap; align-items: center;
+      gap: 10px; justify-content: center;
       animation: fadeUp .5s .3s ease both;
+      padding-bottom: 32px;
     }
     .trust-pill {
       display: flex; align-items: center; gap: 7px;
-      font-size: .78rem; color: rgba(255,255,255,.6);
-      background: rgba(255,255,255,.09);
-      border: 1px solid rgba(255,255,255,.15);
-      padding: 6px 14px; border-radius: 99px;
+      font-size: .76rem; color: rgba(255,255,255,.65);
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.14);
+      padding: 6px 13px; border-radius: 99px;
       backdrop-filter: blur(4px);
     }
-    .trust-pill span { font-size: .9rem; }
+    .trust-pill span { font-size: .88rem; }
+    /* Scroll hint — OUTSIDE hero-inner, pinned to bottom */
     .hero-scroll-hint {
-      position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
-      color: rgba(255,255,255,.35); font-size: .72rem; letter-spacing: .08em;
-      text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 5px;
-      animation: fadeIn 1s 1s ease both;
+      position: relative; z-index: 1;
+      margin-top: auto; padding: 20px 0 28px;
+      color: rgba(255,255,255,.35); font-size: .68rem; letter-spacing: .1em;
+      text-transform: uppercase;
+      display: flex; flex-direction: column; align-items: center; gap: 5px;
+      animation: fadeIn 1s 1.2s ease both; opacity: 0;
     }
     .hero-scroll-hint::after {
-      content: '↓'; font-size: 1rem; animation: bounce 1.8s infinite;
+      content: '↓'; font-size: .9rem; animation: bounce 1.8s infinite;
     }
     @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(5px)} }
+    @media (max-width: 600px) {
+      .hero-inner { padding: 80px 22px 16px; }
+      .hero-title { font-size: clamp(2rem, 9vw, 2.8rem); }
+      .hero-eyebrow-wrap { margin-bottom: 20px; }
+      .hero-ctas { margin-top: 28px; gap: 8px; }
+      .hero-trust { margin-top: 28px; gap: 8px; }
+      .trust-pill { font-size: .71rem; padding: 5px 11px; }
+    }
 
 
 
@@ -655,8 +671,10 @@
 <!-- ADMIN: Para cambiar imagen de fondo del hero, edita: const HERO_SECTION_BG = 'URL' en el JS -->
 <section id="hero">
   <div class="hero-inner">
-    <div class="tag hero-eyebrow" style="background:rgba(255,255,255,.12);color:rgba(255,255,255,.85);border-color:rgba(255,255,255,.18);backdrop-filter:blur(4px);margin-bottom:20px">
-      🏆 El directorio de proveedores para eventos en Santiago
+    <div class="hero-eyebrow-wrap">
+      <div class="tag hero-eyebrow">
+        🏆 El directorio de proveedores para eventos en Santiago
+      </div>
     </div>
     <h1 class="hero-title">
       Celebra con los<br/>
@@ -666,20 +684,20 @@
       Catering, banquetería, barra de tragos, DJ y más — proveedores verificados con precios reales y contacto directo.
     </p>
     <p class="hero-sub2">
-      Más de 20 categorías de servicios · Sin intermediarios · Sin comisiones · Cotización por WhatsApp
+      Más de 20 categorías · Sin intermediarios · Sin comisiones · Contacto directo por WhatsApp
     </p>
-    <div class="hero-ctas" style="margin-top:32px">
+    <div class="hero-ctas">
       <a href="proveedores.html" class="btn btn-primary btn-big">🔍 Ver proveedores</a>
-      <a href="#como" class="btn btn-ghost btn-big" style="color:#fff;border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.08)">¿Cómo funciona?</a>
+      <a href="#como" class="btn btn-ghost btn-big hero-ghost-btn">¿Cómo funciona?</a>
     </div>
-    <div class="hero-trust" style="margin-top:44px">
+    <div class="hero-trust">
       <div class="trust-pill"><span>✅</span> Proveedores verificados</div>
       <div class="trust-pill"><span>💬</span> Contacto directo</div>
       <div class="trust-pill"><span>⭐</span> Gratis para clientes</div>
       <div class="trust-pill"><span>📍</span> Región Metropolitana</div>
     </div>
   </div>
-  <div class="hero-scroll-hint" style="margin-top:56px">Explorar</div>
+  <div class="hero-scroll-hint">Explorar</div>
 </section>
 
 <!-- ══ CÓMO FUNCIONA ══ -->
@@ -941,33 +959,34 @@ async function loadCategories() {
       if (carProviders.length === 0) {
         document.getElementById('destacados').style.display = 'none';
       } else {
-        carTrack.innerHTML = carProviders.map((p, i) => {
-          const waMsg = encodeURIComponent('Hola ' + p.nombre + '! Los vi en CotizaEventos.cl y me interesa cotizar sus servicios.');
-          const cover = p.cover_url
-            ? `<img class="car-cover" src="${p.cover_url}" alt="${p.nombre}" loading="lazy" />`
-            : `<div class="car-cover-ph">${p.logo}</div>`;
-          const badgeCls = p.pos === 1 ? 'car-gold' : 'car-silver';
-          const badgeLbl = p.pos === 1 ? '🥇 Posición Oro' : '🥈 Posición Plata';
+        carTrack.innerHTML = carProviders.map((prov, i) => {
+          const waMsg = encodeURIComponent('Hola ' + prov.nombre + '! Los vi en CotizaEventos.cl y me interesa cotizar sus servicios.');
+          const cover = prov.cover_url
+            ? `<img class="car-cover" src="${prov.cover_url}" alt="${prov.nombre}" loading="lazy" />`
+            : `<div class="car-cover-ph">${prov.logo || '🎉'}</div>`;
+          const badgeCls = prov.pos === 1 ? 'car-gold' : 'car-silver';
+          const badgeLbl = prov.pos === 1 ? '🥇 Posición Oro' : '🥈 Posición Plata';
           return `<div class="car-slide${i===0?' active':''}" data-idx="${i}">
             ${cover}
             <div class="car-body">
-              <div class="car-badge ${badgeCls}">${badgeLbl} · ${p.catIco} ${p.catNombre}</div>
-              <div class="car-name">${p.nombre}</div>
-              <div class="car-tagline">${p.tagline || p.diff || ''}</div>
-              <div class="car-price">Desde ${p.minimo || '—'}</div>
+              <div class="car-badge ${badgeCls}">${badgeLbl} &middot; ${prov.catIco} ${prov.catNombre}</div>
+              <div class="car-name">${prov.nombre}</div>
+              <div class="car-tagline">${prov.tagline || prov.diff || ''}</div>
+              <div class="car-price">Desde ${prov.minimo || '—'}</div>
             </div>
             <div class="car-foot">
-              <span class="car-loc">📍 ${(p.comunas||'Santiago').split(',')[0].trim()}</span>
-              <a class="feat-wa" href="https://wa.me/${p.wa}?text=${waMsg}" target="_blank" onclick="event.stopPropagation()">💬 Cotizar</a>
+              <span class="car-loc">📍 ${(prov.comunas||'Santiago').split(',')[0].trim()}</span>
+              <a class="feat-wa" href="https://wa.me/${prov.wa}?text=${waMsg}" target="_blank" onclick="event.stopPropagation()">💬 Cotizar</a>
             </div>
           </div>`;
         }).join('');
 
         // Dots
         if (carDots) {
-          carDots.innerHTML = carProviders.map((_, i) =>
-            `<button class="car-dot${i===0?' on':''}" onclick="carGoTo(${i})"></button>`
-          ).join('');
+          carDots.innerHTML = carProviders.map((_, i) => {
+            const cls = i === 0 ? 'car-dot on' : 'car-dot';
+            return '<button class="' + cls + '" onclick="carGoTo(' + i + ')"></button>';
+          }).join('');
         }
 
         // Auto-advance every 5s
