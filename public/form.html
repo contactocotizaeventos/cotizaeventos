@@ -751,106 +751,7 @@
       </div>
     </div>
 
-    <!-- ═══ CARD: RESEÑAS DE GOOGLE ═══ -->
-    <div class="form-card">
-      <div class="form-card-header">
-        <div class="fch-icon" style="background:#FFF8E1;font-size:1.3rem">⭐</div>
-        <div>
-          <h3>Reseñas de Google</h3>
-          <p>Muestra la opinión real de tus clientes directamente en tu ficha</p>
-        </div>
-      </div>
-      <div class="form-card-body">
-
-        <!-- Explicación del valor -->
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:24px">
-          <div style="background:var(--bg2);border-radius:12px;padding:14px;text-align:center">
-            <div style="font-size:1.4rem;margin-bottom:6px">🤝</div>
-            <div style="font-size:.78rem;font-weight:700;color:var(--ink);margin-bottom:3px">Más confianza</div>
-            <div style="font-size:.7rem;color:var(--muted)">Los clientes confían más en negocios con reseñas reales</div>
-          </div>
-          <div style="background:var(--bg2);border-radius:12px;padding:14px;text-align:center">
-            <div style="font-size:1.4rem;margin-bottom:6px">✅</div>
-            <div style="font-size:.78rem;font-weight:700;color:var(--ink);margin-bottom:3px">Verificadas</div>
-            <div style="font-size:.7rem;color:var(--muted)">Google verifica que son clientes reales, no inventadas</div>
-          </div>
-          <div style="background:var(--bg2);border-radius:12px;padding:14px;text-align:center">
-            <div style="font-size:1.4rem;margin-bottom:6px">🆓</div>
-            <div style="font-size:.78rem;font-weight:700;color:var(--ink);margin-bottom:3px">Sin costo</div>
-            <div style="font-size:.7rem;color:var(--muted)">Totalmente gratis — solo necesitas tener un perfil de Google</div>
-          </div>
-        </div>
-
-        <!-- Campo URL Google Maps -->
-        <div class="field" style="margin-bottom:16px">
-          <label class="lbl" style="font-size:.85rem;font-weight:700">
-            Link de tu negocio en Google Maps
-            <span style="font-weight:400;color:var(--muted)">(opcional, pero muy recomendado)</span>
-          </label>
-          <input class="inp" type="url" id="google_maps_url" maxlength="400"
-            placeholder="https://maps.app.goo.gl/... o https://g.page/tu-negocio" />
-          <div style="font-size:.72rem;color:var(--muted);margin-top:6px;line-height:1.5">
-            💡 Abre Google Maps, busca tu negocio, toca "Compartir" y pega el link aquí.
-          </div>
-        </div>
-
-        <!-- Cómo conseguir reseñas — guía paso a paso -->
-        <div style="background:#FFFBF0;border:1.5px solid #F9D849;border-radius:14px;padding:20px 22px">
-          <div style="font-size:.85rem;font-weight:700;color:#8B6914;margin-bottom:14px;display:flex;align-items:center;gap:7px">
-            <span>⭐</span> Cómo conseguir tus primeras reseñas
-          </div>
-
-          <!-- Paso 1 -->
-          <div style="display:flex;gap:12px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #F0E07A">
-            <div style="width:26px;height:26px;border-radius:50%;background:#F9D849;color:#8B6914;font-size:.78rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</div>
-            <div>
-              <div style="font-size:.82rem;font-weight:700;color:var(--ink);margin-bottom:3px">Crea o reclama tu ficha en Google Business</div>
-              <div style="font-size:.76rem;color:var(--muted);line-height:1.5">Si aún no tienes ficha, créala gratis en <a href="https://business.google.com" target="_blank" style="color:var(--coral);font-weight:600">business.google.com</a> — solo necesitas una cuenta de Google.</div>
-            </div>
-          </div>
-
-          <!-- Paso 2 -->
-          <div style="display:flex;gap:12px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #F0E07A">
-            <div style="width:26px;height:26px;border-radius:50%;background:#F9D849;color:#8B6914;font-size:.78rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">2</div>
-            <div>
-              <div style="font-size:.82rem;font-weight:700;color:var(--ink);margin-bottom:3px">Obtén tu link directo de reseñas</div>
-              <div style="font-size:.76rem;color:var(--muted);line-height:1.5">Dentro de Google Business Profile → <strong>"Obtener más reseñas"</strong> → copia el link corto. Ese es el enlace que le envías a tus clientes.</div>
-            </div>
-          </div>
-
-          <!-- Paso 3 -->
-          <div style="display:flex;gap:12px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #F0E07A">
-            <div style="width:26px;height:26px;border-radius:50%;background:#F9D849;color:#8B6914;font-size:.78rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">3</div>
-            <div>
-              <div style="font-size:.82rem;font-weight:700;color:var(--ink);margin-bottom:3px">Pídele a tus clientes después del servicio</div>
-              <div style="font-size:.76rem;color:var(--muted);line-height:1.5">El mejor momento es al terminar el evento o al día siguiente. Un mensaje simple funciona muy bien:</div>
-              <div style="margin-top:8px;background:#fff;border:1px solid #F0E07A;border-radius:8px;padding:10px 12px;font-size:.75rem;color:var(--ink2);line-height:1.55;font-style:italic">
-                "¡Hola [nombre]! Fue un gusto servirte hoy 🎉 Si quedaste contento/a con nuestro servicio, nos ayudaría mucho que nos dejaras una reseña rápida en Google. Solo toma 1 minuto 👉 [link]"
-              </div>
-              <button type="button" onclick="copyReviewMsg()" style="margin-top:8px;background:var(--coral-lt);border:1px solid var(--coral-md);color:var(--coral);padding:4px 12px;border-radius:99px;font-size:.72rem;font-weight:600;cursor:pointer" id="copy-review-btn">
-                📋 Copiar mensaje
-              </button>
-            </div>
-          </div>
-
-          <!-- Paso 4 -->
-          <div style="display:flex;gap:12px">
-            <div style="width:26px;height:26px;border-radius:50%;background:#F9D849;color:#8B6914;font-size:.78rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">4</div>
-            <div>
-              <div style="font-size:.82rem;font-weight:700;color:var(--ink);margin-bottom:3px">Mándanos el link cuando lo tengas</div>
-              <div style="font-size:.76rem;color:var(--muted);line-height:1.5">Una vez tengas tu ficha configurada, mándanos el link de Google Maps a <a href="mailto:contactocotizaeventos@gmail.com" style="color:var(--coral);font-weight:600">contactocotizaeventos@gmail.com</a> y nosotros vinculamos las reseñas a tu perfil. ¡Sin que tengas que hacer nada técnico!</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Nota: nosotros lo activamos -->
-        <div style="margin-top:12px;padding:12px 16px;background:var(--bg);border-radius:10px;border:1px solid var(--border);font-size:.76rem;color:var(--muted);line-height:1.5;display:flex;gap:8px">
-          <span style="flex-shrink:0">ℹ️</span>
-          <span>Las reseñas las activamos nosotros en tu ficha una vez estés publicado. Solo necesitamos el link de tu negocio en Google Maps.</span>
-        </div>
-      </div>
-    </div>
-
+   
     <div class="form-nav">
       <button class="btn btn-outline btn-big" onclick="prevStep(5)">← Atrás</button>
       <div class="nav-info">Paso 5 de 6</div>
@@ -902,16 +803,6 @@
         </p>
       </div>
 
-      <!-- Recordatorio reseñas -->
-      <div style="background:#FFFBF0;border:1.5px solid #F9D849;border-radius:14px;padding:18px 22px;margin-bottom:24px;text-align:left;max-width:480px;margin-left:auto;margin-right:auto">
-        <div style="font-size:.82rem;font-weight:700;color:#8B6914;margin-bottom:10px">⭐ Mientras esperas — empieza a conseguir reseñas</div>
-        <ol style="font-size:.78rem;color:var(--ink2);line-height:1.7;padding-left:18px;margin:0">
-          <li>Crea o reclama tu ficha en <a href="https://business.google.com" target="_blank" style="color:var(--coral);font-weight:600">Google Business Profile</a></li>
-          <li>Obtén tu link directo de reseñas desde el panel de Google Business</li>
-          <li>Pídeles a tus clientes recientes que te dejen una reseña rápida</li>
-          <li>Cuando estés publicado, mándanos el link y lo vinculamos a tu ficha</li>
-        </ol>
-      </div>
 
       <div class="success-actions" style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:24px">
         <a href="proveedores.html" class="btn btn-teal btn-big" style="min-width:160px;justify-content:center">Ver directorio →</a>
@@ -1296,7 +1187,7 @@ window.addEventListener('DOMContentLoaded', () => {
   buildComunasGrid();
 });
 
-async function doSubmitForm() {
+async function SubmitForm() {
   document.getElementById('confirm-send-btn').disabled = true;
   document.getElementById('confirm-send-btn').textContent = 'Enviando...';
   const data = getData();
