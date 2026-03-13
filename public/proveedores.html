@@ -285,88 +285,78 @@
     .cat-header p{font-size:.8rem;color:var(--muted)}
     .cat-badge{font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:var(--bg2);color:var(--muted);border:1px solid var(--border);padding:2px 8px;border-radius:99px;margin-left:auto;flex-shrink:0}
 
-    /* PROVIDER CARDS */
-    /* Oro: ocupa todo el ancho horizontal */
-    .top-positions{display:grid;gap:18px;margin-bottom:20px}
-    .top-positions-secondary{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px}
+    /* ══ DESTACADOS — grid 2 cols ══ */
+    .top-positions{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;margin-bottom:20px}
 
-    .pos-card{background:var(--white);border-radius:20px;box-shadow:0 4px 24px rgba(0,0,0,.08);transition:.3s var(--ease);cursor:pointer;position:relative;display:flex;flex-direction:column}
-    .pos-card:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,0,0,.14)}
-    .pos-card.pos-1{
-      border:2.5px solid var(--gold-bd);
-      grid-column:1/-1;flex-direction:row;
-      box-shadow:0 8px 40px rgba(184,134,11,.18), 0 2px 0 0 #E8C84A inset;
-      background:linear-gradient(135deg,#FFFDF5 0%,#FFFFFF 60%);
+    /* Card base */
+    .pos-card{
+      background:var(--white);border-radius:20px;
+      border:2px solid var(--coral-md);
+      box-shadow:0 4px 28px rgba(232,84,42,.10), 0 2px 0 0 var(--coral) inset;
+      transition:.3s var(--ease);cursor:pointer;position:relative;
+      display:flex;flex-direction:column;
+      background:linear-gradient(160deg,#FFF9F7 0%,#FFFFFF 55%);
     }
-    .pos-card.pos-1:hover{
+    .pos-card:hover{
       transform:translateY(-5px);
-      box-shadow:0 20px 60px rgba(184,134,11,.22), 0 2px 0 0 #E8C84A inset;
+      box-shadow:0 18px 54px rgba(232,84,42,.18), 0 2px 0 0 var(--coral) inset;
+      border-color:var(--coral);
     }
-    .pos-card.pos-2{border:1.5px solid #C0C0C0}
-    .pos-card.pos-3{border:1.5px solid #CD7F32}
 
     /* COVER PHOTO */
-    .pos-cover{position:relative;width:100%;height:170px;flex-shrink:0;overflow:hidden;border-radius:18px 18px 0 0}
-    /* Oro horizontal: portada a la izquierda */
-    .pos-card.pos-1 .pos-cover{width:300px;height:100%;flex-shrink:0;min-height:220px;border-radius:18px 0 0 18px}
-    .pos-card.pos-1 .pos-cover-img{width:260px;height:100%}
-    .pos-card.pos-1 .pos-cover-placeholder{width:260px;height:100%;min-height:200px}
-    .pos-cover-img{width:100%;height:170px;object-fit:cover;display:block;transition:transform .4s var(--ease);border-radius:0}
+    .pos-cover{position:relative;width:100%;height:180px;flex-shrink:0;overflow:hidden;border-radius:18px 18px 0 0}
+    .pos-cover-img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s var(--ease)}
     .pos-card:hover .pos-cover-img{transform:scale(1.04)}
-    .pos-cover-placeholder{width:100%;height:170px;display:flex;align-items:center;justify-content:center;font-size:3.5rem}
-    /* border-radius según posición */
-    .pos-card:not(.pos-1) .pos-cover-img,.pos-card:not(.pos-1) .pos-cover-placeholder{border-radius:0}
-    .pos-card.pos-1 .pos-cover-img,.pos-card.pos-1 .pos-cover-placeholder{border-radius:0}
-    /* Image placeholders — dark bg with "img" label */
-    .pos-cover-placeholder{background:#111 !important;color:rgba(255,255,255,.18);font-size:2.8rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
-    .pos-cover-placeholder::after{content:'img';font-size:.65rem;font-family:'Outfit',sans-serif;letter-spacing:.1em;color:rgba(255,255,255,.2)}
-    .pos-1 .pos-cover-placeholder{background:#111 !important}
+    .pos-cover-placeholder{
+      width:100%;height:100%;
+      background:#111 !important;color:rgba(255,255,255,.15);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:2.8rem
+    }
+    .pos-cover-placeholder::after{content:'img';font-size:.65rem;font-family:'Outfit',sans-serif;letter-spacing:.1em;color:rgba(255,255,255,.18)}
+    .pos-cover-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 45%,rgba(0,0,0,.42) 100%)}
 
-    .pos-cover-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(0,0,0,.45) 100%)}
-
-    /* RIBBON sobre la foto */
-    .pos-ribbon{position:absolute;top:12px;left:0;z-index:3;display:inline-flex;align-items:center;gap:5px;padding:5px 14px 5px 12px;border-radius:0 99px 99px 0;font-size:.63rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;box-shadow:0 3px 12px rgba(0,0,0,.18)}
-    .pos-1 .pos-ribbon{background:linear-gradient(90deg,#7A5C12,#C8930A,#E8C84A);color:#fff;box-shadow:0 2px 12px rgba(232,200,74,.45);font-size:.66rem;letter-spacing:.12em}
-    .pos-2 .pos-ribbon{background:linear-gradient(90deg,#555,#888,#ADADAD);color:#fff}
-    .pos-3 .pos-ribbon{background:linear-gradient(90deg,#6B3E10,#9C6B2E,#C88840);color:#fff}
+    /* RIBBON — coral brand */
+    .pos-ribbon{
+      position:absolute;top:12px;left:0;z-index:3;
+      display:inline-flex;align-items:center;gap:6px;
+      padding:5px 14px 5px 12px;border-radius:0 99px 99px 0;
+      background:linear-gradient(90deg,#C94520,var(--coral),#FF7A54);
+      color:#fff;font-size:.64rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;
+      box-shadow:0 2px 12px rgba(232,84,42,.40)
+    }
 
     /* LOGO flotante */
     .pos-logo-wrap{position:absolute;top:12px;right:12px;z-index:4}
-    .pos-logo-circle{width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;box-shadow:0 4px 16px rgba(0,0,0,.15);overflow:hidden;background:#fff}
-    .pos-1 .pos-logo-circle{background:#fff;border:2.5px solid var(--gold-bd);width:62px;height:62px}
-    .pos-2 .pos-logo-circle{background:#fff;border:2.5px solid #C0C0C0}
-    .pos-3 .pos-logo-circle{background:#fff;border:2.5px solid #CD7F32}
+    .pos-logo-circle{
+      width:56px;height:56px;border-radius:14px;
+      display:flex;align-items:center;justify-content:center;font-size:1.8rem;
+      box-shadow:0 4px 16px rgba(0,0,0,.15);overflow:hidden;
+      background:#fff;border:2.5px solid var(--coral)
+    }
 
     /* CARD BODY */
-    .pos-body{padding:20px 22px 16px;flex:1;display:flex;flex-direction:column;gap:10px}
+    .pos-body{padding:18px 20px 14px;flex:1;display:flex;flex-direction:column;gap:10px}
     .pos-header-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
     .pos-name{font-size:1.08rem;font-weight:700;color:var(--ink);font-family:'Outfit',sans-serif;line-height:1.2}
-    .pos-1 .pos-name{font-size:1.22rem}
-    .pos-1 .pos-tagline{font-size:.84rem}
     .pos-tagline{font-size:.78rem;color:var(--muted);margin-top:2px;line-height:1.4}
-    .pos-stars{font-size:.72rem;letter-spacing:1px;margin-top:3px}
-    .pos-1 .pos-stars{color:var(--gold)}
-    .pos-2 .pos-stars{color:#A0A0A0}
-    .pos-3 .pos-stars{color:#CD7F32}
     .pos-price-badge{flex-shrink:0;text-align:right;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:6px 10px}
     .pos-price-badge .pb-label{font-size:.55rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
-    .pos-price-badge .pb-min{font-family:'Fraunces',serif;font-size:1rem;font-weight:900;line-height:1}
-    .pos-1 .pb-min{color:var(--gold)}
-    .pos-2 .pb-min{color:var(--silver)}
-    .pos-3 .pb-min{color:var(--bronze)}
+    .pos-price-badge .pb-min{font-family:'Fraunces',serif;font-size:1rem;font-weight:900;color:var(--coral);line-height:1}
     .pos-price-badge .pb-max{font-size:.65rem;color:var(--muted);margin-top:1px}
-    .pos-diff{display:inline-flex;align-items:center;gap:5px;font-size:.72rem;font-weight:600;padding:4px 11px;border-radius:99px;align-self:flex-start}
-    .pos-1 .pos-diff{background:var(--gold-lt);color:var(--gold);border:1px solid #E8C84A}
-    .pos-2 .pos-diff{background:var(--silver-lt);color:var(--silver);border:1px solid #C0C0C0}
-    .pos-3 .pos-diff{background:var(--bronze-lt);color:var(--bronze);border:1px solid #CD7F32}
+    .pos-diff{
+      display:inline-flex;align-items:center;gap:5px;font-size:.72rem;font-weight:600;
+      padding:4px 11px;border-radius:99px;align-self:flex-start;
+      background:var(--coral-lt);color:var(--coral);border:1px solid var(--coral-md)
+    }
     .pos-desc{font-size:.8rem;color:var(--ink2);line-height:1.65;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-    .pos-footer{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-top:1px solid var(--border);background:var(--bg);gap:10px;flex-wrap:wrap}
+    .pos-footer{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-top:1px solid var(--border);background:var(--bg);gap:10px;flex-wrap:wrap;border-radius:0 0 18px 18px}
     .pos-meta{display:flex;flex-wrap:wrap;gap:10px}
     .pos-meta-item{font-size:.72rem;color:var(--muted);display:flex;align-items:center;gap:4px}
     .pos-cta-group{display:flex;gap:8px;flex-shrink:0}
     .pos-cta-group .btn{padding:8px 14px;font-size:.76rem}
     .btn-detail{background:var(--bg2);color:var(--ink2);border:1px solid var(--border2)}
     .btn-detail:hover{background:var(--border)}
+    @media(max-width:640px){.top-positions{grid-template-columns:1fr}}
 
     /* BASIC LIST */
     /* Basic items */
@@ -420,9 +410,7 @@
     .modal-box::-webkit-scrollbar{width:4px}
     .modal-box::-webkit-scrollbar-thumb{background:var(--coral-md);border-radius:99px}
     .modal-band{height:5px;width:100%;border-radius:20px 20px 0 0}
-    .modal-band.pos-1{background:linear-gradient(90deg,#B8860B,#E8C84A,#B8860B)}
-    .modal-band.pos-2{background:linear-gradient(90deg,#888,#C0C0C0,#888)}
-    .modal-band.pos-3{background:linear-gradient(90deg,#8B5E2A,#CD7F32,#8B5E2A)}
+    .modal-band.dest{background:linear-gradient(90deg,#C94520,var(--coral),#FF7A54)}
     .modal-band.basic{background:var(--border2)}
     .modal-close{position:absolute;top:14px;right:14px;z-index:10;width:32px;height:32px;border-radius:50%;background:var(--bg2);border:1px solid var(--border);color:var(--ink2);font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.18s}
     .modal-close:hover{background:var(--coral);color:#fff;border-color:var(--coral)}
@@ -455,6 +443,26 @@
     .soc-chip{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:99px;font-size:.76rem;font-weight:500;border:1.5px solid var(--border);background:var(--bg);transition:.18s;color:var(--ink2)}
     .soc-chip:hover{border-color:var(--coral);color:var(--coral)}
     .modal-ctas{display:grid;grid-template-columns:1fr 1fr;gap:9px} @media(max-width:400px){.modal-ctas{grid-template-columns:1fr}}
+
+    /* ── REVIEWS SECTION ── */
+    .reviews-section{margin-top:20px;padding-top:20px;border-top:1px solid var(--border)}
+    .reviews-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+    .reviews-title{font-size:.82rem;font-weight:700;color:var(--ink)}
+    .reviews-source{font-size:.7rem;color:var(--muted);display:flex;align-items:center;gap:4px}
+    .reviews-stars-summary{display:flex;align-items:center;gap:8px;margin-bottom:14px;padding:12px;background:var(--bg2);border-radius:10px}
+    .rev-big-score{font-family:'Fraunces',serif;font-size:2rem;font-weight:900;color:var(--ink);line-height:1}
+    .rev-stars-row{color:#FBBF24;font-size:.9rem;letter-spacing:1px}
+    .rev-total{font-size:.72rem;color:var(--muted)}
+    .review-card{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px}
+    .review-top{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+    .review-avatar{width:32px;height:32px;border-radius:50%;background:var(--coral-lt);border:1.5px solid var(--coral-md);display:flex;align-items:center;justify-content:center;font-size:.9rem;font-weight:700;color:var(--coral);flex-shrink:0}
+    .review-author{font-size:.82rem;font-weight:600;color:var(--ink)}
+    .review-date{font-size:.68rem;color:var(--muted);margin-top:1px}
+    .review-stars{color:#FBBF24;font-size:.75rem;letter-spacing:1px;margin-left:auto}
+    .review-text{font-size:.8rem;color:var(--ink2);line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+    .reviews-cta{margin-top:12px;text-align:center}
+    .reviews-cta a{font-size:.76rem;color:var(--coral);font-weight:600;text-decoration:none}
+    .reviews-loading{text-align:center;padding:20px;color:var(--muted);font-size:.8rem}
     .modal-ctas .btn{justify-content:center;padding:12px 18px}
 
     /* EMPTY STATE */
@@ -533,6 +541,7 @@
   <a href="index.html" class="logo">Cotiza<span>Eventos</span>.cl</a>
   <div class="nav-right">
     <a href="index.html" class="btn btn-outline pv-back-btn">← Inicio</a>
+    <a href="plantillas.html" class="nav-link" style="font-size:.82rem;font-weight:600;color:var(--muted)">Tu web</a>
     <a href="form.html" class="btn btn-coral pv-pub-btn">✦ Publica tu negocio</a>
   </div>
 </nav>
@@ -545,11 +554,39 @@
       <p>Encuentra el proveedor ideal por categoría. Las 3 primeras posiciones incluyen información completa y contacto directo.</p>
     </div>
     <div class="ph-legend">
-      <div class="legend-item"><div class="legend-dot ld-1"></div> Posición #1 — Oro</div>
-      <div class="legend-item"><div class="legend-dot ld-2"></div> Posición #2 — Plata</div>
-      <div class="legend-item"><div class="legend-dot ld-3"></div> Posición #3 — Bronce</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--coral)"></div> Destacado</div>
       <div class="legend-item"><div class="legend-dot ld-basic"></div> Listado básico</div>
     </div>
+  </div>
+</div>
+
+<!-- ── BANNER PROVEEDOR ── -->
+<div id="pv-banner" style="background:linear-gradient(90deg,var(--coral-lt),#fff8f6);border-bottom:1px solid var(--coral-md);padding:10px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+  <div style="display:flex;align-items:center;gap:10px">
+    <span style="font-size:1.2rem">🏆</span>
+    <div>
+      <div style="font-size:.82rem;font-weight:700;color:var(--ink)">¿Eres proveedor de eventos?</div>
+      <div style="font-size:.74rem;color:var(--muted)">Aparece en el directorio y recibe clientes directamente</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+    <span style="font-size:.72rem;color:var(--coral);font-weight:600;background:#fff;border:1px solid var(--coral-md);border-radius:99px;padding:3px 10px">Gratis ahora</span>
+    <a href="form.html" class="btn btn-coral" style="padding:8px 18px;font-size:.8rem">Registrar mi negocio →</a>
+  </div>
+</div>
+
+<!-- ── BANNER PROVEEDOR ── -->
+<div id="pv-banner" style="background:linear-gradient(90deg,var(--coral-lt),#fff8f6);border-bottom:1px solid var(--coral-md);padding:10px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+  <div style="display:flex;align-items:center;gap:10px">
+    <span style="font-size:1.2rem">🏆</span>
+    <div>
+      <div style="font-size:.82rem;font-weight:700;color:var(--ink)">¿Eres proveedor de eventos?</div>
+      <div style="font-size:.74rem;color:var(--muted)">Aparece en el directorio y recibe clientes directamente</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+    <span style="font-size:.72rem;color:var(--coral);font-weight:600;background:#fff;border:1px solid var(--coral-md);border-radius:99px;padding:3px 10px">Gratis ahora</span>
+    <a href="form.html" class="btn btn-coral" style="padding:8px 18px;font-size:.8rem">Registrar mi negocio →</a>
   </div>
 </div>
 
@@ -643,8 +680,27 @@ async function loadProviders() {
     GRUPOS = data.grupos || [];
     buildIndex();
     buildCatBar();
-    // Default: first category whose name includes 'pizza', else first cat of first group
+
+    // URL params override: ?cat=ID  |  ?grupo=ID  |  ?all=1
+    const params  = new URLSearchParams(location.search);
+    const paramCat   = params.get('cat');
+    const paramGrupo = params.get('grupo');
+    const paramAll   = params.get('all');
+
     const defaultCat = (() => {
+      // 1. URL param takes priority
+      if (paramAll) return { mode: 'all', groupId: null, catId: null };
+      if (paramGrupo) {
+        const g = GRUPOS.find(g => g.id === paramGrupo);
+        if (g) return { mode: 'group', groupId: g.id, catId: null };
+      }
+      if (paramCat) {
+        for (const g of GRUPOS) {
+          const cat = g.categorias.find(c => c.id === paramCat);
+          if (cat) return { mode: 'cat', groupId: g.id, catId: cat.id };
+        }
+      }
+      // 2. Default: pizzas, else first cat
       for (const g of GRUPOS) {
         for (const cat of g.categorias) {
           if (cat.nombre.toLowerCase().includes('pizza')) return { mode: 'cat', groupId: g.id, catId: cat.id };
@@ -661,11 +717,8 @@ async function loadProviders() {
   }
 }
 
-const RANK = {
-  1:{label:"#1 Posición Oro",stars:"★★★",cls:"pos-1",tag:"pt-1"},
-  2:{label:"#2 Posición Plata",stars:"★★☆",cls:"pos-2",tag:"pt-2"},
-  3:{label:"#3 Posición Bronce",stars:"★☆☆",cls:"pos-3",tag:"pt-3"}
-};
+// Single "Destacado" level — pos 1-3 all equal
+const DEST = { label:"Destacado", badge:"✦ Destacado", cls:"pos-dest", tag:"pt-dest" };
 
 /* ═══════════════════════════════════════════
    PILLS BAR
@@ -793,15 +846,10 @@ function render() {
     if (!filtered.length) return;
     totalVisible += filtered.length;
 
-    const gold   = filtered.find(p => p.pos === 1);
-    const silver = filtered.find(p => p.pos === 2);
-    const bronze = filtered.find(p => p.pos === 3);
-    const secondary = [silver, bronze].filter(Boolean);
-    const paidCount = [gold,silver,bronze].filter(Boolean).length;
-
-    // Basics: shuffle, show 3 random
-    const allBasics = filtered.filter(p => p.pos > 3 || !p.pos);
-    const basics = shuffle([...allBasics]).slice(0, 3);
+    const destacados = filtered.filter(p => p.pos >= 1 && p.pos <= 3);
+    const allBasics  = filtered.filter(p => !p.pos || p.pos > 3);
+    const basics     = shuffle([...allBasics]).slice(0, 3);
+    const maxDest    = 6; // show up to 6 destacados per category
 
     html += `
       <div class="cat-section" id="${cat.id}">
@@ -814,8 +862,14 @@ function render() {
           <div class="cat-badge">${filtered.length} proveedor${filtered.length!==1?'es':''}</div>
         </div>
 
-        ${gold ? `<div class="top-positions">${paidCardHTML(gold)}</div>` : ''}
-        ${secondary.length ? `<div class="top-positions-secondary">${secondary.map(paidCardHTML).join('')}</div>` : ''}
+        ${destacados.length ? `
+          <div style="margin-bottom:6px;display:flex;align-items:center;gap:8px">
+            <span style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--coral)">✦ Destacados</span>
+            <span style="flex:1;height:1px;background:var(--coral-md);opacity:.4"></span>
+          </div>
+          <div class="top-positions">
+            ${destacados.slice(0, maxDest).map(p => paidCardHTML(p)).join('')}
+          </div>` : ''}
 
         ${basics.length ? `
           <div class="basics-section">
@@ -830,13 +884,13 @@ function render() {
               </button>` : ''}
           </div>` : ''}
 
-        ${paidCount < 3 ? `
+        ${destacados.length === 0 ? `
           <div class="upgrade-cta" onclick="window.location='/form.html'" style="margin-top:16px">
             <div class="upgrade-inner">
-              <span class="upgrade-icon">🏆</span>
+              <span class="upgrade-icon">✦</span>
               <div>
-                <div class="upgrade-title">¿Tu negocio aquí?</div>
-                <div class="upgrade-sub">${3-paidCount} posición${3-paidCount!==1?'es':''} disponible${3-paidCount!==1?'s':''}</div>
+                <div class="upgrade-title">¿Tienes un negocio en esta categoría?</div>
+                <div class="upgrade-sub">Sé el primero destacado — gratis durante el lanzamiento</div>
               </div>
               <div class="upgrade-btn">Registrarme →</div>
             </div>
@@ -866,7 +920,7 @@ function render() {
 function showAllBasics(btn, catId) {
   const cat = CAT_INDEX[catId];
   if (!cat) return;
-  const allBasics = cat.proveedores.filter(p => p.pos > 3 || !p.pos);
+  const allBasics = cat.proveedores.filter(p => !p.pos || p.pos > 3);
   const listEl = btn.previousElementSibling;
   listEl.innerHTML = allBasics.map(basicHTML).join('');
   btn.remove();
@@ -881,14 +935,14 @@ function buildGoldGallery(shownCatIds) {
   let golds = [];
   GRUPOS.forEach(g => g.categorias.forEach(cat => {
     if (VIEW.mode === 'all' || !shownCatIds.includes(cat.id)) {
-      const p = cat.proveedores.find(p => p.pos === 1);
+      const p = cat.proveedores.find(p => p.pos >= 1 && p.pos <= 3);
       if (p) golds.push({ ...p, catNombre: cat.nombre, catIco: cat.ico });
     }
   }));
   // If all are shown (mode=cat, same cat), still show from other cats
   if (!golds.length) {
     GRUPOS.forEach(g => g.categorias.forEach(cat => {
-      const p = cat.proveedores.find(p => p.pos === 1);
+      const p = cat.proveedores.find(p => p.pos >= 1 && p.pos <= 3);
       if (p) golds.push({ ...p, catNombre: cat.nombre, catIco: cat.ico });
     }));
   }
@@ -1051,22 +1105,21 @@ function basicHTML(p) {
 ═══════════════════════════════════════════ */
 function openModal(id) {
   const p = PROV_INDEX[id];
-  if (!p || p.pos > 3) return;
-  const r = RANK[p.pos];
+  if (!p || !(p.pos >= 1 && p.pos <= 3)) return;
   const waMsg = encodeURIComponent('Hola ' + p.nombre + '! Los vi en CotizaEventos.cl y quiero cotizar sus servicios para mi evento.');
   document.getElementById('modal-inner').innerHTML = `
-    <div class="modal-band ${r.cls}"></div>
+    <div class="modal-band dest"></div>
     <div class="modal-inner">
       ${p.cover_url ? `<div style="width:100%;height:180px;overflow:hidden;border-radius:12px;margin-bottom:16px"><img src="${p.cover_url}" style="width:100%;height:100%;object-fit:cover" /></div>` : ''}
       <div class="modal-top-row">
-        <div class="modal-logo ${r.cls}">${p.logo_url ? `<img src="${p.logo_url}" style="width:100%;height:100%;object-fit:cover;border-radius:14px" />` : (p.logo||'🏢')}</div>
+        <div class="modal-logo" style="border:2.5px solid var(--coral)">${p.logo_url ? `<img src="${p.logo_url}" style="width:100%;height:100%;object-fit:cover;border-radius:14px" />` : (p.logo||'🏢')}</div>
         <div class="modal-name-block">
-          <div class="modal-position-tag ${r.tag}">${r.stars} ${r.label}</div>
+          <div class="modal-position-tag pt-dest">✦ Destacado</div>
           <h3 class="modal-name">${p.nombre}</h3>
           <div class="modal-tagline">${p.tagline||''}</div>
         </div>
       </div>
-      <div class="modal-diff ${r.cls}">${p.diff||''}</div>
+      <div class="modal-diff" style="background:var(--coral-lt);color:var(--coral);border-color:var(--coral-md)">${p.diff||''}</div>
       <p class="modal-desc">${p.desc||''}</p>
       <div class="modal-info-grid">
         <div class="mig-box"><div class="mig-label">Precio mínimo</div><div class="mig-val price">${p.minimo||'—'}</div></div>
@@ -1081,11 +1134,19 @@ function openModal(id) {
         <a class="btn btn-wa" href="https://wa.me/${p.wa}?text=${waMsg}" target="_blank">💬 Contactar por WhatsApp</a>
         <a class="btn btn-outline" href="form.html">📋 Cotización completa</a>
       </div>
+      ${p.google_place_id || p.google_maps_url ? `
+        <div class="reviews-section" id="rev-section-${p.id}">
+          <div class="reviews-loading">Cargando reseñas de Google...</div>
+        </div>` : ''}
     </div>`;
   document.getElementById('modal-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
   document.body.style.position = 'fixed';
   document.body.style.width = '100%';
+  // Load reviews after modal renders
+  if (p.google_place_id || p.google_maps_url) {
+    setTimeout(() => loadGoogleReviews(p), 80);
+  }
 }
 
 function openModalBasic(id) {
@@ -1119,6 +1180,83 @@ function openModalBasic(id) {
   document.body.style.overflow = 'hidden';
   document.body.style.position = 'fixed';
   document.body.style.width = '100%';
+}
+
+/* ═══════════════════════════════════════════
+   GOOGLE REVIEWS
+   Requiere: columna google_place_id (o google_maps_url) en tabla proveedores,
+   y la variable de entorno GOOGLE_PLACES_KEY en Cloudflare Pages.
+   Si no hay API key configurada, muestra botón a Google Maps.
+═══════════════════════════════════════════ */
+async function loadGoogleReviews(p) {
+  const section = document.getElementById('rev-section-' + p.id);
+  if (!section) return;
+
+  const placeId = p.google_place_id;
+  const mapsUrl = p.google_maps_url || (placeId ? `https://search.google.com/local/reviews?placeid=${placeId}` : null);
+
+  // If no place ID, just show a link to leave a review
+  if (!placeId) {
+    section.innerHTML = renderReviewsNoId(p, mapsUrl);
+    return;
+  }
+
+  try {
+    // Call our own edge function that wraps the Places API (avoids exposing API key)
+    const res = await fetch('/api/get-reviews?place_id=' + encodeURIComponent(placeId));
+    if (!res.ok) throw new Error('API ' + res.status);
+    const data = await res.json();
+    section.innerHTML = renderReviewsData(data, mapsUrl);
+  } catch (e) {
+    // Fallback: show link to Google Maps
+    section.innerHTML = renderReviewsNoId(p, mapsUrl);
+  }
+}
+
+function renderReviewsData(data, mapsUrl) {
+  const reviews = (data.reviews || []).slice(0, 4);
+  const avg = data.rating || 0;
+  const total = data.user_ratings_total || 0;
+  const stars = r => '★'.repeat(Math.round(r)) + '☆'.repeat(5 - Math.round(r));
+  return `
+    <div class="reviews-header">
+      <span class="reviews-title">⭐ Reseñas de clientes</span>
+      <span class="reviews-source">via Google</span>
+    </div>
+    ${avg ? `<div class="reviews-stars-summary">
+      <div class="rev-big-score">${avg.toFixed(1)}</div>
+      <div>
+        <div class="rev-stars-row">${stars(avg)}</div>
+        <div class="rev-total">${total} reseña${total !== 1 ? 's' : ''} en Google</div>
+      </div>
+    </div>` : ''}
+    ${reviews.map(r => `
+      <div class="review-card">
+        <div class="review-top">
+          <div class="review-avatar">${(r.author_name||'?')[0].toUpperCase()}</div>
+          <div>
+            <div class="review-author">${r.author_name}</div>
+            <div class="review-date">${r.relative_time_description||''}</div>
+          </div>
+          <div class="review-stars">${stars(r.rating)}</div>
+        </div>
+        <div class="review-text">${r.text || ''}</div>
+      </div>
+    `).join('')}
+    ${mapsUrl ? `<div class="reviews-cta"><a href="${mapsUrl}" target="_blank">Ver todas las reseñas en Google →</a></div>` : ''}`;
+}
+
+function renderReviewsNoId(p, mapsUrl) {
+  return `
+    <div class="reviews-header">
+      <span class="reviews-title">⭐ Reseñas de clientes</span>
+    </div>
+    <div style="text-align:center;padding:14px 0;font-size:.8rem;color:var(--muted)">
+      ${mapsUrl
+        ? `<p style="margin-bottom:10px">¿Has contratado a ${p.nombre}?</p>
+           <a href="${mapsUrl}" target="_blank" style="color:var(--coral);font-weight:600;font-size:.8rem">Dejar reseña en Google Maps →</a>`
+        : `<p>Este proveedor aún no tiene reseñas vinculadas.</p>`}
+    </div>`;
 }
 
 function closeModal() {
