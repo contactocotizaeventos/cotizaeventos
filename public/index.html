@@ -241,47 +241,54 @@
     .section-header p { font-size: .9rem; color: var(--muted); }
 
     /* Category groups */
-    .cat-group { margin-bottom: 36px; }
-    .cat-group-label {
-      font-size: .68rem; font-weight: 700; letter-spacing: .12em;
-      text-transform: uppercase; color: var(--muted);
-      padding: 0 4px; margin-bottom: 12px;
-      display: flex; align-items: center; gap: 10px;
+    /* ── CHIPS DE CATEGORÍAS ── */
+    /* Fila de chips de grupos (categorías padre) */
+    .cat-chips-row {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      margin-bottom: 0;
     }
-    .cat-group-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .cat-chip-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 7px 14px;
+      background: var(--white); border: 1.5px solid var(--border2);
+      border-radius: 99px; cursor: pointer;
+      font-family: 'Outfit', sans-serif; font-size: .8rem; font-weight: 600;
+      color: var(--ink2); transition: .18s var(--ease);
+      white-space: nowrap;
+    }
+    .cat-chip-btn:hover { border-color: var(--coral-md); color: var(--coral); background: var(--coral-lt); }
+    .cat-chip-btn.open {
+      background: var(--coral); border-color: var(--coral);
+      color: #fff;
+    }
+    .cat-chip-btn .chip-arrow {
+      font-size: .55rem; transition: transform .22s var(--ease); opacity: .6;
+    }
+    .cat-chip-btn.open .chip-arrow { transform: rotate(180deg); opacity: 1; }
 
-    .cat-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 10px;
+    /* Panel de etiquetas desplegable */
+    .cat-chip-panel {
+      display: grid; grid-template-rows: 0fr;
+      transition: grid-template-rows .28s var(--ease);
     }
-    .cat-tile {
-      background: var(--white);
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      padding: 16px 12px;
-      text-align: center;
-      transition: .25s var(--ease);
-      cursor: pointer;
-      display: flex; flex-direction: column; align-items: center;
-      text-decoration: none; color: var(--ink);
-      position: relative; overflow: hidden;
-    }
-    .cat-tile:hover {
-      border-color: var(--coral);
+    .cat-chip-panel.open { grid-template-rows: 1fr; }
+    .cat-chip-panel-inner {
+      overflow: hidden;
+      border: 1.5px solid var(--coral-md);
+      border-top: none; border-radius: 0 0 12px 12px;
       background: var(--coral-lt);
-      transform: translateY(-3px);
-      box-shadow: 0 8px 24px rgba(232,84,42,.12);
     }
-    .cat-tile .ico { font-size: 1.8rem; margin-bottom: 7px; display: block; }
-    .cat-tile h4 { font-family: 'Outfit', sans-serif; font-size: .82rem; font-weight: 600; line-height: 1.3; color: var(--ink); }
-    .cat-tile .count { font-size: .68rem; color: var(--muted); margin-top: 3px; }
-    .cat-tile-parent {
-      border-color: var(--border2);
-      background: var(--bg);
+    /* Etiquetas: chips chicos en fila flexible */
+    .cat-tag-row { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 12px; }
+    .cat-tag-chip {
+      display: inline-flex; align-items: center;
+      padding: 5px 12px;
+      background: var(--white); border: 1.5px solid var(--border);
+      border-radius: 99px; font-size: .74rem; font-weight: 500;
+      color: var(--ink2); text-decoration: none; cursor: pointer;
+      transition: .15s var(--ease); white-space: nowrap;
     }
-    .cat-tile-parent .ico { font-size: 2rem; }
-    .cat-tile-parent h4 { font-size: .88rem; font-weight: 700; }
+    .cat-tag-chip:hover { border-color: var(--coral); color: var(--coral); background: #fff; }
 
     /* view all */
     .view-all-wrap {
@@ -550,7 +557,6 @@
       .hero-title { font-size: clamp(2rem, 7vw, 3rem); }
       .hero-ctas { justify-content: center; }
       .steps { grid-template-columns: 1fr; }
-      .cat-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
       .form-panel { padding: 28px 24px 24px; }
       .rev-grid { grid-template-columns: 1fr !important; }
       .form-nav { padding: 16px 24px; }
@@ -560,7 +566,6 @@
     }
     @media (max-width: 480px) {
       .hero-title { font-size: 2rem; }
-      .cat-grid { grid-template-columns: repeat(3, 1fr); }
     }
 
   /* ── FEATURED GOLD CARDS ── */
@@ -635,26 +640,6 @@
   }
   .img-strip-tile.has-img .img-strip-ph { display: none; }
   @media(max-width:600px) { #img-strip { display: none; } }
-  /* compact accordion */
-/* ── PATCH: botones acordeón más compactos ── */
-.acc-btn {
-  padding: 9px 16px !important;
-}
-.acc-btn .acc-lbl .acc-name {
-  font-size: .85rem !important;
-}
-.acc-btn .acc-lbl .acc-sub {
-  font-size: .67rem !important;
-}
-.cat-group-btn {
-  padding: 9px 16px !important;
-}
-.cat-group-btn .cgb-name {
-  font-size: .88rem !important;
-}
-.cat-group-btn .cgb-sub {
-  font-size: .67rem !important;
-}
   </style>
 </head>
 <body>
@@ -753,17 +738,10 @@
 
     <!-- CATEGORÍAS — generado dinámicamente desde Supabase -->
     <div id="cat-groups-container">
-      <div class="cat-group reveal" id="cat-skeleton">
-        <div class="cat-group-label">🍽️ Catering</div>
-        <div class="cat-grid" style="opacity:.35;pointer-events:none">
-          <div style="min-height:90px;background:var(--bg2);border-radius:16px;border:1px solid var(--border)"></div>
-          <div style="min-height:90px;background:var(--bg2);border-radius:16px;border:1px solid var(--border)"></div>
-          <div style="min-height:90px;background:var(--bg2);border-radius:16px;border:1px solid var(--border)"></div>
-          <div style="min-height:90px;background:var(--bg2);border-radius:16px;border:1px solid var(--border)"></div>
-          <div style="min-height:90px;background:var(--bg2);border-radius:16px;border:1px solid var(--border)"></div>
-          <div style="min-height:90px;background:var(--bg2);border-radius:16px;border:1px solid var(--border)"></div>
-          <div style="min-height:90px;background:var(--bg2);border-radius:16px;border:1px solid var(--border)"></div>
-        </div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;opacity:.4;pointer-events:none" id="cat-skeleton">
+        <span style="height:34px;width:90px;background:var(--bg2);border-radius:99px;display:inline-block"></span>
+        <span style="height:34px;width:110px;background:var(--bg2);border-radius:99px;display:inline-block"></span>
+        <span style="height:34px;width:80px;background:var(--bg2);border-radius:99px;display:inline-block"></span>
       </div>
     </div>
 
@@ -936,20 +914,41 @@ async function loadCategories() {
       completos:'🌭', torta:'🎂', barra:'🍹',
     };
 
-    container.innerHTML = grupos.map(g => `
-      <div class="cat-group reveal visible">
-        <div class="cat-group-label">${g.ico} ${g.nombre}</div>
-        <div class="cat-grid">
-          ${g.categorias.map((cat, i) => `
-            <a class="cat-tile${i===0?' cat-tile-parent':''}" href="proveedores.html#${cat.id}">
-              <span class="ico">${cat.ico || CAT_ICONS[cat.id] || '🍽️'}</span>
-              <h4>${cat.nombre}</h4>
-              <span class="count">${cat.proveedores.length} proveedor${cat.proveedores.length!==1?'es':''}</span>
-            </a>
-          `).join('')}
-        </div>
-      </div>
-    `).join('');
+    // Chips de grupos en fila + panel de etiquetas
+    const chipsRow  = document.createElement('div');
+    chipsRow.className = 'cat-chips-row';
+    const panelWrap = document.createElement('div');
+    panelWrap.style.cssText = 'margin-top:-1px'; // pega al chip abierto
+
+    grupos.forEach((g, gi) => {
+      // Panel de etiquetas (oculto por defecto)
+      const panel = document.createElement('div');
+      panel.className = 'cat-chip-panel';
+      panel.id = 'cgp-' + g.id;
+      panel.innerHTML = `
+        <div class="cat-chip-panel-inner">
+          <div class="cat-tag-row">
+            ${g.categorias.map(cat => `
+              <a class="cat-tag-chip" href="proveedores.html?cat=${cat.id}&scroll=1">
+                ${cat.nombre}
+                <span style="margin-left:4px;font-size:.62rem;color:var(--muted)">${cat.proveedores.length}</span>
+              </a>
+            `).join('')}
+          </div>
+        </div>`;
+      panelWrap.appendChild(panel);
+
+      // Chip del grupo
+      const chip = document.createElement('div');
+      chip.className = 'cat-chip-btn';
+      chip.id = 'cgb-' + g.id;
+      chip.innerHTML = `${g.nombre} <span class="chip-arrow">▼</span>`;
+      chip.addEventListener('click', () => toggleCatGroup(g.id));
+      chipsRow.appendChild(chip);
+    });
+
+    container.appendChild(chipsRow);
+    container.appendChild(panelWrap);
 
     // Actualizar SERVICIOS para el formulario de cotización
     SERVICIOS.length = 0;
@@ -1240,6 +1239,25 @@ function carGoTo(idx) {
 function carMove(dir) { carGoTo(_carIdx + dir); }
 
 /* ── Init ── */
+/* ── CHIPS de categorías (index) ── */
+let _openGrp = null;
+function toggleCatGroup(id) {
+  const chip  = document.getElementById('cgb-' + id);
+  const panel = document.getElementById('cgp-' + id);
+  if (!chip || !panel) return;
+  const isOpen = chip.classList.contains('open');
+
+  // Cerrar el anterior
+  if (_openGrp && _openGrp !== id) {
+    document.getElementById('cgb-' + _openGrp)?.classList.remove('open');
+    document.getElementById('cgp-' + _openGrp)?.classList.remove('open');
+  }
+
+  chip.classList.toggle('open', !isOpen);
+  panel.classList.toggle('open', !isOpen);
+  _openGrp = isOpen ? null : id;
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   loadCategories();
   loadCookies();
