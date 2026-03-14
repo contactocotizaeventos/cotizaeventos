@@ -584,6 +584,7 @@
   .car-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:99px;font-size:.7rem;font-weight:700;margin-bottom:10px;width:fit-content}
   .car-gold{background:#FFF8E1;color:#B8860B;border:1px solid #F9D849}
   .car-silver{background:#F3F4F6;color:#555;border:1px solid #C0C0C0}
+  .car-dest{background:var(--coral-lt);color:var(--coral);border:1px solid var(--coral-md);font-weight:700}
   .car-name{font-size:1.15rem;font-weight:700;color:var(--ink);margin-bottom:4px}
   .car-tagline{font-size:.83rem;color:var(--muted);line-height:1.5;margin-bottom:10px}
   .car-price{font-size:.85rem;font-weight:600;color:var(--coral)}
@@ -947,7 +948,7 @@ async function loadCategories() {
     const carProviders = [];
     grupos.forEach(g => g.categorias.forEach(cat => {
       cat.proveedores.forEach(p => {
-        if (p.pos === 1 || p.pos === 2) carProviders.push({ ...p, catNombre: cat.nombre, catIco: cat.ico });
+        if (p.pos === 1 || p.pos === 2 || p.pos === 5) carProviders.push({ ...p, catNombre: cat.nombre, catIco: cat.ico });
       });
     }));
 
@@ -964,8 +965,8 @@ async function loadCategories() {
           const cover = prov.cover_url
             ? `<img class="car-cover" src="${prov.cover_url}" alt="${prov.nombre}" loading="lazy" />`
             : `<div class="car-cover-ph">${prov.logo || '🎉'}</div>`;
-          const badgeCls = prov.pos === 1 ? 'car-gold' : 'car-silver';
-          const badgeLbl = prov.pos === 1 ? '🥇 Posición Oro' : '🥈 Posición Plata';
+          const badgeCls = prov.pos === 5 ? 'car-dest' : prov.pos === 1 ? 'car-gold' : 'car-silver';
+          const badgeLbl = prov.pos === 5 ? '✦ Destacado' : prov.pos === 1 ? '🥇 Posición Oro' : '🥈 Posición Plata';
           return `<div class="car-slide${i===0?' active':''}" data-idx="${i}">
             ${cover}
             <div class="car-body">

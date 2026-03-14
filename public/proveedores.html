@@ -304,6 +304,32 @@
     }
     .pos-card.pos-2{border:1.5px solid #C0C0C0}
     .pos-card.pos-3{border:1.5px solid #CD7F32}
+    /* Destacado (pos 5) — coral brand, aparece en galería recomendados */
+    .pos-card.pos-dest{
+      border:2.5px solid var(--coral);
+      box-shadow:0 6px 32px rgba(232,84,42,.14), 0 2px 0 0 var(--coral) inset;
+      background:linear-gradient(160deg,#FFF9F7,#fff);
+    }
+    .pos-card.pos-dest:hover{box-shadow:0 16px 48px rgba(232,84,42,.20),0 2px 0 0 var(--coral) inset}
+    .pos-dest .pos-ribbon{background:linear-gradient(90deg,#C94520,var(--coral),#FF7A54);box-shadow:0 2px 12px rgba(232,84,42,.4)}
+    .pos-dest .pos-logo-circle{border:2.5px solid var(--coral)}
+    .pos-dest .pb-min{color:var(--coral)}
+    .pos-dest .pos-diff{background:var(--coral-lt);color:var(--coral);border:1px solid var(--coral-md)}
+    .modal-band.pos-dest{background:linear-gradient(90deg,#C94520,var(--coral),#FF7A54)}
+    .pt-dest{background:var(--coral-lt);color:var(--coral);border:1px solid var(--coral-md)}
+    /* Destacado (pos 5) — coral brand, aparece en galería recomendados */
+    .pos-card.pos-dest{
+      border:2.5px solid var(--coral);
+      box-shadow:0 6px 32px rgba(232,84,42,.14), 0 2px 0 0 var(--coral) inset;
+      background:linear-gradient(160deg,#FFF9F7,#fff);
+    }
+    .pos-card.pos-dest:hover{box-shadow:0 16px 48px rgba(232,84,42,.20), 0 2px 0 0 var(--coral) inset}
+    .pos-dest .pos-ribbon{background:linear-gradient(90deg,#C94520,var(--coral),#FF7A54);box-shadow:0 2px 12px rgba(232,84,42,.4)}
+    .pos-dest .pos-logo-circle{border:2.5px solid var(--coral)}
+    .pos-dest .pb-min{color:var(--coral)}
+    .pos-dest .pos-diff{background:var(--coral-lt);color:var(--coral);border:1px solid var(--coral-md)}
+    .modal-band.pos-dest{background:linear-gradient(90deg,#C94520,var(--coral),#FF7A54)}
+    .pt-dest{background:var(--coral-lt);color:var(--coral);border:1px solid var(--coral-md)}
 
     /* COVER PHOTO */
     .pos-cover{position:relative;width:100%;height:170px;flex-shrink:0;overflow:hidden;border-radius:18px 18px 0 0}
@@ -712,10 +738,18 @@ async function loadProviders() {
 }
 
 const RANK = {
-  1:{label:"#1 Posición Oro",stars:"★★★",cls:"pos-1",tag:"pt-1"},
-  2:{label:"#2 Posición Plata",stars:"★★☆",cls:"pos-2",tag:"pt-2"},
-  3:{label:"#3 Posición Bronce",stars:"★☆☆",cls:"pos-3",tag:"pt-3"}
+  1:{label:"#1 Posición Oro",  stars:"★★★", cls:"pos-1",    tag:"pt-1"},
+  2:{label:"#2 Posición Plata",stars:"★★☆", cls:"pos-2",    tag:"pt-2"},
+  3:{label:"#3 Posición Bronce",stars:"★☆☆",cls:"pos-3",    tag:"pt-3"},
+  5:{label:"✦ Destacado",      stars:"✦",   cls:"pos-dest",  tag:"pt-dest"},
 };
+// pos 5 = Destacado (pago separado, aparece en carrusel + galería)
+// pos 1-3 = Oro/Plata/Bronce (posición en directorio)
+// básico = sin pos o pos > 5 (excepto 5)
+const IS_PAID = p => p.pos >= 1 && p.pos <= 3;
+const IS_DEST = p => p.pos === 5;
+const IS_BASIC = p => !p.pos || (p.pos > 3 && p.pos !== 5);
+const IS_RECOMMENDED = p => p.pos === 1 || p.pos === 2 || p.pos === 5;
 
 /* ═══════════════════════════════════════════
    PILLS BAR
@@ -843,14 +877,15 @@ function render() {
     if (!filtered.length) return;
     totalVisible += filtered.length;
 
-    const gold   = filtered.find(p => p.pos === 1);
-    const silver = filtered.find(p => p.pos === 2);
-    const bronze = filtered.find(p => p.pos === 3);
+    const gold      = filtered.find(p => p.pos === 1);
+    const silver    = filtered.find(p => p.pos === 2);
+    const bronze    = filtered.find(p => p.pos === 3);
+    const destList  = filtered.filter(IS_DEST);   // pos 5: Destacados en esta cat
     const secondary = [silver, bronze].filter(Boolean);
     const paidCount = [gold,silver,bronze].filter(Boolean).length;
 
     // Basics: shuffle, show 3 random
-    const allBasics = filtered.filter(p => p.pos > 3 || !p.pos);
+    const allBasics = filtered.filter(IS_BASIC);
     const basics = shuffle([...allBasics]).slice(0, 3);
 
     html += `
@@ -864,6 +899,20 @@ function render() {
           <div class="cat-badge">${filtered.length} proveedor${filtered.length!==1?'es':''}</div>
         </div>
 
+        ${destList.length ? `
+          <div style="margin-bottom:6px;display:flex;align-items:center;gap:8px">
+            <span style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--coral)">✦ Destacados</span>
+            <span style="flex:1;height:1px;background:var(--coral-md);opacity:.5"></span>
+          </div>
+          <div class="top-positions" style="margin-bottom:20px">
+            ${destList.map(p => paidCardHTML(p)).join('')}
+          </div>` : ''}
+
+        ${gold || secondary.length ? `
+          <div style="margin-bottom:6px;display:flex;align-items:center;gap:8px">
+            <span style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)">🏅 Posiciones en el directorio</span>
+            <span style="flex:1;height:1px;background:var(--border)"></span>
+          </div>` : ''}
         ${gold ? `<div class="top-positions">${paidCardHTML(gold)}</div>` : ''}
         ${secondary.length ? `<div class="top-positions-secondary">${secondary.map(paidCardHTML).join('')}</div>` : ''}
 
@@ -916,7 +965,7 @@ function render() {
 function showAllBasics(btn, catId) {
   const cat = CAT_INDEX[catId];
   if (!cat) return;
-  const allBasics = cat.proveedores.filter(p => p.pos > 3 || !p.pos);
+  const allBasics = cat.proveedores.filter(IS_BASIC);
   const listEl = btn.previousElementSibling;
   listEl.innerHTML = allBasics.map(basicHTML).join('');
   btn.remove();
@@ -931,14 +980,14 @@ function buildGoldGallery(shownCatIds) {
   let golds = [];
   GRUPOS.forEach(g => g.categorias.forEach(cat => {
     if (VIEW.mode === 'all' || !shownCatIds.includes(cat.id)) {
-      const p = cat.proveedores.find(p => p.pos === 1);
+      const p = cat.proveedores.find(IS_RECOMMENDED);
       if (p) golds.push({ ...p, catNombre: cat.nombre, catIco: cat.ico });
     }
   }));
   // If all are shown (mode=cat, same cat), still show from other cats
   if (!golds.length) {
     GRUPOS.forEach(g => g.categorias.forEach(cat => {
-      const p = cat.proveedores.find(p => p.pos === 1);
+      const p = cat.proveedores.find(IS_RECOMMENDED);
       if (p) golds.push({ ...p, catNombre: cat.nombre, catIco: cat.ico });
     }));
   }
@@ -1101,7 +1150,7 @@ function basicHTML(p) {
 ═══════════════════════════════════════════ */
 function openModal(id) {
   const p = PROV_INDEX[id];
-  if (!p || p.pos > 3) return;
+  if (!p || IS_BASIC(p)) return;
   const r = RANK[p.pos];
   const waMsg = encodeURIComponent('Hola ' + p.nombre + '! Los vi en CotizaEventos.cl y quiero cotizar sus servicios para mi evento.');
   document.getElementById('modal-inner').innerHTML = `
