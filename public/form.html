@@ -944,7 +944,7 @@ function renderFormCategories(grupos) {
       <p style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:8px">${g.nombre}</p>
       <div class="check-grid">
         ${g.categorias.map(cat => `
-          <label class="check-pill" onclick="togglePill(this)">
+          <label class="check-pill" onclick="togglePill(this, event)">
             <input type="radio" name="categoria" value="${cat.nombre}" />
             <div class="pill-box">✓</div>
             <span class="pill-label">${cat.nombre}</span>
@@ -1005,21 +1005,21 @@ function updateStepper(active) {
 /* ═══════════════════════════════════════
    TOGGLE CHECKBOXES
 ═══════════════════════════════════════ */
-function togglePill(label) {
-  const inp = label.querySelector('input');
-  const wasChecked = inp.checked;
+function togglePill(label, event) {
+  // Evitar doble disparo: si el evento viene del input interno, ignorarlo
+  if (event && event.target.tagName === 'INPUT') return;
 
-  // Desmarcar todas primero (comportamiento radio)
+  // Desmarcar todas
   document.querySelectorAll('.check-pill').forEach(p => {
     p.classList.remove('checked');
-    p.querySelector('input').checked = false;
+    const inp = p.querySelector('input');
+    if (inp) inp.checked = false;
   });
 
-  // Si no estaba marcada, marcarla
-  if (!wasChecked) {
-    inp.checked = true;
-    label.classList.add('checked');
-  }
+  // Marcar esta
+  const inp = label.querySelector('input');
+  if (inp) inp.checked = true;
+  label.classList.add('checked');
 }
 
 /* ═══════════════════════════════════════
