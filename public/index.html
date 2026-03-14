@@ -170,12 +170,14 @@
     }
     .trust-pill {
       display: flex; align-items: center; gap: 7px;
-      font-size: .76rem; color: rgba(255,255,255,.65);
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.14);
-      padding: 6px 13px; border-radius: 99px;
+      font-size: .76rem; color: rgba(255,255,255,.75);
+      background: rgba(255,255,255,.1);
+      border: 1px solid rgba(255,255,255,.18);
+      padding: 7px 15px; border-radius: 99px;
       backdrop-filter: blur(4px);
+      transition: background .2s;
     }
+    .trust-pill:hover { background: rgba(255,255,255,.15); }
     .trust-pill span { font-size: .88rem; }
     /* Scroll hint — OUTSIDE hero-inner, pinned to bottom */
     .hero-scroll-hint {
@@ -191,11 +193,14 @@
     }
     @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(5px)} }
     @media (max-width: 600px) {
-      .hero-inner { padding: 80px 22px 16px; }
-      .hero-title { font-size: clamp(2rem, 9vw, 2.8rem); }
-      .hero-eyebrow-wrap { margin-bottom: 20px; }
-      .hero-ctas { margin-top: 28px; gap: 8px; }
-      .hero-trust { margin-top: 28px; gap: 8px; }
+      .hero-inner { padding: 72px 20px 20px; gap: 0; }
+      .hero-title { font-size: clamp(2rem, 9.5vw, 2.8rem); margin-bottom: 14px; }
+      .hero-eyebrow-wrap { margin-bottom: 16px; }
+      .hero-sub { font-size: .92rem; margin-bottom: 6px; }
+      .hero-sub2 { font-size: .8rem; }
+      .hero-ctas { margin-top: 24px; gap: 10px; flex-direction: column; align-items: stretch; }
+      .hero-ctas .btn { justify-content: center; padding: 14px 20px; font-size: .9rem; }
+      .hero-trust { margin-top: 24px; gap: 7px; }
       .trust-pill { font-size: .71rem; padding: 5px 11px; }
     }
 
@@ -204,95 +209,121 @@
 
     /* ── HOW IT WORKS ── */
     #como {
-      padding: 72px 24px;
+      padding: 80px 24px;
       background: var(--bg);
       border-top: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
     }
     .steps {
       display: grid; grid-template-columns: repeat(3,1fr);
-      gap: 20px; margin-top: 40px;
+      gap: 0; margin-top: 48px;
+      position: relative;
+    }
+    .steps::before {
+      content: '';
+      position: absolute; top: 36px; left: calc(16.66% + 12px); right: calc(16.66% + 12px);
+      height: 1.5px;
+      background: linear-gradient(90deg, var(--coral-md), var(--coral), var(--coral-md));
+      z-index: 0;
     }
     .step {
       background: var(--white); border: 1px solid var(--border);
-      border-radius: 16px; padding: 28px 22px; text-align: center;
+      border-radius: 20px; padding: 32px 24px 28px; text-align: center;
       transition: .3s var(--ease); position: relative; overflow: hidden;
+      margin: 0 8px;
+      z-index: 1;
     }
-    .step:hover { border-color: var(--coral-md); transform: translateY(-4px); box-shadow: var(--shadow-md); }
-    .step::before {
-      content: attr(data-n);
-      position: absolute; top: -8px; right: 12px;
-      font-family: 'Fraunces', serif; font-size: 4rem; font-weight: 900;
-      color: rgba(232,84,42,.06); line-height: 1;
+    .step:hover { border-color: var(--coral-md); transform: translateY(-6px); box-shadow: var(--shadow-md); }
+    .step-num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 48px; height: 48px; border-radius: 50%;
+      background: var(--coral); color: #fff;
+      font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: 900;
+      margin: 0 auto 18px; position: relative; z-index: 1;
+      box-shadow: 0 4px 16px rgba(232,84,42,.3);
     }
-    .step-ico { font-size: 2rem; margin-bottom: 14px; display: block; }
-    .step h3 { font-size: 1rem; margin-bottom: 8px; font-family: 'Outfit', sans-serif; font-weight: 600; color: var(--ink); }
-    .step p  { font-size: .83rem; color: var(--muted); line-height: 1.65; }
+    .step-ico { font-size: 1.6rem; margin-bottom: 10px; display: block; }
+    .step h3 { font-size: 1rem; margin-bottom: 8px; font-family: 'Outfit', sans-serif; font-weight: 700; color: var(--ink); }
+    .step p  { font-size: .83rem; color: var(--muted); line-height: 1.7; }
+    @media (max-width: 860px) {
+      .steps { grid-template-columns: 1fr; gap: 12px; }
+      .steps::before { display: none; }
+      .step { margin: 0; padding: 24px 20px; display: flex; align-items: flex-start; gap: 16px; text-align: left; }
+      .step-num { flex-shrink: 0; margin: 0; width: 40px; height: 40px; font-size: 1.1rem; }
+      .step-ico { display: none; }
+      .step h3 { margin-bottom: 5px; }
+    }
 
     /* ── CATEGORÍAS ── */
     #categorias {
-      padding: 72px 24px;
+      padding: 80px 24px;
       background: var(--white);
     }
     .section-header {
-      text-align: center; max-width: 520px; margin: 0 auto 40px;
+      text-align: center; max-width: 520px; margin: 0 auto 48px;
     }
     .section-header h2 { font-size: clamp(1.6rem, 3vw, 2.4rem); margin-bottom: 10px; color: var(--ink); }
     .section-header p { font-size: .9rem; color: var(--muted); }
 
-    /* Category groups */
-    /* ── CHIPS DE CATEGORÍAS ── */
-    /* Fila de chips de grupos (categorías padre) */
+    /* Category groups — tarjetas visuales */
     .cat-chips-row {
-      display: flex; flex-wrap: wrap; gap: 8px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
       margin-bottom: 0;
     }
     .cat-chip-btn {
-      display: inline-flex; align-items: center; gap: 5px;
-      padding: 7px 14px;
-      background: var(--white); border: 1.5px solid var(--border2);
-      border-radius: 99px; cursor: pointer;
-      font-family: 'Outfit', sans-serif; font-size: .8rem; font-weight: 600;
-      color: var(--ink2); transition: .18s var(--ease);
-      white-space: nowrap;
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      padding: 24px 16px 20px;
+      background: var(--white); border: 1.5px solid var(--border);
+      border-radius: 18px; cursor: pointer;
+      font-family: 'Outfit', sans-serif; font-size: .85rem; font-weight: 600;
+      color: var(--ink2); transition: .22s var(--ease);
+      text-align: center; line-height: 1.3;
+      white-space: normal;
+      box-shadow: 0 2px 8px rgba(0,0,0,.04);
     }
-    .cat-chip-btn:hover { border-color: var(--coral-md); color: var(--coral); background: var(--coral-lt); }
+    .cat-chip-btn:hover { border-color: var(--coral); color: var(--coral); background: var(--coral-lt); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(232,84,42,.1); }
     .cat-chip-btn.open {
       background: var(--coral); border-color: var(--coral);
-      color: #fff;
+      color: #fff; transform: translateY(-3px); box-shadow: 0 8px 24px rgba(232,84,42,.22);
     }
-    .cat-chip-btn .chip-arrow {
-      font-size: .55rem; transition: transform .22s var(--ease); opacity: .6;
-    }
-    .cat-chip-btn.open .chip-arrow { transform: rotate(180deg); opacity: 1; }
+    .cat-chip-btn .chip-ico { font-size: 1.8rem; line-height: 1; }
+    .cat-chip-btn .chip-arrow { display: none; }
 
     /* Panel de etiquetas desplegable */
     .cat-chip-panel {
       display: grid; grid-template-rows: 0fr;
-      transition: grid-template-rows .28s var(--ease);
+      transition: grid-template-rows .3s var(--ease);
+      grid-column: 1 / -1;
     }
     .cat-chip-panel.open { grid-template-rows: 1fr; }
     .cat-chip-panel-inner {
       overflow: hidden;
-      border: 1.5px solid var(--coral-md);
-      border-top: none; border-radius: 0 0 12px 12px;
       background: var(--coral-lt);
+      border: 1.5px solid var(--coral-md);
+      border-radius: 16px;
+      margin-top: 4px;
     }
-    /* Etiquetas: chips chicos en fila flexible */
-    .cat-tag-row { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 12px; }
+    .cat-tag-row { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 16px; }
     .cat-tag-chip {
-      display: inline-flex; align-items: center;
-      padding: 5px 12px;
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 7px 14px;
       background: var(--white); border: 1.5px solid var(--border);
-      border-radius: 99px; font-size: .74rem; font-weight: 500;
+      border-radius: 99px; font-size: .8rem; font-weight: 500;
       color: var(--ink2); text-decoration: none; cursor: pointer;
       transition: .15s var(--ease); white-space: nowrap;
     }
-    .cat-tag-chip:hover { border-color: var(--coral); color: var(--coral); background: #fff; }
+    .cat-tag-chip:hover { border-color: var(--coral); color: var(--coral); background: #fff; box-shadow: 0 2px 8px rgba(232,84,42,.1); }
+    @media (max-width: 600px) {
+      .cat-chips-row { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+      .cat-chip-btn { padding: 16px 10px 14px; font-size: .76rem; gap: 7px; }
+      .cat-chip-btn .chip-ico { font-size: 1.5rem; }
+    }
 
     /* view all */
     .view-all-wrap {
-      text-align: center; margin-top: 28px;
+      text-align: center; margin-top: 32px;
     }
 
     /* ── FORM SECTION ── */
@@ -536,11 +567,28 @@
     /* ── FOOTER ── */
     footer {
       background: var(--ink); border-top: 1px solid rgba(255,255,255,.06);
-      padding: 36px 24px; text-align: center;
-      font-size: .78rem; color: rgba(255,255,255,.45);
+      padding: 48px 24px 28px;
     }
-    footer .logo { font-size: 1rem; margin-bottom: 8px; display: block; color: rgba(255,255,255,.7); }
-    footer .logo span { color: var(--coral); }
+    .footer-inner {
+      max-width: 1080px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr auto;
+      gap: 32px; align-items: start;
+      padding-bottom: 28px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      margin-bottom: 24px;
+    }
+    .footer-brand .logo { font-size: 1.15rem; margin-bottom: 10px; display: block; color: rgba(255,255,255,.8); }
+    .footer-brand p { font-size: .8rem; color: rgba(255,255,255,.35); line-height: 1.65; max-width: 260px; }
+    .footer-links { display: flex; gap: 24px; flex-wrap: wrap; justify-content: flex-end; }
+    .footer-links a { font-size: .8rem; color: rgba(255,255,255,.45); transition: color .18s; }
+    .footer-links a:hover { color: var(--coral); }
+    .footer-bottom { max-width: 1080px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+    .footer-bottom p { font-size: .76rem; color: rgba(255,255,255,.3); }
+    @media(max-width:640px) {
+      .footer-inner { grid-template-columns: 1fr; gap: 20px; }
+      .footer-links { justify-content: flex-start; gap: 16px; }
+      .footer-bottom { flex-direction: column; align-items: flex-start; }
+    }
 
     /* ── REVEAL ── */
     .reveal { opacity: 0; transform: translateY(20px); transition: opacity .55s ease, transform .55s ease; }
@@ -785,16 +833,19 @@
     </div>
     <div class="steps">
       <div class="step reveal" data-n="1">
+        <div class="step-num">1</div>
         <span class="step-ico">🍽️</span>
         <h3>¿Qué quieres servir?</h3>
         <p>Explora por categoría — catering, bebidas, música y más. Filtra según tu tipo de celebración.</p>
       </div>
       <div class="step reveal" data-n="2">
+        <div class="step-num">2</div>
         <span class="step-ico">🔎</span>
         <h3>Busca tu mejor opción</h3>
         <p>Compara proveedores verificados, precios, zona de cobertura y qué incluye cada servicio.</p>
       </div>
       <div class="step reveal" data-n="3">
+        <div class="step-num">3</div>
         <span class="step-ico">🎉</span>
         <h3>Contrata y celebra</h3>
         <p>Contacta directo por WhatsApp. Tú eliges, tú contratas. Sin comisiones ni filas.</p>
@@ -805,28 +856,28 @@
 
 
 <!-- ══ NOSOTROS PREVIEW ══ -->
-<section style="padding:64px 0;background:var(--bg2);border-top:1px solid var(--border)">
+<section style="padding:72px 0;background:var(--bg2);border-top:1px solid var(--border)">
   <div class="container">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;max-width:900px;margin:0 auto" class="rev-grid" class="reveal">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;max-width:920px;margin:0 auto" class="rev-grid reveal">
       <div>
         <div class="tag">Quiénes somos</div>
-        <h2 style="font-size:clamp(1.4rem,2.6vw,2rem);margin-bottom:14px;line-height:1.2">El puente entre tus celebraciones y los mejores proveedores</h2>
-        <p style="font-size:.9rem;color:var(--ink2);line-height:1.75;margin-bottom:20px">Soy emprendedor con años de experiencia en el mundo de los eventos. Creé <strong>CotizaEventos.cl</strong> para simplificar el proceso de buscar servicios confiables, reuniendo opciones seleccionadas en cada categoría.</p>
+        <h2 style="font-size:clamp(1.4rem,2.6vw,2rem);margin-bottom:16px;line-height:1.2">El puente entre tus celebraciones y los mejores proveedores</h2>
+        <p style="font-size:.9rem;color:var(--ink2);line-height:1.8;margin-bottom:24px">Soy emprendedor con años de experiencia en el mundo de los eventos. Creé <strong>CotizaEventos.cl</strong> para simplificar el proceso de buscar servicios confiables, reuniendo opciones seleccionadas en cada categoría.</p>
         <a href="nosotros.html" class="btn btn-ghost" style="display:inline-flex;align-items:center;gap:6px">Conocer más sobre nosotros →</a>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-        <div style="background:#fff;border:1px solid var(--border);border-radius:16px;padding:22px;text-align:center">
-          <div style="font-family:'Fraunces',serif;font-size:2.2rem;font-weight:900;color:var(--coral)">+20</div>
-          <div style="font-size:.76rem;color:var(--muted);margin-top:3px">Categorías de servicios</div>
+        <div style="background:#fff;border:1.5px solid var(--border);border-radius:20px;padding:24px;text-align:center;transition:.25s" onmouseover="this.style.borderColor='var(--coral)';this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform='none'">
+          <div style="font-family:'Fraunces',serif;font-size:2.6rem;font-weight:900;color:var(--coral);line-height:1">+20</div>
+          <div style="font-size:.76rem;color:var(--muted);margin-top:5px;font-weight:500">Categorías</div>
         </div>
-        <div style="background:#fff;border:1px solid var(--border);border-radius:16px;padding:22px;text-align:center">
-          <div style="font-family:'Fraunces',serif;font-size:2.2rem;font-weight:900;color:var(--coral)">100%</div>
-          <div style="font-size:.76rem;color:var(--muted);margin-top:3px">Proveedores verificados</div>
+        <div style="background:#fff;border:1.5px solid var(--border);border-radius:20px;padding:24px;text-align:center;transition:.25s" onmouseover="this.style.borderColor='var(--coral)';this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform='none'">
+          <div style="font-family:'Fraunces',serif;font-size:2.6rem;font-weight:900;color:var(--coral);line-height:1">100%</div>
+          <div style="font-size:.76rem;color:var(--muted);margin-top:5px;font-weight:500">Verificados</div>
         </div>
-        <div style="background:var(--coral-lt);border:1.5px solid var(--coral-md);border-radius:16px;padding:18px;text-align:center;grid-column:1/-1">
-          <div style="font-size:1.3rem;margin-bottom:5px">🎊</div>
-          <div style="font-size:.84rem;font-weight:600;color:var(--coral);margin-bottom:3px">Cada evento es único</div>
-          <div style="font-size:.76rem;color:var(--ink2)">Proveedores que se destacan por calidad y dedicación.</div>
+        <div style="background:var(--ink);border-radius:20px;padding:22px;text-align:center;grid-column:1/-1;transition:.25s" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='none'">
+          <div style="font-size:1.5rem;margin-bottom:8px">🎊</div>
+          <div style="font-size:.9rem;font-weight:700;color:#fff;margin-bottom:4px">Cada evento es único</div>
+          <div style="font-size:.78rem;color:rgba(255,255,255,.5)">Proveedores que se destacan por calidad y dedicación.</div>
         </div>
       </div>
     </div>
@@ -867,15 +918,23 @@
 
 <!-- ══ FOOTER ══ -->
 <footer>
-  <a href="/" class="logo" style="text-decoration:none">Cotiza<span>Eventos</span>.cl</a>
-  <div style="display:flex;gap:20px;justify-content:center;margin:12px 0;flex-wrap:wrap">
-    <a href="proveedores.html" style="font-size:.8rem;color:var(--muted)">Proveedores</a>
-    <a href="form.html" style="font-size:.8rem;color:var(--muted)">Publica tu negocio</a>
-    <a href="terminos.html" style="font-size:.8rem;color:var(--muted)">Términos y condiciones</a>
-    <a href="nosotros.html" style="font-size:.8rem;color:var(--muted)">Nosotros</a>
-    <a href="#contacto" style="font-size:.8rem;color:var(--muted)">Contacto</a>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="/" class="logo" style="text-decoration:none">Cotiza<span>Eventos</span>.cl</a>
+      <p>El directorio de proveedores verificados para eventos en Santiago. Sin intermediarios, sin comisiones.</p>
+    </div>
+    <div class="footer-links">
+      <a href="proveedores.html">Proveedores</a>
+      <a href="form.html">Publica tu negocio</a>
+      <a href="nosotros.html">Nosotros</a>
+      <a href="#contacto">Contacto</a>
+      <a href="terminos.html">Términos</a>
+    </div>
   </div>
-  <p>© 2025 CotizaEventos.cl — Todos los derechos reservados · Santiago, Chile</p>
+  <div class="footer-bottom">
+    <p>© 2025 CotizaEventos.cl — Todos los derechos reservados · Santiago, Chile</p>
+    <p style="font-size:.72rem;color:rgba(255,255,255,.2)">Hecho con ❤️ para los eventos de Santiago</p>
+  </div>
 </footer>
 
 
@@ -941,7 +1000,7 @@ async function loadCategories() {
       const chip = document.createElement('div');
       chip.className = 'cat-chip-btn';
       chip.id = 'cgb-' + g.id;
-      chip.innerHTML = `${g.nombre} <span class="chip-arrow">▼</span>`;
+      chip.innerHTML = `<span class="chip-ico">${g.ico || '🍽️'}</span>${g.nombre} <span class="chip-arrow">▼</span>`;
       chip.addEventListener('click', () => toggleCatGroup(g.id));
       chipsRow.appendChild(chip);
     });
