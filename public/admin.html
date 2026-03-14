@@ -595,9 +595,14 @@ function solCard(s) {
   const cats = Array.isArray(s.categorias) ? s.categorias : [s.categorias];
   const posOpts = [
     { val:5, label:'✦ Destacado' },
-    { val:0, label:'📋 Básico' },
+    { val:4, label:'📋 Básico' },
   ];
-  const curPos = selectedPos[s.id] ?? 0;
+
+  // Pre-seleccionar según lo que pidió el usuario en el formulario
+  if (selectedPos[s.id] === undefined) {
+    selectedPos[s.id] = (s.posicion_deseada === 'Destacado') ? 5 : 4;
+  }
+  const curPos = selectedPos[s.id];
 
   return `
   <div class="sol-card estado-${s.estado}" id="sol-${s.id}">
@@ -615,6 +620,7 @@ function solCard(s) {
       <div class="sol-price">
         Precio: <strong>${s.precio_minimo || '—'}</strong> – <strong>${s.precio_maximo || '—'}</strong>
         ${s.comunas ? ` · 📍 ${s.comunas}` : ''}
+        ${s.posicion_deseada ? ` · <strong style="color:var(--coral)">Solicitó: ${s.posicion_deseada}</strong>` : ''}
       </div>
     </div>
     <div class="sol-actions">
