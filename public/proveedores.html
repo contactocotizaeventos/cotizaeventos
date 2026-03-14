@@ -143,40 +143,41 @@
       white-space:nowrap;
     }
 
-    /* Parent category pill */
+    /* Parent category pill — igual al cat-tile del index */
     .cat-pill{
-      display:inline-flex;align-items:center;gap:5px;
-      padding:5px 12px;border-radius:99px;
-      font-size:.76rem;font-weight:500;color:var(--ink2);
+      display:inline-flex;align-items:center;gap:6px;
+      padding:6px 14px;border-radius:99px;
+      font-size:.78rem;font-weight:600;color:var(--ink2);
       cursor:pointer;border:1.5px solid var(--border);background:var(--white);
-      transition:.18s;white-space:nowrap;flex-shrink:0;margin-right:5px;
+      transition:.2s;white-space:nowrap;flex-shrink:0;margin-right:6px;
       user-select:none;
     }
-    .cat-pill:hover{border-color:var(--coral-md);background:var(--coral-lt);color:var(--coral)}
-    .cat-pill.open{border-color:var(--coral);background:var(--coral);color:#fff}
-    .cat-pill .cp-arr{font-size:.65rem;transition:transform .2s;display:inline-block}
+    .cat-pill:hover{border-color:var(--coral);background:var(--coral-lt);color:var(--coral);transform:translateY(-1px)}
+    .cat-pill.active{border-color:var(--coral-md);background:var(--coral-lt);color:var(--coral)}
+    .cat-pill.open{border-color:var(--coral);background:var(--coral-lt);color:var(--coral)}
+    .cat-pill .cp-arr{font-size:.6rem;transition:transform .2s;display:inline-block;opacity:.6}
     .cat-pill.open .cp-arr{transform:rotate(180deg)}
 
-    /* Sub-tag pills — injected inline after parent */
+    /* Sub-tag pills — igual al cat-tile del index pero más chico */
     .tag-pill-group{
       display:inline-flex;align-items:center;gap:5px;
-      margin-right:10px;
+      margin-right:8px;
       animation:fadeInPills .18s ease;
     }
     @keyframes fadeInPills{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:none}}
     .tag-pill{
-      display:inline-flex;align-items:center;gap:5px;
-      padding:6px 13px;border-radius:99px;
-      font-size:.78rem;font-weight:500;color:var(--ink2);
-      cursor:pointer;border:1.5px solid var(--border2);background:var(--bg2);
-      transition:.15s;white-space:nowrap;flex-shrink:0;
+      display:inline-flex;align-items:center;
+      padding:5px 12px;border-radius:99px;
+      font-size:.74rem;font-weight:500;color:var(--ink2);
+      cursor:pointer;border:1.5px solid var(--border);background:var(--white);
+      transition:.18s;white-space:nowrap;flex-shrink:0;
       user-select:none;
     }
-    .tag-pill:hover{border-color:var(--coral);color:var(--coral);background:var(--coral-lt)}
+    .tag-pill:hover{border-color:var(--coral);color:var(--coral);background:var(--coral-lt);transform:translateY(-1px)}
     .tag-pill.active{border-color:var(--coral);background:var(--coral-lt);color:var(--coral);font-weight:600}
 
     /* Separator between parent group and tag group */
-    .pill-sep{color:var(--border2);font-size:.7rem;margin-right:6px;flex-shrink:0}
+    .pill-sep{color:var(--border2);font-size:.65rem;margin-right:4px;flex-shrink:0}
 
     /* Responsive */
     @media(max-width:600px){
@@ -533,12 +534,11 @@
     .expand-btn{width:100%;padding:10px;margin-top:8px;border:1.5px dashed var(--border);border-radius:10px;background:var(--bg);color:var(--muted);font-size:.82rem;font-weight:600;cursor:pointer;transition:.18s}
     .expand-btn:hover{border-color:var(--coral);color:var(--coral);background:var(--coral-lt)}
     /* CAT TILES */
-    .ct-tile{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 10px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);text-decoration:none;text-align:center;transition:.18s;cursor:pointer}
-    .ct-tile:hover{border-color:var(--coral-md);background:var(--coral-lt);transform:translateY(-2px)}
-    .ct-tile.active{border-color:var(--coral);background:var(--coral-lt);box-shadow:0 0 0 3px var(--coral-lt)}
-    .ct-ico{font-size:1.7rem;display:block}
-    .ct-name{font-size:.78rem;font-weight:600;color:var(--ink);line-height:1.2}
-    .ct-count{font-size:.62rem;color:var(--muted)}
+    .ct-tile{display:inline-flex;align-items:center;justify-content:space-between;gap:6px;padding:6px 14px;border-radius:99px;border:1.5px solid var(--border);background:var(--white);text-decoration:none;transition:.2s;cursor:pointer;white-space:nowrap}
+    .ct-tile:hover{border-color:var(--coral);background:var(--coral-lt);color:var(--coral);transform:translateY(-1px)}
+    .ct-tile.active{border-color:var(--coral);background:var(--coral-lt);color:var(--coral)}
+    .ct-name{font-size:.78rem;font-weight:600;color:inherit}
+    .ct-count{font-size:.65rem;color:var(--muted);flex-shrink:0}
 
     /* GOLD GALLERY */
     .gold-gallery{margin-top:52px;padding-top:28px;border-top:1px solid var(--border)}
@@ -812,7 +812,7 @@ function buildCatTiles() {
         ${g.nombre}
         <span style="flex:1;height:1px;background:var(--border);display:inline-block"></span>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px">
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
         ${g.categorias.map(cat => `
           <a class="ct-tile" id="ct-${cat.id}" onclick="setView({mode:'cat',groupId:'${g.id}',catId:'${cat.id}'});return false" href="#">
             <span class="ct-name">${cat.nombre}</span>
