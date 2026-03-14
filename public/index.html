@@ -117,7 +117,7 @@
       position: relative; overflow: hidden;
       min-height: 100svh;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      background-image: var(--hero-bg, linear-gradient(160deg,#1A1410 0%,#2D1810 100%));
+      background-image: url('/img/IMG_9996.jpg');
       background-size: cover; background-position: center;
     }
     #hero::before {
@@ -785,10 +785,10 @@
 
     <!-- CATEGORÍAS — generado dinámicamente desde Supabase -->
     <div id="cat-groups-container">
-      <div style="display:flex;flex-wrap:wrap;gap:8px;opacity:.4;pointer-events:none" id="cat-skeleton">
-        <span style="height:34px;width:90px;background:var(--bg2);border-radius:99px;display:inline-block"></span>
-        <span style="height:34px;width:110px;background:var(--bg2);border-radius:99px;display:inline-block"></span>
-        <span style="height:34px;width:80px;background:var(--bg2);border-radius:99px;display:inline-block"></span>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;opacity:.35;pointer-events:none" id="cat-skeleton">
+        <span style="height:96px;background:var(--bg2);border-radius:18px;display:block"></span>
+        <span style="height:96px;background:var(--bg2);border-radius:18px;display:block"></span>
+        <span style="height:96px;background:var(--bg2);border-radius:18px;display:block"></span>
       </div>
     </div>
 
@@ -1113,7 +1113,6 @@ function renderChecklist() {
         <strong>${s.nombre}</strong>
         <small>${s.desc}</small>
       </div>
-      <span class="cb-ico">${s.ico}</span>
     </label>
   `).join('');
   document.querySelectorAll('.check-item input').forEach(inp => {
@@ -1209,12 +1208,12 @@ function buildResumen() {
     ? `<br/>📱 <strong>WhatsApp:</strong> ${wa}`
     : `<br/>📧 <strong>Email:</strong> ${email}`;
   document.getElementById('resumen').innerHTML = `
-    <strong>👤 Nombre:</strong> ${nombre}<br/>
-    <strong>📍 Comuna:</strong> ${comuna}<br/>
-    <strong>📨 Canal preferido:</strong> ${chIcon}
+    <strong>Nombre:</strong> ${nombre}<br/>
+    <strong>Comuna:</strong> ${comuna}<br/>
+    <strong>Canal preferido:</strong> ${chIcon}
     ${contacto}<br/><br/>
-    <strong>✅ Servicios solicitados (${svc.length}):</strong><br/>
-    ${svc.map(s => `${s.ico} ${s.nombre}`).join(' &nbsp;·&nbsp; ')}
+    <strong>Servicios solicitados (${svc.length}):</strong><br/>
+    ${svc.map(s => s.nombre).join(' · ')}
   `;
 }
 
@@ -1328,9 +1327,7 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 function initHeroBg() {
-  if (!HERO_SECTION_BG) return;
-  const hero = document.getElementById('hero');
-  if (hero) hero.style.setProperty('--hero-bg', `url('${HERO_SECTION_BG}')`);
+  // imagen ya definida en CSS
 }
 
 function initImageStrip() {

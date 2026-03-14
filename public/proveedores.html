@@ -285,29 +285,45 @@
     .group-section-header p{font-size:.82rem;color:var(--muted)}
 
     /* CAT SECTION (sub-category) */
-    .cat-section{margin-bottom:56px;scroll-margin-top:120px}
+    .cat-section{
+      margin-bottom:0;
+      scroll-margin-top:120px;
+      padding-bottom:36px;
+    }
+    .cat-section + .cat-section{
+      padding-top:8px;
+    }
+
+    /* Header de categoría — banda separadora */
     .cat-header{
-      display:flex;align-items:center;gap:16px;
-      margin-bottom:20px;padding-bottom:16px;
-      border-bottom:1.5px solid var(--border);
-      position:relative;
+      display:flex;align-items:center;gap:12px;
+      margin-bottom:20px;
+      background:var(--bg2);
+      border-top:1px solid var(--border);
+      border-bottom:1px solid var(--border);
+      padding:14px 0;
+      margin-left:-32px;
+      margin-right:-32px;
+      padding-left:32px;
+      padding-right:20px;
     }
-    /* Acento coral a la izquierda */
-    .cat-header::before{
-      content:'';
-      position:absolute;left:0;bottom:-1.5px;
-      width:48px;height:1.5px;
-      background:var(--coral);
-      border-radius:99px;
-    }
-    .cat-icon{display:none} /* eliminado */
+    .cat-header::before{ display:none; }
+    .cat-icon{display:none}
     .cat-header-text{flex:1}
-    .cat-header h3{font-size:1.1rem;font-weight:700;color:var(--ink);margin-bottom:2px;font-family:'Outfit',sans-serif;letter-spacing:-.01em}
-    .cat-header p{font-size:.78rem;color:var(--muted);line-height:1.5}
+    .cat-header h3{
+      font-size:.72rem;font-weight:800;color:var(--ink2);
+      font-family:'Outfit',sans-serif;
+      text-transform:uppercase;letter-spacing:.12em;
+    }
+    .cat-header p{font-size:.75rem;color:var(--muted);line-height:1.5;margin-top:2px}
     .cat-badge{
-      font-size:.65rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
-      background:var(--bg2);color:var(--muted);border:1px solid var(--border);
-      padding:3px 10px;border-radius:6px;margin-left:auto;flex-shrink:0;
+      font-size:.62rem;font-weight:600;
+      background:var(--white);color:var(--muted);border:1px solid var(--border);
+      padding:3px 9px;border-radius:6px;flex-shrink:0;
+      margin-right:12px;
+    }
+    @media(max-width:560px){
+      .cat-header{margin-left:-12px;margin-right:-12px;padding-left:12px;padding-right:12px}
     }
 
     /* PROVIDER CARDS */
@@ -630,13 +646,7 @@
     <div>
       <div class="ph-eyebrow">Directorio verificado</div>
       <h1>Proveedores para tu evento</h1>
-      <p>Encuentra el proveedor ideal por categoría. Las 3 primeras posiciones incluyen información completa y contacto directo.</p>
-    </div>
-    <div class="ph-legend">
-      <div class="legend-item"><div class="legend-dot ld-1"></div> Posición #1 — Oro</div>
-      <div class="legend-item"><div class="legend-dot ld-2"></div> Posición #2 — Plata</div>
-      <div class="legend-item"><div class="legend-dot ld-3"></div> Posición #3 — Bronce</div>
-      <div class="legend-item"><div class="legend-dot ld-basic"></div> Listado básico</div>
+      <p>Encuentra el proveedor ideal por categoría. Compara precios y contacta directo por WhatsApp.</p>
     </div>
   </div>
 </div>
