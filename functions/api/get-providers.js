@@ -81,9 +81,9 @@ function buildGruposDynamic(providers, cats, tags) {
       id:         cat.id,
       ico:        cat.ico || '🍽️',
       nombre:     cat.nombre,
-      categorias: categorias.filter(c => c.proveedores.length > 0),
+      categorias: categorias,  // todas las etiquetas del grupo, con o sin proveedores
     };
-  }).filter(g => g.categorias.length > 0);
+  }).filter(g => g.categorias.length > 0);  // ocultar grupos sin etiquetas
 }
 
 // Fallback: hardcoded categories (backward compatibility)
