@@ -589,12 +589,10 @@
     <div>
       <div class="ph-eyebrow">Directorio verificado</div>
       <h1>Proveedores para tu evento</h1>
-      <p>Encuentra el proveedor ideal por categoría. Las 3 primeras posiciones incluyen información completa y contacto directo.</p>
+      <p>Encuentra el proveedor ideal para tu evento y contáctalo directamente.</p>
     </div>
     <div class="ph-legend">
-      <div class="legend-item"><div class="legend-dot ld-1"></div> Posición #1 — Oro</div>
-      <div class="legend-item"><div class="legend-dot ld-2"></div> Posición #2 — Plata</div>
-      <div class="legend-item"><div class="legend-dot ld-3"></div> Posición #3 — Bronce</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--coral)"></div> Destacado</div>
       <div class="legend-item"><div class="legend-dot ld-basic"></div> Listado básico</div>
     </div>
   </div>
@@ -893,10 +891,15 @@ function render() {
     if (!filtered.length) return;
     totalVisible += filtered.length;
 
-    // Destacados (pos 5) y básicos (cualquier otro)
-    const destacados = filtered.filter(p => p.pos === 5 || p.posicion === 5);
-    const allBasics  = filtered.filter(p => p.pos !== 5 && p.posicion !== 5);
-    const basics     = shuffle([...allBasics]).slice(0, 3);
+    const gold   = filtered.find(p => p.pos === 1);
+    const silver = filtered.find(p => p.pos === 2);
+    const bronze = filtered.find(p => p.pos === 3);
+    const secondary = [silver, bronze].filter(Boolean);
+    const paidCount = [gold,silver,bronze].filter(Boolean).length;
+
+    // Basics: shuffle, show 3 random
+    const allBasics = filtered.filter(p => p.pos > 3 || !p.pos);
+    const basics = shuffle([...allBasics]).slice(0, 3);
 
     html += `
       <div class="cat-section" id="${cat.id}">
@@ -909,14 +912,8 @@ function render() {
           <div class="cat-badge">${filtered.length} proveedor${filtered.length!==1?'es':''}</div>
         </div>
 
-        ${destacados.length ? `
-          <div style="margin-bottom:8px;display:flex;align-items:center;gap:8px">
-            <span style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--coral)">✦ Destacados</span>
-            <span style="flex:1;height:1px;background:var(--coral-md);opacity:.4"></span>
-          </div>
-          <div class="top-positions" style="margin-bottom:18px">
-            ${destacados.map(p => paidCardHTML(p)).join('')}
-          </div>` : ''}
+        ${gold ? `<div class="top-positions">${paidCardHTML(gold)}</div>` : ''}
+        ${secondary.length ? `<div class="top-positions-secondary">${secondary.map(paidCardHTML).join('')}</div>` : ''}
 
         ${basics.length ? `
           <div class="basics-section">
@@ -931,13 +928,13 @@ function render() {
               </button>` : ''}
           </div>` : ''}
 
-        ${!destacados.length ? `
+        ${paidCount < 3 ? `
           <div class="upgrade-cta" onclick="window.location='/form.html'" style="margin-top:16px">
             <div class="upgrade-inner">
-              <span class="upgrade-icon">✦</span>
+              <span class="upgrade-icon">🏆</span>
               <div>
-                <div class="upgrade-title">¿Eres proveedor aquí?</div>
-                <div class="upgrade-sub">Sé el primero Destacado — gratis por 3 meses</div>
+                <div class="upgrade-title">¿Tu negocio aquí?</div>
+                <div class="upgrade-sub">${3-paidCount} posición${3-paidCount!==1?'es':''} disponible${3-paidCount!==1?'s':''}</div>
               </div>
               <div class="upgrade-btn">Registrarme →</div>
             </div>
@@ -958,7 +955,7 @@ function render() {
   html += buildGoldGallery(catsToShow.map(x => x.cat.id));
 
   area.innerHTML = html;
-  syncActiveTile();
+  syncChipState();
 }
 
 /* ═══════════════════════════════════════════
@@ -967,7 +964,7 @@ function render() {
 function showAllBasics(btn, catId) {
   const cat = CAT_INDEX[catId];
   if (!cat) return;
-  const allBasics = cat.proveedores.filter(p => p.pos !== 5 && p.posicion !== 5);
+  const allBasics = cat.proveedores.filter(p => p.pos > 3 || !p.pos);
   const listEl = btn.previousElementSibling;
   listEl.innerHTML = allBasics.map(basicHTML).join('');
   btn.remove();
@@ -976,47 +973,43 @@ function showAllBasics(btn, catId) {
 /* ═══════════════════════════════════════════
    GOLD GALLERY (bottom of page)
 ═══════════════════════════════════════════ */
-// Orden de Destacados fijado una vez por sesión (no cambia al filtrar)
-let _destOrder = null;
-
 function buildGoldGallery(shownCatIds) {
-  // Recoger TODOS los Destacados (pos 5 o posicion 5) de todas las categorías
-  if (!_destOrder) {
-    const all = [];
+  // Collect all gold providers NOT in the current shown cats (if mode=cat/group)
+  // If mode=all, collect all gold
+  let golds = [];
+  GRUPOS.forEach(g => g.categorias.forEach(cat => {
+    if (VIEW.mode === 'all' || !shownCatIds.includes(cat.id)) {
+      const p = cat.proveedores.find(p => p.pos === 1);
+      if (p) golds.push({ ...p, catNombre: cat.nombre, catIco: cat.ico });
+    }
+  }));
+  // If all are shown (mode=cat, same cat), still show from other cats
+  if (!golds.length) {
     GRUPOS.forEach(g => g.categorias.forEach(cat => {
-      cat.proveedores.forEach(p => {
-        if (p.pos === 5 || p.posicion === 5) {
-          all.push({ ...p, catNombre: cat.nombre, catIco: cat.ico, _catId: cat.id });
-        }
-      });
+      const p = cat.proveedores.find(p => p.pos === 1);
+      if (p) golds.push({ ...p, catNombre: cat.nombre, catIco: cat.ico });
     }));
-    // Mezclar una sola vez al cargar la página
-    _destOrder = shuffle([...all]);
   }
+  if (!golds.length) return '';
 
-  if (!_destOrder.length) return '';
-
-  // Priorizar los que NO están en la vista actual, y rellenar si faltan
-  const notShown = _destOrder.filter(p => !shownCatIds.includes(p._catId));
-  const picks    = (notShown.length >= 3 ? notShown : _destOrder).slice(0, 6);
-
+  const picks = shuffle([...golds]).slice(0, 6);
   return `
     <div class="gold-gallery">
       <div class="gold-gallery-header">
-        <span style="font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--coral)">✦ Destacados que podrían interesarte</span>
+        <span style="font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">⭐ También te puede interesar</span>
       </div>
       <div class="gold-gallery-grid">
         ${picks.map(p => {
           const waMsg = encodeURIComponent('Hola ' + p.nombre + '! Los vi en CotizaEventos.cl y me interesa cotizar sus servicios.');
           const cover = p.cover_url
             ? `<img src="${p.cover_url}" style="width:100%;height:100%;object-fit:cover" loading="lazy">`
-            : `<div style="width:100%;height:100%;background:#111;display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:rgba(255,255,255,.18)">✦</div>`;
+            : `<div style="width:100%;height:100%;background:#111;display:flex;align-items:center;justify-content:center;font-size:2rem;color:rgba(255,255,255,.2)">img</div>`;
           return `<div class="gg-card" onclick="openModal('${p.id}')">
             <div class="gg-cover">${cover}</div>
             <div class="gg-body">
-              <div class="gg-cat" style="color:var(--coral)">✦ Destacado · ${p.catNombre}</div>
+              <div class="gg-cat">${p.catIco} ${p.catNombre}</div>
               <div class="gg-name">${p.nombre}</div>
-              <div class="gg-tagline">${p.tagline || p.diff || ''}</div>
+              <div class="gg-tagline">${p.tagline || ''}</div>
             </div>
             <div class="gg-footer">
               <span class="gg-price">Desde ${p.minimo || '—'}</span>
@@ -1156,7 +1149,7 @@ function basicHTML(p) {
 ═══════════════════════════════════════════ */
 function openModal(id) {
   const p = PROV_INDEX[id];
-  if (!p || (p.pos !== 5 && p.posicion !== 5 && !(p.pos >= 1 && p.pos <= 3))) return;
+  if (!p || p.pos > 3) return;
   const r = RANK[p.pos];
   const waMsg = encodeURIComponent('Hola ' + p.nombre + '! Los vi en CotizaEventos.cl y quiero cotizar sus servicios para mi evento.');
   document.getElementById('modal-inner').innerHTML = `
