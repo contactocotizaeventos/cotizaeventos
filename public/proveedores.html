@@ -365,16 +365,16 @@
     }
 
     /* PROVIDER CARDS */
-    .top-positions{display:grid;gap:16px;margin-bottom:18px}
+    .top-positions{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
     .top-positions-secondary{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
 
     .pos-card{background:var(--white);border-radius:22px;box-shadow:0 2px 16px rgba(0,0,0,.06);transition:.3s var(--ease);cursor:pointer;position:relative;display:flex;flex-direction:column}
     .pos-card:hover{transform:translateY(-5px);box-shadow:0 20px 52px rgba(0,0,0,.13)}
     .pos-card.pos-1{
       border:2.5px solid var(--gold-bd);
-      grid-column:1/-1;flex-direction:row;
+      flex-direction:column;
       box-shadow:0 8px 40px rgba(184,134,11,.15), 0 2px 0 0 #E8C84A inset;
-      background:linear-gradient(135deg,#FFFDF5 0%,#FFFFFF 60%);
+      background:linear-gradient(160deg,#FFFDF5 0%,#FFFFFF 60%);
     }
     .pos-card.pos-1:hover{
       transform:translateY(-6px);
@@ -391,24 +391,12 @@
     .modal-band.pos-dest{background:linear-gradient(90deg,#C94520,var(--coral),#FF7A54)}
     .pt-dest{background:var(--coral-lt);color:var(--coral);border:1px solid var(--coral-md)}
 
-    /* COVER PHOTO */
+    /* COVER PHOTO — mismo para todos, sin distinción pos-1 */
     .pos-cover{position:relative;width:100%;height:130px;flex-shrink:0;overflow:hidden;border-radius:18px 18px 0 0}
-    /* Oro horizontal: portada a la izquierda */
-    .pos-card.pos-1 .pos-cover{width:220px;height:100%;flex-shrink:0;min-height:170px;border-radius:18px 0 0 18px}
-    .pos-card.pos-1 .pos-cover-img{width:220px;height:100%}
-    .pos-card.pos-1 .pos-cover-placeholder{width:220px;height:100%;min-height:170px}
-    .pos-cover-img{width:100%;height:130px;object-fit:cover;display:block;transition:transform .4s var(--ease);border-radius:0}
+    .pos-cover-img{width:100%;height:130px;object-fit:cover;display:block;transition:transform .4s var(--ease)}
     .pos-card:hover .pos-cover-img{transform:scale(1.04)}
-    .pos-cover-placeholder{width:100%;height:130px;display:flex;align-items:center;justify-content:center;font-size:3rem}
-    /* border-radius según posición */
-    .pos-card:not(.pos-1) .pos-cover-img,.pos-card:not(.pos-1) .pos-cover-placeholder{border-radius:0}
-    .pos-card.pos-1 .pos-cover-img,.pos-card.pos-1 .pos-cover-placeholder{border-radius:0}
-    /* Image placeholders — dark bg */
-    .pos-cover-placeholder{background:#111 !important;color:rgba(255,255,255,.18);font-size:2.4rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+    .pos-cover-placeholder{width:100%;height:130px;background:#111 !important;color:rgba(255,255,255,.18);font-size:2.4rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
     .pos-cover-placeholder::after{content:'img';font-size:.6rem;font-family:'Outfit',sans-serif;letter-spacing:.1em;color:rgba(255,255,255,.2)}
-    .pos-1 .pos-cover-placeholder{background:#111 !important}
-
-    .pos-cover-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(0,0,0,.4) 100%)}
 
     /* RIBBON sobre la foto */
     .pos-ribbon{position:absolute;top:9px;left:0;z-index:3;display:inline-flex;align-items:center;gap:4px;padding:3px 11px 3px 9px;border-radius:0 99px 99px 0;font-size:.58rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;box-shadow:0 2px 8px rgba(0,0,0,.18)}
@@ -593,16 +581,15 @@
       .pv-pub-btn{display:none}
       .page-header{padding:40px 20px 36px}
       .ph-legend{display:none}
-      .top-positions-secondary{grid-template-columns:1fr 1fr;gap:10px}
-      .pos-card.pos-1{flex-direction:column}
-      .pos-card.pos-1 .pos-cover{width:100%;height:140px;min-height:unset;border-radius:18px 18px 0 0}
-      .pos-card.pos-1 .pos-cover-img,.pos-card.pos-1 .pos-cover-placeholder{width:100%;height:140px;border-radius:18px 18px 0 0}
+      .top-positions{grid-template-columns:1fr 1fr;gap:12px}
+      .top-positions-secondary{grid-template-columns:1fr 1fr;gap:12px}
       .pos-footer{flex-direction:column;align-items:flex-start}
       .pos-cta-group{width:100%}
       .pos-cta-group .btn{flex:1;justify-content:center}
       .modal-info-grid{grid-template-columns:1fr}
     }
     @media(max-width:560px){
+      .top-positions{grid-template-columns:1fr}
       .top-positions-secondary{grid-template-columns:1fr}
       .content-area{padding:14px 12px 0}
       .pos-body{padding:10px 12px 8px}
