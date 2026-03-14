@@ -145,11 +145,11 @@
 
     /* Parent category pill */
     .cat-pill{
-      display:inline-flex;align-items:center;gap:7px;
-      padding:7px 16px;border-radius:99px;
-      font-size:.82rem;font-weight:500;color:var(--ink2);
+      display:inline-flex;align-items:center;gap:5px;
+      padding:5px 12px;border-radius:99px;
+      font-size:.76rem;font-weight:500;color:var(--ink2);
       cursor:pointer;border:1.5px solid var(--border);background:var(--white);
-      transition:.18s;white-space:nowrap;flex-shrink:0;margin-right:6px;
+      transition:.18s;white-space:nowrap;flex-shrink:0;margin-right:5px;
       user-select:none;
     }
     .cat-pill:hover{border-color:var(--coral-md);background:var(--coral-lt);color:var(--coral)}
@@ -575,21 +575,6 @@
   </div>
 </div>
 
-<!-- ── BANNER PROVEEDOR ── -->
-<div id="pv-banner" style="background:linear-gradient(90deg,var(--coral-lt),#fff8f6);border-bottom:1px solid var(--coral-md);padding:10px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
-  <div style="display:flex;align-items:center;gap:10px">
-    <span style="font-size:1.2rem">🏆</span>
-    <div>
-      <div style="font-size:.82rem;font-weight:700;color:var(--ink)">¿Eres proveedor de eventos?</div>
-      <div style="font-size:.74rem;color:var(--muted)">Aparece en el directorio y recibe clientes directamente</div>
-    </div>
-  </div>
-  <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-    <span style="font-size:.72rem;color:var(--coral);font-weight:600;background:#fff;border:1px solid var(--coral-md);border-radius:99px;padding:3px 10px">Gratis ahora</span>
-    <a href="form.html" class="btn btn-coral" style="padding:8px 18px;font-size:.8rem">Registrar mi negocio →</a>
-  </div>
-</div>
-
 <!-- ── STICKY BAR: BUSCAR + CATEGORÍAS ── -->
 <div class="sticky-bar" id="sticky-bar">
 
@@ -736,14 +721,43 @@ function buildCatBar() {
   allPill.addEventListener('click', () => setView({ mode: 'all' }));
   track.appendChild(allPill);
 
-  // One pill per GRUPO (parent)
+  // One pill per GRUPO (parent) — click toggles sub-tag pills inline
   GRUPOS.forEach(g => {
     const pill = document.createElement('span');
     pill.className = 'cat-pill';
     pill.id = 'pill-g-' + g.id;
-    pill.innerHTML = g.ico + ' ' + g.nombre;
-    pill.addEventListener('click', () => setView({ mode: 'group', groupId: g.id }));
+    pill.innerHTML = g.ico + ' ' + g.nombre + ' <span class="cp-arr">▾</span>';
+
+    // Build sub-tag group (hidden by default)
+    const tagGroup = document.createElement('span');
+    tagGroup.className = 'tag-pill-group';
+    tagGroup.id = 'tags-g-' + g.id;
+    tagGroup.style.display = 'none';
+    tagGroup.innerHTML = '<span class="pill-sep">›</span>' +
+      g.categorias.map(cat =>
+        `<span class="tag-pill" id="tp-${cat.id}" onclick="setView({mode:'cat',groupId:'${g.id}',catId:'${cat.id}'})">${cat.ico} ${cat.nombre}</span>`
+      ).join('');
+
+    pill.addEventListener('click', () => {
+      const isOpen = pill.classList.contains('open');
+      // Close all others
+      document.querySelectorAll('.cat-pill.open').forEach(p => {
+        p.classList.remove('open');
+        const gid = p.id.replace('pill-g-', '');
+        const tg = document.getElementById('tags-g-' + gid);
+        if (tg) tg.style.display = 'none';
+      });
+      if (!isOpen) {
+        pill.classList.add('open');
+        tagGroup.style.display = 'inline-flex';
+        setView({ mode: 'group', groupId: g.id });
+      } else {
+        setView({ mode: 'all' });
+      }
+    });
+
     track.appendChild(pill);
+    track.appendChild(tagGroup);
   });
 
   buildCatTiles();
@@ -797,12 +811,14 @@ function setView(v) {
 
 function syncActivePillToView() {
   document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tag-pill').forEach(t => t.classList.remove('active'));
   if (VIEW.mode === 'all') {
     document.getElementById('pill-all')?.classList.add('active');
   } else if (VIEW.mode === 'group' && VIEW.groupId) {
     document.getElementById('pill-g-' + VIEW.groupId)?.classList.add('active');
   } else if (VIEW.mode === 'cat' && VIEW.groupId) {
     document.getElementById('pill-g-' + VIEW.groupId)?.classList.add('active');
+    if (VIEW.catId) document.getElementById('tp-' + VIEW.catId)?.classList.add('active');
   }
 }
 
