@@ -3,9 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nosotros – CotizaEventos.cl</title>
-  <meta name="description" content="Conoce al equipo detrás de CotizaEventos.cl. Somos emprendedores apasionados por los eventos, creamos esta plataforma para simplificar la búsqueda de proveedores en Santiago." />
+  <title>Nosotros – Quiénes Somos | CotizaEventos.cl</title>
+  <meta name="description" content="Conoce a CotizaEventos.cl, el directorio de proveedores para eventos en Santiago creado para simplificar la búsqueda de catering, banquetería y servicios para eventos en Chile." />
+  <meta name="keywords" content="quienes somos cotizaeventos, directorio proveedores eventos santiago, plataforma catering chile, sobre nosotros cotizaeventos" />
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="CotizaEventos.cl" />
   <link rel="canonical" href="https://www.cotizaeventos.cl/nosotros.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Quiénes Somos – CotizaEventos.cl" />
+  <meta property="og:description" content="Somos un directorio de proveedores para eventos en Santiago, creado para simplificar la búsqueda de catering y servicios para celebraciones en Chile." />
+  <meta property="og:url" content="https://www.cotizaeventos.cl/nosotros.html" />
+  <meta property="og:locale" content="es_CL" />
+  <meta property="og:site_name" content="CotizaEventos.cl" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    "name": "Quiénes Somos – CotizaEventos.cl",
+    "url": "https://www.cotizaeventos.cl/nosotros.html",
+    "description": "Directorio de proveedores verificados para eventos en Santiago de Chile. Catering, banquetería, barra de tragos y más.",
+    "publisher": {
+      "@type": "Organization",
+      "name": "CotizaEventos.cl",
+      "url": "https://www.cotizaeventos.cl"
+    }
+  }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;0,900;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -58,7 +81,7 @@
     .tag { display: inline-block; background: var(--bg2); color: var(--coral); border: 1px solid var(--coral-md); padding: 4px 14px; border-radius: 99px; font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 14px; }
 
     /* REVEAL */
-    .reveal { opacity: 0; transform: translateY(22px); transition: opacity .5s ease, transform .5s ease; }
+    .reveal { opacity: 0; transform: translateY(16px); transition: opacity .45s ease, transform .45s ease; }
     .reveal.visible { opacity: 1; transform: none; }
 
     /* ── PAGE HERO ── */
@@ -430,26 +453,27 @@
   <p>© 2025 CotizaEventos.cl — Todos los derechos reservados · Santiago, Chile</p>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-/* Gallery images — replace URLs to activate */
+<script>
+/* Gallery images */
 document.querySelectorAll('.nos-img-tile').forEach(tile => {
   const src = tile.dataset.src;
   if (src) {
     const img = document.createElement('img');
-    img.src = src;
-    img.alt = '';
-    tile.innerHTML = '';
-    tile.appendChild(img);
+    img.src = src; img.alt = '';
+    tile.innerHTML = ''; tile.appendChild(img);
   }
 });
 
 /* Scroll reveal */
 const obs = new IntersectionObserver(es => es.forEach(e => {
   if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
-}), { threshold: 0.08 });
+}), { threshold: 0.05, rootMargin: '0px 0px -40px 0px' });
 document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 
 /* Mobile nav */
 document.addEventListener('click', e => {
   const m = document.getElementById('nm');
-  const 
+  const h = document.getElementById('nav-ham');
+  if (m && h && !m.contains(e.target) && !h.contains(e.target)) m.classList.remove('open');
+});
+</script>

@@ -3,7 +3,45 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Proveedores – CotizaTuFiesta.cl</title>
+  <title>Proveedores para Eventos en Santiago – Catering, Barra, DJ y más | CotizaEventos.cl</title>
+  <meta name="description" content="Directorio completo de proveedores para eventos en Santiago: catering, banquetería, pizzas, hamburguesas, churrascos, barra de tragos, tortas, DJ y más. Precios reales, contacto directo por WhatsApp." />
+  <meta name="keywords" content="proveedores eventos santiago, catering eventos santiago, banquetería santiago, barra de tragos eventos, pizza eventos santiago, catering matrimonios, catering cumpleaños chile, DJ eventos santiago, catering corporativo santiago, food truck eventos, proveedores verificados eventos" />
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="CotizaEventos.cl" />
+  <link rel="canonical" href="https://www.cotizaeventos.cl/proveedores.html" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Proveedores para Eventos en Santiago | CotizaEventos.cl" />
+  <meta property="og:description" content="Compara catering, banquetería, barra de tragos, DJ y más para tu evento en Santiago. Proveedores verificados, precios reales, contacto directo." />
+  <meta property="og:url" content="https://www.cotizaeventos.cl/proveedores.html" />
+  <meta property="og:locale" content="es_CL" />
+  <meta property="og:site_name" content="CotizaEventos.cl" />
+  <meta property="og:image" content="https://www.cotizaeventos.cl/img/og-proveedores.jpg" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Proveedores para Eventos en Santiago | CotizaEventos.cl" />
+  <meta name="twitter:description" content="Directorio de proveedores verificados para eventos en Santiago. Catering, barra de tragos, DJ y más." />
+
+  <!-- Schema: ItemList de categorías -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Proveedores para Eventos en Santiago",
+    "description": "Directorio de proveedores verificados de servicios para eventos en la Región Metropolitana de Santiago de Chile",
+    "url": "https://www.cotizaeventos.cl/proveedores.html",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Catering y Banquetería", "url": "https://www.cotizaeventos.cl/proveedores.html?cat=banqueteria" },
+      { "@type": "ListItem", "position": 2, "name": "Catering Pizzas", "url": "https://www.cotizaeventos.cl/proveedores.html?cat=pizzas" },
+      { "@type": "ListItem", "position": 3, "name": "Catering Hamburguesas", "url": "https://www.cotizaeventos.cl/proveedores.html?cat=hamburguesas" },
+      { "@type": "ListItem", "position": 4, "name": "Parrillas y Churrascos", "url": "https://www.cotizaeventos.cl/proveedores.html?cat=churrascos" },
+      { "@type": "ListItem", "position": 5, "name": "Barra de Tragos", "url": "https://www.cotizaeventos.cl/proveedores.html?cat=barra" },
+      { "@type": "ListItem", "position": 6, "name": "Tortas y Postres", "url": "https://www.cotizaeventos.cl/proveedores.html?cat=torta" }
+    ]
+  }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;0,900;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -642,11 +680,46 @@
 
 <nav>
   <a href="index.html" class="logo">Cotiza<span>Eventos</span>.cl</a>
+  <div class="nav-links" style="display:flex;align-items:center;gap:2px">
+    <a href="index.html" class="nav-link" style="font-size:.82rem;font-weight:500;color:var(--ink2);padding:7px 12px;border-radius:99px;transition:.18s;text-decoration:none">Inicio</a>
+    <a href="proveedores.html" class="nav-link" style="font-size:.82rem;font-weight:500;color:var(--ink);padding:7px 12px;border-radius:99px;background:var(--bg2);transition:.18s;text-decoration:none">Proveedores</a>
+    <a href="index.html#como" class="nav-link" style="font-size:.82rem;font-weight:500;color:var(--ink2);padding:7px 12px;border-radius:99px;transition:.18s;text-decoration:none">¿Cómo funciona?</a>
+    <a href="nosotros.html" class="nav-link" style="font-size:.82rem;font-weight:500;color:var(--ink2);padding:7px 12px;border-radius:99px;transition:.18s;text-decoration:none">Nosotros</a>
+    <a href="index.html#contacto" class="nav-link" style="font-size:.82rem;font-weight:500;color:var(--ink2);padding:7px 12px;border-radius:99px;transition:.18s;text-decoration:none">Contacto</a>
+  </div>
   <div class="nav-right">
-    <a href="index.html" class="btn btn-outline pv-back-btn">← Inicio</a>
     <a href="form.html" class="btn btn-coral pv-pub-btn">✦ Publica tu negocio</a>
+    <button id="pv-ham" onclick="document.getElementById('pv-mobile').classList.toggle('open')" style="display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px;background:none;border:none" aria-label="Menú">
+      <span style="display:block;width:22px;height:2px;background:var(--ink);border-radius:2px"></span>
+      <span style="display:block;width:22px;height:2px;background:var(--ink);border-radius:2px"></span>
+      <span style="display:block;width:22px;height:2px;background:var(--ink);border-radius:2px"></span>
+    </button>
   </div>
 </nav>
+<div id="pv-mobile" style="display:none;position:fixed;inset:56px 0 0 0;background:#fff;z-index:199;padding:20px;flex-direction:column;gap:8px;border-top:1px solid var(--border);overflow-y:auto">
+  <a href="index.html" style="font-size:.95rem;font-weight:500;color:var(--ink2);padding:14px 18px;border-radius:12px;border:1px solid var(--border);text-align:center;text-decoration:none">Inicio</a>
+  <a href="proveedores.html" style="font-size:.95rem;font-weight:500;color:var(--ink2);padding:14px 18px;border-radius:12px;border:1px solid var(--border);text-align:center;text-decoration:none">Proveedores</a>
+  <a href="index.html#como" style="font-size:.95rem;font-weight:500;color:var(--ink2);padding:14px 18px;border-radius:12px;border:1px solid var(--border);text-align:center;text-decoration:none">¿Cómo funciona?</a>
+  <a href="nosotros.html" style="font-size:.95rem;font-weight:500;color:var(--ink2);padding:14px 18px;border-radius:12px;border:1px solid var(--border);text-align:center;text-decoration:none">Nosotros</a>
+  <a href="index.html#contacto" style="font-size:.95rem;font-weight:500;color:var(--ink2);padding:14px 18px;border-radius:12px;border:1px solid var(--border);text-align:center;text-decoration:none">Contacto</a>
+  <a href="form.html" style="font-size:.95rem;font-weight:600;color:#fff;padding:14px 18px;border-radius:12px;background:var(--coral);border:1px solid var(--coral);text-align:center;text-decoration:none">✦ Publica tu negocio</a>
+</div>
+<style>
+  .nav-link:hover{background:var(--bg2)!important;color:var(--ink)!important}
+  #pv-mobile.open{display:flex!important}
+  @media(max-width:860px){
+    .nav-links{display:none!important}
+    .pv-pub-btn{display:none!important}
+    #pv-ham{display:flex!important}
+  }
+</style>
+<script>
+  document.addEventListener('click', e => {
+    const m = document.getElementById('pv-mobile');
+    const h = document.getElementById('pv-ham');
+    if (m && h && !m.contains(e.target) && !h.contains(e.target)) m.classList.remove('open');
+  });
+</script>
 
 <div class="page-header">
   <div class="inner">
