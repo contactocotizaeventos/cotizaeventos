@@ -518,52 +518,46 @@
     .expand-btn{width:100%;padding:10px;margin-top:8px;border:1.5px dashed var(--border);border-radius:10px;background:var(--bg);color:var(--muted);font-size:.82rem;font-weight:600;cursor:pointer;transition:.18s}
     .expand-btn:hover{border-color:var(--coral);color:var(--coral);background:var(--coral-lt)}
     /* CAT TILES */
-    /* ── ACORDEÓN GRUPOS proveedores ── */
-    .acc-grp { margin-bottom: 8px; }
-    .acc-btn {
-      width:100%; display:flex; align-items:center; gap:12px;
-      padding:13px 18px; background:var(--white);
-      border:1.5px solid var(--border2); border-radius:12px;
-      cursor:pointer; font-family:'Outfit',sans-serif; text-align:left;
+    /* ── ACORDEÓN GRUPOS ── */
+    .acc-grp{margin-bottom:8px}
+    .acc-btn{
+      width:100%;display:flex;align-items:center;gap:12px;
+      padding:13px 18px;background:var(--white);
+      border:1.5px solid var(--border2);border-radius:12px;
+      cursor:pointer;font-family:'Outfit',sans-serif;text-align:left;
       transition:.2s var(--ease);
     }
-    .acc-btn:hover { border-color:var(--coral-md); background:var(--coral-lt); }
-    .acc-btn.open {
-      border-color:var(--coral); background:var(--coral-lt);
-      border-radius:12px 12px 0 0; border-bottom-color:transparent;
+    .acc-btn:hover{border-color:var(--coral-md);background:var(--coral-lt)}
+    .acc-btn.open{
+      border-color:var(--coral);background:var(--coral-lt);
+      border-radius:12px 12px 0 0;border-bottom-color:transparent;
     }
-    .acc-lbl  { flex:1; min-width:0; }
-    .acc-name { font-size:.88rem; font-weight:700; color:var(--ink); display:block; }
-    .acc-sub  { font-size:.7rem; color:var(--muted); margin-top:1px; display:block; }
-    .acc-arrow{ font-size:.7rem; color:var(--muted); flex-shrink:0; transition:transform .28s var(--ease); }
-    .acc-btn.open .acc-arrow { transform:rotate(180deg); color:var(--coral); }
-    .acc-panel {
-      display:grid; grid-template-rows:0fr;
-      transition:grid-template-rows .3s var(--ease);
-    }
-    .acc-panel.open { grid-template-rows:1fr; }
-    .acc-panel-inner {
-      overflow:hidden; background:var(--coral-lt);
+    .acc-lbl{flex:1;min-width:0}
+    .acc-name{font-size:.88rem;font-weight:700;color:var(--ink);display:block}
+    .acc-sub{font-size:.7rem;color:var(--muted);margin-top:1px;display:block}
+    .acc-arrow{font-size:.7rem;color:var(--muted);flex-shrink:0;transition:transform .28s var(--ease)}
+    .acc-btn.open .acc-arrow{transform:rotate(180deg);color:var(--coral)}
+    .acc-panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s var(--ease)}
+    .acc-panel.open{grid-template-rows:1fr}
+    .acc-panel-inner{
+      overflow:hidden;background:var(--coral-lt);
       border:1.5px solid var(--coral);
-      border-top:none; border-radius:0 0 12px 12px;
+      border-top:none;border-radius:0 0 12px 12px;
     }
-    /* 4 por fila fijo, sin emojis */
-    .acc-tags {
-      display:grid; grid-template-columns:repeat(4,1fr);
-      gap:8px; padding:12px 14px;
+    /* Etiquetas: 4 por fila, compactas, sin emojis */
+    .acc-tags{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:10px 12px}
+    .acc-tag{
+      display:flex;flex-direction:column;align-items:center;gap:2px;
+      padding:8px 6px;border-radius:8px;
+      border:1.5px solid var(--border);background:var(--white);
+      text-decoration:none;text-align:center;
+      transition:.18s var(--ease);cursor:pointer;
     }
-    .acc-tag {
-      display:flex; flex-direction:column; align-items:center; gap:3px;
-      padding:11px 8px; border-radius:10px;
-      border:1.5px solid var(--border); background:var(--white);
-      text-decoration:none; text-align:center;
-      transition:.18s var(--ease); cursor:pointer;
-    }
-    .acc-tag:hover { border-color:var(--coral); transform:translateY(-2px); box-shadow:0 4px 14px rgba(232,84,42,.12); }
-    .acc-tag.active { border-color:var(--coral); background:var(--coral-lt); }
-    .acc-tag-name  { font-size:.74rem; font-weight:600; color:var(--ink); line-height:1.2; }
-    .acc-tag-count { font-size:.6rem; color:var(--muted); }
-    @media(max-width:560px){ .acc-tags{ grid-template-columns:repeat(2,1fr); } }
+    .acc-tag:hover{border-color:var(--coral);transform:translateY(-1px);box-shadow:0 3px 10px rgba(232,84,42,.12)}
+    .acc-tag.active{border-color:var(--coral);background:var(--coral-lt)}
+    .acc-tag-name{font-size:.7rem;font-weight:600;color:var(--ink);line-height:1.2}
+    .acc-tag-count{font-size:.58rem;color:var(--muted)}
+    @media(max-width:560px){.acc-tags{grid-template-columns:repeat(2,1fr)}}
 
     /* GOLD GALLERY */
     .gold-gallery{margin-top:52px;padding-top:28px;border-top:1px solid var(--border)}
@@ -749,7 +743,7 @@ const RANK = {
    PILLS BAR
 ═══════════════════════════════════════════ */
 /* ═══════════════════════════════════════════
-   ACORDEÓN — reemplaza pills + tiles
+   ACORDEÓN — reemplaza pills + cat-tiles
 ═══════════════════════════════════════════ */
 let _accOpen = null;
 
@@ -792,6 +786,7 @@ function toggleAcc(groupId) {
   const panel = document.getElementById('acc-panel-' + groupId);
   if (!btn || !panel) return;
   const isOpen = btn.classList.contains('open');
+  // Cierra el anterior
   if (_accOpen && _accOpen !== groupId) {
     document.getElementById('acc-btn-'   + _accOpen)?.classList.remove('open');
     document.getElementById('acc-panel-' + _accOpen)?.classList.remove('open');
@@ -799,12 +794,9 @@ function toggleAcc(groupId) {
   btn.classList.toggle('open', !isOpen);
   panel.classList.toggle('open', !isOpen);
   _accOpen = isOpen ? null : groupId;
-  if (!isOpen) {
-    setView({ mode: 'group', groupId });
-    setTimeout(() => btn.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 60);
-  } else {
-    setView({ mode: 'all' });
-  }
+  // Al abrir categoría → mostrar TODOS sus proveedores (mode group)
+  if (!isOpen) setView({ mode: 'group', groupId });
+  else         setView({ mode: 'all' });
 }
 
 function selectTag(groupId, catId) {
@@ -821,15 +813,11 @@ function setView(v) {
   syncActivePillToView();
   syncActiveTile();
   render();
-  // Scroll to top of content area
-  const area = document.getElementById('content-area');
-  if (area) {
-    const y = area.getBoundingClientRect().top + window.scrollY - 130;
-    window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
-  }
+  // Sin scroll automático — el usuario controla dónde está
 }
 
 function syncActivePillToView() {
+  // Sync visual en el acordeón
   document.querySelectorAll('.acc-tag').forEach(t => t.classList.remove('active'));
   if (VIEW.mode === 'cat' && VIEW.catId) {
     document.getElementById('acc-tag-' + VIEW.catId)?.classList.add('active');
@@ -889,7 +877,6 @@ function render() {
     html += `
       <div class="cat-section" id="${cat.id}">
         <div class="cat-header">
-
           <div>
             <h3>${cat.nombre}</h3>
             <p>${cat.desc||''}</p>
