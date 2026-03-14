@@ -158,7 +158,7 @@
     }
     .pos-btn:hover{border-color:var(--coral)}
     .pos-btn.selected{background:var(--coral-lt);border-color:var(--coral);color:var(--coral)}
-    .pos-btn[data-pos="1"].selected{background:var(--gold-lt);border-color:#E8C84A;color:var(--gold)}
+    .pos-btn[data-pos="5"].selected{background:var(--coral-lt);border-color:var(--coral-md);color:var(--coral)}
 
     /* ── PROVEEDORES TABLE ── */
     .prov-table-wrap{overflow-x:auto;border-radius:14px;border:1px solid var(--border);box-shadow:var(--shadow)}
@@ -170,9 +170,7 @@
     tr:hover td{background:var(--bg)}
     .td-name{font-weight:700;color:var(--ink)}
     .rank-dot{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;font-size:.75rem;font-weight:800;flex-shrink:0}
-    .rd-1{background:var(--gold-lt);color:var(--gold);border:1px solid #E8C84A}
-    .rd-2{background:#F3F4F6;color:#6B7280;border:1px solid #C0C0C0}
-    .rd-3{background:#FDF3E6;color:#9C6B2E;border:1px solid #CD7F32}
+    .rd-dest{background:var(--coral-lt);color:var(--coral);border:1px solid var(--coral-md)}
     .rd-basic{background:var(--bg2);color:var(--muted);border:1px solid var(--border)}
     .toggle-active{
       width:38px;height:22px;border-radius:99px;cursor:pointer;border:none;
@@ -405,7 +403,13 @@
             <option value="">Cargando...</option>
           </select>
         </div>
-        <div class="em-field"><label>Posición (1=Oro, 2=Plata, 3=Bronce, 4+=Básico)</label><input id="em-posicion" type="number" min="1" max="99"/></div>
+        <div class="em-field">
+          <label>Posición</label>
+          <select id="em-posicion" class="em-input">
+            <option value="5">✦ Destacado</option>
+            <option value="0">📋 Básico</option>
+          </select>
+        </div>
         <div class="em-field"><label>Precio mínimo</label><input id="em-precio-min" type="text" placeholder="$250.000"/></div>
         <div class="em-field"><label>Precio máximo</label><input id="em-precio-max" type="text" placeholder="$900.000"/></div>
         <div class="em-field full"><label>Comunas donde opera</label><input id="em-comunas" type="text"/></div>
@@ -590,12 +594,10 @@ function solCard(s) {
   const isPending = s.estado === 'pendiente';
   const cats = Array.isArray(s.categorias) ? s.categorias : [s.categorias];
   const posOpts = [
-    { val:1, label:'🥇 Oro' },
-    { val:2, label:'🥈 Plata' },
-    { val:3, label:'🥉 Bronce' },
-    { val:4, label:'📋 Básico' },
+    { val:5, label:'✦ Destacado' },
+    { val:0, label:'📋 Básico' },
   ];
-  const curPos = selectedPos[s.id] || 4;
+  const curPos = selectedPos[s.id] ?? 0;
 
   return `
   <div class="sol-card estado-${s.estado}" id="sol-${s.id}">
@@ -618,7 +620,7 @@ function solCard(s) {
     <div class="sol-actions">
       <div class="sol-estado ${isPending ? 'estado-pendiente' : 'estado-aprobada-badge'}">${isPending ? '⏳ Pendiente' : '✅ Aprobada'}</div>
       ${isPending ? `
-        <div style="font-size:.68rem;font-weight:700;color:var(--muted);margin-bottom:4px">POSICIÓN:</div>
+        <div style="font-size:.68rem;font-weight:700;color:var(--muted);margin-bottom:4px">TIPO DE CUENTA:</div>
         <div class="pos-selector">
           ${posOpts.map(p => `
             <div class="pos-btn${curPos === p.val ? ' selected' : ''}" data-pos="${p.val}"
@@ -642,7 +644,7 @@ function selectSolPos(solId, pos, el) {
 async function aprobar(id) {
   const sol = solicitudesData.find(s => s.id === id);
   if (!sol) return;
-  const posicion = selectedPos[id] || 4;
+  const posicion = selectedPos[id] ?? 0;
 
   try {
     const data = await apiFetch('admin-manage', {
@@ -650,7 +652,8 @@ async function aprobar(id) {
       body: JSON.stringify({ action: 'aprobar', id, posicion }),
     });
     if (!data.ok) throw new Error(data.error);
-    showToast(`✅ ${sol.nombre} aprobado en posición ${posicion}`, 'success');
+    const posLabel = posicion === 5 ? 'Destacado' : 'Básico';
+    showToast(`✅ ${sol.nombre} aprobado como ${posLabel}`, 'success');
     await loadSolicitudes();
     await loadProveedores();
   } catch (e) {
@@ -710,10 +713,10 @@ async function loadProveedores() {
           </thead>
           <tbody>
             ${proveedoresData.map(p => {
-              const rdCls = p.posicion === 1 ? 'rd-1' : p.posicion === 2 ? 'rd-2' : p.posicion === 3 ? 'rd-3' : 'rd-basic';
+              const rdCls = p.posicion === 5 ? 'rd-dest' : 'rd-basic';
               return `
               <tr>
-                <td><span class="rank-dot ${rdCls}">${p.posicion}</span></td>
+                <td><span class="rank-dot ${rdCls}">${p.posicion === 5 ? '✦' : '—'}</span></td>
                 <td>
                   <div class="td-name">${p.logo_emoji || '🍽️'} ${p.nombre}</div>
                   <div style="font-size:.74rem;color:var(--muted)">${p.tagline || ''}</div>
@@ -781,7 +784,8 @@ function openEdit(id) {
     if (!sel.value && sel.options.length) sel.selectedIndex = 0;
   }, 50);
   void 0; // placeholder for removed direct assignment
-  document.getElementById('em-posicion').value    = p.posicion || 4;
+  const emPos = document.getElementById('em-posicion');
+  if (emPos) emPos.value = (p.posicion === 5) ? '5' : '0';
   document.getElementById('em-precio-min').value  = p.precio_minimo || '';
   document.getElementById('em-precio-max').value  = p.precio_maximo || '';
   document.getElementById('em-comunas').value     = p.comunas || '';
