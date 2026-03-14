@@ -208,12 +208,6 @@
     .pb-gold{background:#FFF3CC;color:#B8860B;border:1px solid #E8C84A}
     .pb-silver{background:#F3F4F6;color:#6B7280;border:1px solid #C0C0C0}
     .pb-bronze{background:#FDF3E6;color:#9C6B2E;border:1px solid #CD7F32}
-    .pb-dest{background:var(--coral-lt);color:var(--coral);border:1.5px solid var(--coral-md);font-weight:800}
-    .pos-option.pos-dest-highlight{border-color:var(--coral-md)!important;background:linear-gradient(135deg,var(--coral-lt),#fff)!important}
-    .pos-option.pos-dest-highlight.selected{border-color:var(--coral)!important;box-shadow:0 0 0 3px var(--coral-lt),0 4px 20px rgba(232,84,42,.18)!important}
-    .pb-dest{background:var(--coral-lt);color:var(--coral);border:1.5px solid var(--coral-md);font-weight:800}
-    .pos-option.pos-dest-highlight{border-color:var(--coral-md)!important;background:linear-gradient(135deg,var(--coral-lt),#fff)!important}
-    .pos-option.pos-dest-highlight.selected{border-color:var(--coral)!important;box-shadow:0 0 0 3px var(--coral-lt),0 4px 20px rgba(232,84,42,.18)!important}
     .pb-basic{background:var(--bg2);color:var(--muted);border:1px solid var(--border2)}
 
     /* PRICE RANGE */
@@ -629,76 +623,46 @@
         </div>
       </div>
       <div class="form-card-body">
-        <!-- ✦ DESTACADO — opción premium separada, visible primero -->
-        <div style="margin-bottom:18px">
-          <div style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--coral);margin-bottom:10px;display:flex;align-items:center;gap:8px">
-            <span>✦</span> Opción con visibilidad máxima
-            <span style="flex:1;height:1px;background:var(--coral-md);opacity:.5"></span>
-          </div>
-          <label class="pos-option pos-dest-highlight" onclick="selectPos(this, 'Destacado #5')">
-            <input type="radio" name="posicion" value="Destacado #5" />
-            <span class="pos-badge pb-dest">✦ Recomendado</span>
-            <span class="pos-ico">⭐</span>
-            <div class="pos-name">Destacado</div>
-            <div class="pos-price">
-              Apareces en el <strong>carrusel del inicio</strong> y en la <strong>galería de recomendados</strong>.<br/>
-              Ficha completa con foto de portada.<br/>
-              <strong style="color:var(--coral)">$30.000/mes</strong>
-            </div>
-          </label>
-        </div>
-
-        <!-- POSICIONES EN EL DIRECTORIO -->
-        <div style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:8px">
-          Posición en el directorio
-          <span style="flex:1;height:1px;background:var(--border)"></span>
-        </div>
         <div class="pos-grid">
           <label class="pos-option" onclick="selectPos(this, 'Posición Oro #1')">
             <input type="radio" name="posicion" value="Posición Oro #1" />
-            <span class="pos-badge pb-gold">★★★ Top</span>
+            <span class="pos-badge pb-gold">★★★ Más visible</span>
             <span class="pos-ico">🥇</span>
             <div class="pos-name">Posición #1 Oro</div>
-            <div class="pos-price">Primer lugar del listado<br/><strong style="color:var(--teal)">Gratis ahora</strong> <s style="font-size:.73rem;color:var(--muted)">$50.000/mes</s></div>
+            <div class="pos-price">Top del listado<br/><strong style="color:var(--teal)">Gratis ahora</strong> <s style="font-size:.73rem;color:var(--muted)">$50.000/mes</s></div>
           </label>
           <label class="pos-option" onclick="selectPos(this, 'Posición Plata #2')">
             <input type="radio" name="posicion" value="Posición Plata #2" />
             <span class="pos-badge pb-silver">★★☆</span>
             <span class="pos-ico">🥈</span>
             <div class="pos-name">Posición #2 Plata</div>
-            <div class="pos-price">Segundo en el listado<br/><strong style="color:var(--teal)">Gratis ahora</strong> <s style="font-size:.73rem;color:var(--muted)">$30.000/mes</s></div>
+            <div class="pos-price">Segundo destacado<br/><strong style="color:var(--teal)">Gratis ahora</strong> <s style="font-size:.73rem;color:var(--muted)">$30.000/mes</s></div>
           </label>
           <label class="pos-option" onclick="selectPos(this, 'Posición Bronce #3')">
             <input type="radio" name="posicion" value="Posición Bronce #3" />
             <span class="pos-badge pb-bronze">★☆☆</span>
             <span class="pos-ico">🥉</span>
             <div class="pos-name">Posición #3 Bronce</div>
-            <div class="pos-price">Tercero en el listado<br/><strong style="color:var(--teal)">Gratis ahora</strong> <s style="font-size:.73rem;color:var(--muted)">$20.000/mes</s></div>
+            <div class="pos-price">Tercer destacado<br/><strong style="color:var(--teal)">Gratis ahora</strong> <s style="font-size:.73rem;color:var(--muted)">$20.000/mes</s></div>
           </label>
           <label class="pos-option" onclick="selectPos(this, 'Listado Básico')">
             <input type="radio" name="posicion" value="Listado Básico" />
             <span class="pos-badge pb-basic">Básico</span>
             <span class="pos-ico">📋</span>
             <div class="pos-name">Listado Básico</div>
-            <div class="pos-price">Apareces en el listado simple<br/><strong style="color:var(--teal)">Siempre gratis</strong></div>
+            <div class="pos-price">Visibilidad básica<br/><strong style="color:var(--teal)">Siempre gratis</strong></div>
           </label>
         </div>
 
-        <!-- Info combinar -->
-        <div style="margin-top:14px;padding:13px 16px;background:var(--coral-lt);border:1.5px solid var(--coral-md);border-radius:12px;font-size:.78rem;color:var(--ink2);line-height:1.6;display:flex;gap:10px;align-items:flex-start">
-          <span style="flex-shrink:0;font-size:1rem">💡</span>
-          <span><strong style="color:var(--coral)">¿Puedo combinarlos?</strong> Sí. Puedes tener una posición en el directorio (Oro/Plata/Bronce) <em>y además</em> ser Destacado. Son independientes. Un Destacado aparece en el carrusel del inicio sin importar su posición en el directorio.</span>
-        </div>
-
         <!-- Aviso promocional -->
-        <div style="margin-top:12px;padding:14px 18px;background:#f0fdf4;border-radius:12px;border:1.5px solid #86efac">
+        <div style="margin-top:16px;padding:14px 18px;background:#f0fdf4;border-radius:12px;border:1.5px solid #86efac">
           <p style="font-size:.82rem;color:#166534;line-height:1.65">
-            🎉 <strong>¡Lanzamiento gratuito!</strong> Las posiciones #1, #2 y #3 son <strong>gratis durante los primeros 2 meses</strong> por orden de llegada. ¡Aprovecha antes que se llenen!
+            🎉 <strong>¡Lanzamiento gratuito!</strong> Por orden de llegada, las posiciones destacadas son <strong>gratis durante los primeros 2 meses</strong>. Luego se confirmará la suscripción al valor indicado, por orden de quién paga primero. ¡Aprovecha ahora antes que se acaben!
           </p>
         </div>
 
         <div style="margin-top:10px;padding:14px 18px;background:var(--bg);border-radius:12px;border:1px solid var(--border)">
-          <p style="font-size:.82rem;color:var(--muted);line-height:1.6">💡 <strong style="color:var(--ink)">¿Cómo funciona?</strong> Las posiciones se asignan por orden de solicitud. Te contactaremos para confirmar y activar tu publicación.</p>
+          <p style="font-size:.82rem;color:var(--muted);line-height:1.6">💡 <strong style="color:var(--ink)">¿Cómo funciona?</strong> Las posiciones se asignan por orden de solicitud. Una vez revisemos tu registro, te contactaremos para confirmar tu posición y activar tu publicación.</p>
         </div>
       </div>
     </div>
@@ -873,7 +837,7 @@
             <div style="width:26px;height:26px;border-radius:50%;background:#F9D849;color:#8B6914;font-size:.78rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">4</div>
             <div>
               <div style="font-size:.82rem;font-weight:700;color:var(--ink);margin-bottom:3px">Mándanos el link cuando lo tengas</div>
-              <div style="font-size:.76rem;color:var(--muted);line-height:1.5">Una vez tengas tu ficha configurada, mándanos el link de Google Maps a <a href="/cdn-cgi/l/email-protection#ddbeb2b3a9bcbea9b2beb2a9b4a7bcb8abb8b3a9b2ae9dbab0bcb4b1f3beb2b0" style="color:var(--coral);font-weight:600"><span class="__cf_email__" data-cfemail="60030f0e140103140f030f14091a010516050e140f1320070d01090c4e030f0d">[email&#160;protected]</span></a> y nosotros vinculamos las reseñas a tu perfil. ¡Sin que tengas que hacer nada técnico!</div>
+              <div style="font-size:.76rem;color:var(--muted);line-height:1.5">Una vez tengas tu ficha configurada, mándanos el link de Google Maps a <a href="/cdn-cgi/l/email-protection#4724282933262433282428332e3d262231222933283407202a262e2b6924282a" style="color:var(--coral);font-weight:600"><span class="__cf_email__" data-cfemail="cfaca0a1bbaeacbba0aca0bba6b5aeaab9aaa1bba0bc8fa8a2aea6a3e1aca0a2">[email&#160;protected]</span></a> y nosotros vinculamos las reseñas a tu perfil. ¡Sin que tengas que hacer nada técnico!</div>
             </div>
           </div>
         </div>
@@ -933,7 +897,7 @@
         <p style="font-size:.85rem;color:var(--ink2);line-height:1.7">
           ✅ <strong>¿Qué pasa ahora?</strong><br/>
           Nuestro equipo revisará tu información y te contactará en 48 horas para activar tu publicación.<br/>
-          Si necesitas hacer cambios, escríbenos a <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="62010d0c160301160d010d160b18030714070c160d1122050f030b0e4c010d0f">[email&#160;protected]</a></strong>
+          Si necesitas hacer cambios, escríbenos a <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="14777b7a607577607b777b607d6e757162717a607b67547379757d783a777b79">[email&#160;protected]</a></strong>
         </p>
       </div>
 
@@ -1608,4 +1572,24 @@ function toggleFaq(item) {
 }
 
 function removeImage(type) {
-  if (type
+  if (type === 'cover') {
+    coverUrl = '';
+    document.getElementById('cover-url-input').value = '';
+    document.getElementById('cover-preview-wrap').style.display = 'none';
+    document.getElementById('cover-upload-status').textContent = '';
+  } else {
+    logoUrl = '';
+    document.getElementById('logo-url').value = '';
+    document.getElementById('logo-preview-wrap').style.display = 'none';
+    document.getElementById('logo-upload-status').textContent = '';
+  }
+}
+
+function submitForm() {
+  if (!validate(currentStep)) return;
+  buildSummary();
+  openConfirmPopup();
+}
+</script>
+</body>
+</html>
