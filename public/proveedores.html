@@ -518,20 +518,11 @@
     .expand-btn{width:100%;padding:10px;margin-top:8px;border:1.5px dashed var(--border);border-radius:10px;background:var(--bg);color:var(--muted);font-size:.82rem;font-weight:600;cursor:pointer;transition:.18s}
     .expand-btn:hover{border-color:var(--coral);color:var(--coral);background:var(--coral-lt)}
     /* CAT TILES */
-    /* ── ACORDEÓN GRUPOS ── */
+    /* ── ACORDEÓN ── */
     .acc-grp{margin-bottom:8px}
-    .acc-btn{
-      width:100%;display:flex;align-items:center;gap:12px;
-      padding:13px 18px;background:var(--white);
-      border:1.5px solid var(--border2);border-radius:12px;
-      cursor:pointer;font-family:'Outfit',sans-serif;text-align:left;
-      transition:.2s var(--ease);
-    }
+    .acc-btn{width:100%;display:flex;align-items:center;gap:12px;padding:13px 18px;background:var(--white);border:1.5px solid var(--border2);border-radius:12px;cursor:pointer;font-family:'Outfit',sans-serif;text-align:left;transition:.2s var(--ease)}
     .acc-btn:hover{border-color:var(--coral-md);background:var(--coral-lt)}
-    .acc-btn.open{
-      border-color:var(--coral);background:var(--coral-lt);
-      border-radius:12px 12px 0 0;border-bottom-color:transparent;
-    }
+    .acc-btn.open{border-color:var(--coral);background:var(--coral-lt);border-radius:12px 12px 0 0;border-bottom-color:transparent}
     .acc-lbl{flex:1;min-width:0}
     .acc-name{font-size:.88rem;font-weight:700;color:var(--ink);display:block}
     .acc-sub{font-size:.7rem;color:var(--muted);margin-top:1px;display:block}
@@ -539,25 +530,15 @@
     .acc-btn.open .acc-arrow{transform:rotate(180deg);color:var(--coral)}
     .acc-panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s var(--ease)}
     .acc-panel.open{grid-template-rows:1fr}
-    .acc-panel-inner{
-      overflow:hidden;background:var(--coral-lt);
-      border:1.5px solid var(--coral);
-      border-top:none;border-radius:0 0 12px 12px;
-    }
-    /* Etiquetas: 4 por fila, compactas, sin emojis */
+    .acc-panel-inner{overflow:hidden;background:var(--coral-lt);border:1.5px solid var(--coral);border-top:none;border-radius:0 0 12px 12px}
+    /* mínimo 3, máximo 4 por fila */
     .acc-tags{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:10px 12px}
-    .acc-tag{
-      display:flex;flex-direction:column;align-items:center;gap:2px;
-      padding:8px 6px;border-radius:8px;
-      border:1.5px solid var(--border);background:var(--white);
-      text-decoration:none;text-align:center;
-      transition:.18s var(--ease);cursor:pointer;
-    }
+    @media(max-width:640px){.acc-tags{grid-template-columns:repeat(3,1fr)}}
+    .acc-tag{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 6px;border-radius:8px;border:1.5px solid var(--border);background:var(--white);text-decoration:none;text-align:center;transition:.18s var(--ease);cursor:pointer}
     .acc-tag:hover{border-color:var(--coral);transform:translateY(-1px);box-shadow:0 3px 10px rgba(232,84,42,.12)}
     .acc-tag.active{border-color:var(--coral);background:var(--coral-lt)}
     .acc-tag-name{font-size:.7rem;font-weight:600;color:var(--ink);line-height:1.2}
     .acc-tag-count{font-size:.58rem;color:var(--muted)}
-    @media(max-width:560px){.acc-tags{grid-template-columns:repeat(2,1fr)}}
 
     /* GOLD GALLERY */
     .gold-gallery{margin-top:52px;padding-top:28px;border-top:1px solid var(--border)}
@@ -596,14 +577,9 @@
     <div>
       <div class="ph-eyebrow">Directorio verificado</div>
       <h1>Proveedores para tu evento</h1>
-      <p>Encuentra el proveedor ideal por categoría. Las 3 primeras posiciones incluyen información completa y contacto directo.</p>
+      <p>Encuentra el proveedor ideal por categoría y contacta directamente al que más te guste.</p>
     </div>
-    <div class="ph-legend">
-      <div class="legend-item"><div class="legend-dot ld-1"></div> Posición #1 — Oro</div>
-      <div class="legend-item"><div class="legend-dot ld-2"></div> Posición #2 — Plata</div>
-      <div class="legend-item"><div class="legend-dot ld-3"></div> Posición #3 — Bronce</div>
-      <div class="legend-item"><div class="legend-dot ld-basic"></div> Listado básico</div>
-    </div>
+
   </div>
 </div>
 
@@ -703,8 +679,26 @@ async function loadProviders() {
     GRUPOS = data.grupos || [];
     buildIndex();
     buildCatBar();
-    // Default: first category whose name includes 'pizza', else first cat of first group
+    // URL params: ?cat=ID | ?grupo=ID | ?all=1 | ?scroll=1 (desde index)
+    const params     = new URLSearchParams(location.search);
+    const paramCat   = params.get('cat');
+    const paramGrupo = params.get('grupo');
+    const paramAll   = params.get('all');
+    const paramScroll = params.get('scroll') === '1';
+
     const defaultCat = (() => {
+      if (paramAll) return { mode: 'all', groupId: null, catId: null };
+      if (paramGrupo) {
+        const g = GRUPOS.find(g => g.id === paramGrupo);
+        if (g) return { mode: 'group', groupId: g.id, catId: null };
+      }
+      if (paramCat) {
+        for (const g of GRUPOS) {
+          const cat = g.categorias.find(c => c.id === paramCat);
+          if (cat) return { mode: 'cat', groupId: g.id, catId: cat.id };
+        }
+      }
+      // Default: pizzas, sino primera cat
       for (const g of GRUPOS) {
         for (const cat of g.categorias) {
           if (cat.nombre.toLowerCase().includes('pizza')) return { mode: 'cat', groupId: g.id, catId: cat.id };
@@ -713,22 +707,29 @@ async function loadProviders() {
       if (GRUPOS[0]?.categorias[0]) return { mode: 'cat', groupId: GRUPOS[0].id, catId: GRUPOS[0].categorias[0].id };
       return { mode: 'all', groupId: null, catId: null };
     })();
+
     VIEW = defaultCat;
     render();
-    // Auto-abrir el grupo por defecto en el acordeón
+
+    // Auto-abrir grupo en acordeón
     if (defaultCat.groupId) {
       setTimeout(() => {
         const btn   = document.getElementById('acc-btn-'   + defaultCat.groupId);
         const panel = document.getElementById('acc-panel-' + defaultCat.groupId);
         if (btn && panel) {
-          btn.classList.add('open');
-          panel.classList.add('open');
+          btn.classList.add('open'); panel.classList.add('open');
           _accOpen = defaultCat.groupId;
           if (defaultCat.catId)
             document.getElementById('acc-tag-' + defaultCat.catId)?.classList.add('active');
         }
-      }, 100);
+        // Scroll si viene desde index con ?scroll=1
+        if (paramScroll) {
+          const area = document.getElementById('content-area');
+          if (area) window.scrollTo({ top: area.getBoundingClientRect().top + window.scrollY - 130, behavior: 'smooth' });
+        }
+      }, 200);
     }
+
     window.addEventListener('scroll', updateActivePill, { passive: true });
   } catch (e) {
     area.innerHTML = `<div style="text-align:center;padding:60px 24px;color:var(--muted)"><span style="font-size:3rem;display:block;margin-bottom:14px">⚠️</span><h3 style="font-size:1.2rem;color:var(--ink);margin-bottom:8px">Error al cargar proveedores</h3><p style="font-size:.88rem">${e.message}</p></div>`;
@@ -745,22 +746,17 @@ const RANK = {
    PILLS BAR
 ═══════════════════════════════════════════ */
 /* ═══════════════════════════════════════════
-   ACORDEÓN — reemplaza pills + cat-tiles
-   - Clic en categoría (grupo): muestra todos sus proveedores, SIN scroll
-   - Clic en etiqueta: filtra esa etiqueta, CON scroll a proveedores
+   ACORDEÓN
 ═══════════════════════════════════════════ */
 let _accOpen = null;
-
 function buildCatBar() { buildAccordion(); }
 
 function buildAccordion() {
   const acc = document.getElementById('cat-accordion');
   if (!acc) return;
-
   acc.innerHTML = GRUPOS.map(g => {
     const total = g.categorias.reduce((s, cat) => s + cat.proveedores.length, 0);
-    return `
-    <div class="acc-grp">
+    return `<div class="acc-grp">
       <button class="acc-btn" id="acc-btn-${g.id}" onclick="toggleAcc('${g.id}')">
         <span class="acc-lbl">
           <span class="acc-name">${g.nombre}</span>
@@ -769,21 +765,16 @@ function buildAccordion() {
         <span class="acc-arrow">▼</span>
       </button>
       <div class="acc-panel" id="acc-panel-${g.id}">
-        <div class="acc-panel-inner">
-          <div class="acc-tags">
-            ${g.categorias.map(cat => `
-              <a class="acc-tag" id="acc-tag-${cat.id}"
-                 onclick="selectTag('${g.id}','${cat.id}');return false" href="#">
-                <span class="acc-tag-name">${cat.nombre}</span>
-                <span class="acc-tag-count">${cat.proveedores.length} prov.</span>
-              </a>
-            `).join('')}
-          </div>
-        </div>
+        <div class="acc-panel-inner"><div class="acc-tags">
+          ${g.categorias.map(cat => `
+            <a class="acc-tag" id="acc-tag-${cat.id}" onclick="selectTag('${g.id}','${cat.id}');return false" href="#">
+              <span class="acc-tag-name">${cat.nombre}</span>
+              <span class="acc-tag-count">${cat.proveedores.length} prov.</span>
+            </a>`).join('')}
+        </div></div>
       </div>
     </div>`;
   }).join('');
-
   acc.style.display = 'block';
 }
 
@@ -792,30 +783,23 @@ function toggleAcc(groupId) {
   const panel = document.getElementById('acc-panel-' + groupId);
   if (!btn || !panel) return;
   const isOpen = btn.classList.contains('open');
-
-  // Cierra el anterior
   if (_accOpen && _accOpen !== groupId) {
     document.getElementById('acc-btn-'   + _accOpen)?.classList.remove('open');
     document.getElementById('acc-panel-' + _accOpen)?.classList.remove('open');
   }
-
   btn.classList.toggle('open', !isOpen);
   panel.classList.toggle('open', !isOpen);
   _accOpen = isOpen ? null : groupId;
-
-  // Clic en categoría: muestra todos sus proveedores, SIN scroll automático
-  if (!isOpen) {
-    setView({ mode: 'group', groupId }, false);  // false = sin scroll
-  } else {
-    setView({ mode: 'all' }, false);
-  }
+  // Mostrar todos los proveedores del grupo, SIN scroll
+  if (!isOpen) setView({ mode: 'group', groupId }, false);
+  else         setView({ mode: 'all' }, false);
 }
 
 function selectTag(groupId, catId) {
-  // Clic en etiqueta: filtra esa etiqueta, CON scroll a proveedores
+  // Filtrar por etiqueta CON scroll a proveedores
   document.querySelectorAll('.acc-tag').forEach(t => t.classList.remove('active'));
   document.getElementById('acc-tag-' + catId)?.classList.add('active');
-  setView({ mode: 'cat', groupId, catId }, true);  // true = con scroll
+  setView({ mode: 'cat', groupId, catId }, true);
 }
 
 /* ═══════════════════════════════════════════
@@ -826,7 +810,7 @@ function setView(v, doScroll) {
   syncActivePillToView();
   syncActiveTile();
   render();
-  // Scroll solo cuando se pide explícitamente (al clickear una etiqueta)
+  // Scroll solo al clickear etiqueta (doScroll=true)
   if (doScroll) {
     const area = document.getElementById('content-area');
     if (area) {
@@ -837,18 +821,15 @@ function setView(v, doScroll) {
 }
 
 function syncActivePillToView() {
-  // Acordeón: resaltar la etiqueta activa si hay una seleccionada
   document.querySelectorAll('.acc-tag').forEach(t => t.classList.remove('active'));
-  if (VIEW.mode === 'cat' && VIEW.catId) {
+  if (VIEW.mode === 'cat' && VIEW.catId)
     document.getElementById('acc-tag-' + VIEW.catId)?.classList.add('active');
-  }
 }
 
 function syncActiveTile() {
   document.querySelectorAll('.acc-tag').forEach(t => t.classList.remove('active'));
-  if (VIEW.mode === 'cat' && VIEW.catId) {
+  if (VIEW.mode === 'cat' && VIEW.catId)
     document.getElementById('acc-tag-' + VIEW.catId)?.classList.add('active');
-  }
 }
 
 /* ═══════════════════════════════════════════

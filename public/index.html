@@ -267,8 +267,9 @@
       border:1.5px solid var(--coral);
       border-top:none;border-radius:0 0 14px 14px;
     }
-    /* 4 por fila, etiquetas compactas sin emoji */
+    /* mínimo 3 por fila, máximo 4 */
     .cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:10px 12px}
+    @media(max-width:640px){.cat-grid{grid-template-columns:repeat(3,1fr)}}
     .cat-tile{
       background:var(--white);border:1.5px solid var(--border);
       border-radius:8px;padding:9px 6px;
@@ -276,10 +277,9 @@
       display:flex;flex-direction:column;align-items:center;
       text-decoration:none;color:var(--ink);
     }
-    .cat-tile:hover{border-color:var(--coral);background:var(--white);transform:translateY(-2px);box-shadow:0 4px 14px rgba(232,84,42,.12)}
+    .cat-tile:hover{border-color:var(--coral);transform:translateY(-2px);box-shadow:0 4px 14px rgba(232,84,42,.12)}
     .cat-tile h4{font-size:.73rem;font-weight:600;line-height:1.3;color:var(--ink)}
     .cat-tile .count{font-size:.6rem;color:var(--muted);margin-top:2px}
-    @media(max-width:600px){.cat-grid{grid-template-columns:repeat(2,1fr)}}
 
     /* view all */
     .view-all-wrap {
@@ -920,7 +920,7 @@ async function loadCategories() {
           <div class="cat-group-panel-inner">
             <div class="cat-grid">
               ${g.categorias.map(cat => `
-                <a class="cat-tile" href="proveedores.html?cat=${cat.id}">
+                <a class="cat-tile" href="proveedores.html?cat=${cat.id}&scroll=1">
                   <h4>${cat.nombre}</h4>
                   <span class="count">${cat.proveedores.length} proveedor${cat.proveedores.length!==1?'es':''}</span>
                 </a>
