@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Admin – CotizaTuFiesta.cl</title>
+  <title>Admin – CotizaEventos.cl</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700;900&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
@@ -407,7 +407,7 @@
           <label>Posición</label>
           <select id="em-posicion" class="em-input">
             <option value="5">✦ Destacado</option>
-            <option value="0">📋 Básico</option>
+            <option value="4">📋 Básico</option>
           </select>
         </div>
         <div class="em-field"><label>Precio mínimo</label><input id="em-precio-min" type="text" placeholder="$250.000"/></div>
@@ -424,6 +424,7 @@
         <div class="em-field"><label>TikTok</label><input id="em-tiktok" type="text"/></div>
         <div class="em-field"><label>Emoji/Logo</label><input id="em-logo-emoji" type="text" maxlength="4" placeholder="🍕"/></div>
         <div class="em-field"><label>URL logo (opcional)</label><input id="em-logo-url" type="text"/></div>
+        <div class="em-field full"><label>URL portada (cover)</label><input id="em-cover-url" type="text" placeholder="https://..."/></div>
       </div>
     </div>
     <div class="em-footer">
@@ -791,7 +792,7 @@ function openEdit(id) {
   }, 50);
   void 0; // placeholder for removed direct assignment
   const emPos = document.getElementById('em-posicion');
-  if (emPos) emPos.value = (p.posicion === 5) ? '5' : '0';
+  if (emPos) emPos.value = (p.posicion === 5) ? '5' : '4';
   document.getElementById('em-precio-min').value  = p.precio_minimo || '';
   document.getElementById('em-precio-max').value  = p.precio_maximo || '';
   document.getElementById('em-comunas').value     = p.comunas || '';
@@ -806,6 +807,7 @@ function openEdit(id) {
   document.getElementById('em-tiktok').value      = p.tiktok || '';
   document.getElementById('em-logo-emoji').value  = p.logo_emoji || '🍽️';
   document.getElementById('em-logo-url').value    = p.logo_url || '';
+  document.getElementById('em-cover-url').value   = p.cover_url || '';
 
   document.getElementById('edit-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -842,6 +844,7 @@ async function saveEdit() {
     tiktok:        document.getElementById('em-tiktok').value.trim(),
     logo_emoji:    document.getElementById('em-logo-emoji').value.trim(),
     logo_url:      document.getElementById('em-logo-url').value.trim(),
+    cover_url:     document.getElementById('em-cover-url').value.trim(),
   };
 
   if (!fields.nombre) { showToast('El nombre es obligatorio.', 'error'); return; }

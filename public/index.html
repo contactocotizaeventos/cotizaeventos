@@ -695,77 +695,6 @@
       .hero-title { font-size: 2rem; }
     }
 
-  /* ── FEATURED GOLD CARDS ── */
-  .feat-card{
-    background:var(--white);border-radius:20px;
-    box-shadow:0 4px 24px rgba(0,0,0,.07);
-    border:2px solid #F9D849;
-    overflow:hidden;transition:.28s var(--ease);
-    cursor:pointer;display:flex;flex-direction:column;
-    text-decoration:none;color:inherit;
-  }
-  .feat-card:hover{transform:translateY(-5px);box-shadow:0 16px 40px rgba(0,0,0,.13)}
-  /* ── CAROUSEL ── */
-  .car-slide{display:none;flex-direction:column;background:var(--white);border-radius:20px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.25)}
-  .car-slide.active{display:flex;animation:carFade .35s ease}
-  @keyframes carFade{from{opacity:.4;transform:translateX(12px)}to{opacity:1;transform:none}}
-  .car-cover{width:100%;height:220px;object-fit:cover;display:block}
-  .car-cover-ph{width:100%;height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:3rem;background:#111;color:rgba(255,255,255,.18)}
-  .car-cover-ph::after{content:'img';font-size:.65rem;letter-spacing:.12em;color:rgba(255,255,255,.22)}
-  .car-body{padding:20px 24px 14px}
-  .car-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:99px;font-size:.7rem;font-weight:700;margin-bottom:10px;width:fit-content}
-  .car-dest{background:var(--coral-lt);color:var(--coral);border:1px solid var(--coral-md);font-weight:700}
-  .car-name{font-size:1.15rem;font-weight:700;color:var(--ink);margin-bottom:4px}
-  .car-tagline{font-size:.83rem;color:var(--muted);line-height:1.5;margin-bottom:10px}
-  .car-price{font-size:.85rem;font-weight:600;color:var(--coral)}
-  .car-foot{padding:14px 24px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px}
-  .car-loc{font-size:.75rem;color:var(--muted)}
-  .car-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.25);cursor:pointer;transition:.2s;border:none}
-  .car-dot.on{background:#fff;transform:scale(1.2)}
-
-  .feat-cover{width:100%;height:150px;object-fit:cover;display:block}
-  .feat-cover-ph{width:100%;height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;font-size:2.5rem;background:#111;color:rgba(255,255,255,.18)} .feat-cover-ph::after{content:"img";font-size:.62rem;letter-spacing:.12em;color:rgba(255,255,255,.2)}
-  .feat-body{padding:18px 20px 20px;flex:1;display:flex;flex-direction:column;gap:6px}
-  .feat-badge{display:inline-flex;align-items:center;gap:5px;background:#FFF8E1;color:#B8860B;border:1px solid #F9D849;padding:3px 10px;border-radius:99px;font-size:.7rem;font-weight:700;width:fit-content}
-  .feat-name{font-size:1rem;font-weight:700;color:var(--ink);line-height:1.25}
-  .feat-tagline{font-size:.78rem;color:var(--muted);line-height:1.45}
-  .feat-price{font-size:.8rem;font-weight:600;color:var(--coral);margin-top:4px}
-  .feat-footer{padding:12px 20px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center}
-  .feat-cat{font-size:.72rem;color:var(--muted);flex:1}
-  .feat-wa{padding:6px 14px;background:#25D366;color:#fff;border-radius:99px;font-size:.74rem;font-weight:700;text-decoration:none;white-space:nowrap}
-  .feat-wa:hover{background:#1db954}
-
-  /* ── IMAGE STRIP ── */
-  .img-strip-tile {
-    flex: 1; position: relative; overflow: hidden;
-    background: #0D0D0D;
-    transition: flex .4s var(--ease);
-    cursor: default;
-  }
-  .img-strip-tile:hover { flex: 1.6; }
-  .img-strip-tile.has-img {
-    background-size: cover;
-    background-position: center;
-  }
-  .img-strip-tile::after {
-    content: ''; position: absolute; inset: 0;
-    background: linear-gradient(to top, rgba(0,0,0,.35) 0%, transparent 60%);
-    opacity: 0; transition: opacity .3s;
-  }
-  .img-strip-tile:hover::after { opacity: 1; }
-  .img-strip-ph {
-    position: absolute; inset: 0;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 6px;
-    font-size: 2rem; color: rgba(255,255,255,.15);
-  }
-  .img-strip-ph::after {
-    content: 'img';
-    font-family: 'Outfit', monospace; font-size: .65rem; letter-spacing: .14em;
-    color: rgba(255,255,255,.18); text-transform: uppercase;
-  }
-  .img-strip-tile.has-img .img-strip-ph { display: none; }
-  @media(max-width:600px) { #img-strip { display: none; } }
   </style>
 </head>
 <body>
@@ -898,22 +827,66 @@
   </div>
 </section>
 <style>
-  .dest-card{background:var(--white);border-radius:14px;overflow:hidden;cursor:pointer;transition:.25s;display:flex;flex-direction:column;text-decoration:none;color:inherit;height:100%}
+  /* ── GRID DESTACADOS (index) ── */
+  #dest-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;grid-auto-rows:1fr}
+  .dest-card{
+    background:var(--white);border-radius:14px;overflow:hidden;
+    cursor:pointer;transition:.25s;
+    display:flex;flex-direction:column;
+    text-decoration:none;color:inherit;
+  }
   .dest-card:hover{transform:translateY(-4px);box-shadow:0 14px 36px rgba(0,0,0,.22)}
-  .dest-cover{width:100%;height:110px;object-fit:cover;display:block;flex-shrink:0}
-  .dest-cover-ph{width:100%;height:110px;background:#111;display:flex;align-items:center;justify-content:center;font-size:2rem;color:rgba(255,255,255,.15);flex-shrink:0}
-  .dest-body{padding:10px 12px 8px;flex:1;min-height:72px}
-  .dest-badge{font-size:.6rem;font-weight:700;color:var(--coral);background:var(--coral-lt);border:1px solid var(--coral-md);padding:2px 7px;border-radius:99px;display:inline-block;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
-  .dest-name{font-size:.84rem;font-weight:700;color:var(--ink);line-height:1.2;margin-bottom:2px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
-  .dest-tagline{font-size:.7rem;color:var(--muted);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-  .dest-foot{padding:7px 12px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;margin-top:auto}
+  /* Cover: altura fija siempre, independiente del contenido */
+  .dest-cover-wrap{
+    width:100%;height:110px;flex-shrink:0;overflow:hidden;
+    background:#111;
+  }
+  .dest-cover-wrap img{width:100%;height:110px;object-fit:cover;display:block}
+  .dest-cover-ph{
+    width:100%;height:110px;
+    background:#111;
+    display:flex;align-items:center;justify-content:center;
+    color:rgba(255,255,255,.12);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;
+  }
+  /* Body: flex:1 para empujar footer al fondo */
+  .dest-body{padding:10px 12px 6px;flex:1;display:flex;flex-direction:column}
+  .dest-badge{
+    font-size:.58rem;font-weight:700;color:var(--coral);
+    background:var(--coral-lt);border:1px solid var(--coral-md);
+    padding:2px 6px;border-radius:99px;display:inline-block;
+    margin-bottom:6px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;
+  }
+  .dest-name{
+    font-size:.82rem;font-weight:700;color:var(--ink);line-height:1.25;
+    display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;
+  }
+  .dest-tagline{
+    font-size:.68rem;color:var(--muted);line-height:1.4;margin-top:3px;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  }
+  /* Footer: siempre pegado al fondo */
+  .dest-foot{
+    margin-top:auto;padding:7px 12px;
+    border-top:1px solid var(--border);
+    display:flex;align-items:center;justify-content:space-between;
+  }
   .dest-price{font-size:.72rem;font-weight:600;color:var(--coral)}
-  .dest-wa{width:26px;height:26px;border-radius:8px;background:#25D366;color:#fff;display:flex;align-items:center;justify-content:center;font-size:.72rem;text-decoration:none;flex-shrink:0;font-weight:700}
+  .dest-wa{
+    width:26px;height:26px;border-radius:8px;
+    background:#25D366;color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-size:.62rem;font-weight:700;text-decoration:none;flex-shrink:0;
+  }
   .dest-wa:hover{background:#1db954}
-  .dest-pg-btn{width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.6);cursor:pointer;font-size:.8rem;font-weight:600;transition:.18s}
+  .dest-pg-btn{
+    width:32px;height:32px;border-radius:8px;
+    background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);
+    color:rgba(255,255,255,.6);cursor:pointer;font-size:.8rem;font-weight:600;transition:.18s;
+  }
   .dest-pg-btn:hover,.dest-pg-btn.active{background:var(--coral);border-color:var(--coral);color:#fff}
   @media(max-width:860px){#dest-grid{grid-template-columns:repeat(2,1fr)}}
-  @media(max-width:480px){#dest-grid{grid-template-columns:repeat(2,1fr);gap:10px}.dest-cover,.dest-cover-ph{height:90px}}
+  @media(max-width:480px){#dest-grid{grid-template-columns:repeat(2,1fr);gap:10px}.dest-cover-wrap,.dest-cover-wrap img,.dest-cover-ph{height:90px}}
 </style>
 
 <!-- ══ CÓMO FUNCIONA ══ -->
@@ -1099,7 +1072,7 @@ document.addEventListener('click',e=>{
 });
 
 const WA_NUMERO    = "56991999301";
-const EMAIL_DESTINO= "cotizaciones@cotizatufiesta.cl";
+const EMAIL_DESTINO= "contactocotizaeventos@gmail.com";
 
 /* ── Cargar categorías dinámicamente desde API ── */
 async function loadCategories() {
@@ -1150,7 +1123,7 @@ async function loadCategories() {
     grupos.forEach(g => g.categorias.forEach(cat => {
       SERVICIOS.push({
         id: cat.id,
-        ico: cat.ico || CAT_ICONS[cat.id] || '🍽️',
+        ico: cat.ico || '🍽️',
         nombre: cat.nombre,
         desc: cat.desc || '',
       });
@@ -1161,7 +1134,7 @@ async function loadCategories() {
     const destProviders = [];
     grupos.forEach(g => g.categorias.forEach(cat => {
       cat.proveedores.forEach(p => {
-        if (p.pos === 5 || p.posicion === 5) destProviders.push({ ...p, catNombre: cat.nombre });
+        if (p.pos === 5 || p.posicion === 5) destProviders.push({ ...p, catNombre: cat.nombre, _catId: cat.id });
       });
     }));
 
@@ -1181,13 +1154,13 @@ async function loadCategories() {
       const slice = destProviders.slice(page * PER_PAGE, page * PER_PAGE + PER_PAGE);
       destGrid.innerHTML = slice.map(p => {
         const waMsg = encodeURIComponent('Hola ' + p.nombre + '! Los vi en CotizaEventos.cl y me interesa cotizar sus servicios.');
-        const cover = p.cover_url
-          ? `<img class="dest-cover" src="${p.cover_url}" alt="Catering ${p.nombre} para eventos Santiago" loading="lazy">`
-          : `<div class="dest-cover-ph">${p.logo || ''}</div>`;
-        return `<div class="dest-card" onclick="window.location='proveedores.html?cat=${p._cat||''}'">
-          ${cover}
+        const coverInner = p.cover_url
+          ? `<img src="${p.cover_url}" alt="${p.nombre}" loading="lazy">`
+          : `<div class="dest-cover-ph"></div>`;
+        return `<div class="dest-card" onclick="window.location='proveedores.html?cat=${p._catId||''}'">
+          <div class="dest-cover-wrap">${coverInner}</div>
           <div class="dest-body">
-            <div class="dest-badge">✦ Destacado · ${p.catNombre}</div>
+            <div class="dest-badge">✦ ${p.catNombre}</div>
             <div class="dest-name">${p.nombre}</div>
             <div class="dest-tagline">${p.tagline || p.diff || ''}</div>
           </div>
@@ -1424,18 +1397,6 @@ const STRIP_IMAGES = [
   // 'https://tu-imagen-3.jpg',
   // 'https://tu-imagen-4.jpg',
 ];
-
-/* ── CAROUSEL CONTROLS ── */
-let _carIdx = 0;
-function carGoTo(idx) {
-  const slides = document.querySelectorAll('.car-slide');
-  const dots   = document.querySelectorAll('.car-dot');
-  if (!slides.length) return;
-  _carIdx = (idx + slides.length) % slides.length;
-  slides.forEach((s, i) => s.classList.toggle('active', i === _carIdx));
-  dots.forEach((d, i)   => d.classList.toggle('on', i === _carIdx));
-}
-function carMove(dir) { carGoTo(_carIdx + dir); }
 
 /* ── Init ── */
 /* ── CHIPS de categorías (index) ── */

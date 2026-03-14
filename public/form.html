@@ -163,7 +163,6 @@
     select.inp option{background:var(--white)}
 
     /* CHECKBOX GRID */
-    .check-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}
     .check-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:8px}
     .check-pill{
       display:flex;align-items:center;gap:8px;
@@ -287,7 +286,6 @@
       nav{padding:0 20px}
       .field-grid{grid-template-columns:1fr}
       .field.span-2,.field.span-3{grid-column:span 1}
-      .pos-grid{grid-template-columns:1fr 1fr}
       .form-card-body{padding:18px 18px}
       .form-nav{padding:16px 18px}
       .summary-grid{grid-template-columns:1fr}
@@ -1291,9 +1289,9 @@ function downloadAgain() {
 function sendByEmail(e) {
   e.preventDefault();
   const nombre = lastExcelData ? lastExcelData['Nombre del Negocio'] : 'mi negocio';
-  const subject = encodeURIComponent(`Registro proveedor – ${nombre} – CotizaTuFiesta.cl`);
+  const subject = encodeURIComponent(`Registro proveedor – ${nombre} – CotizaEventos.cl`);
   const body = encodeURIComponent(
-    `Hola equipo de CotizaTuFiesta.cl,\n\nAdjunto el archivo Excel con el registro de mi negocio "${nombre}" para aparecer en el directorio.\n\nQuedo atento/a a su confirmación.\n\nSaludos.`
+    `Hola equipo de CotizaEventos.cl,\n\nAdjunto el archivo Excel con el registro de mi negocio "${nombre}" para aparecer en el directorio.\n\nQuedo atento/a a su confirmación.\n\nSaludos.`
   );
   window.open(`mailto:contactocotizaeventos@gmail.com?subject=${subject}&body=${body}`, '_blank');
 }
@@ -1302,15 +1300,15 @@ function sendByWhatsApp(e) {
   e.preventDefault();
   const nombre = lastExcelData ? lastExcelData['Nombre del Negocio'] : 'mi negocio';
   const msg = encodeURIComponent(
-    `Hola! Acabo de completar el formulario de registro en CotizaTuFiesta.cl para mi negocio *"${nombre}"*. Te envío el archivo Excel adjunto para activar mi ficha en el directorio. Quedo atento/a a su confirmación. 🎉`
+    `Hola! Acabo de completar el formulario de registro en CotizaEventos.cl para mi negocio *"${nombre}"*. Te envío el archivo Excel adjunto para activar mi ficha en el directorio. Quedo atento/a a su confirmación. 🎉`
   );
-  window.open(`https://wa.me/56912345678?text=${msg}`, '_blank');
+  window.open(`https://wa.me/56991999301?text=${msg}`, '_blank');
 }
 
 function generateExcel(data) {
   // Build worksheet data — two columns: Campo | Valor
   const wsData = [
-    ['REGISTRO DE PROVEEDOR – CotizaTuFiesta.cl', ''],
+    ['REGISTRO DE PROVEEDOR – CotizaEventos.cl', ''],
     ['', ''],
     ['CAMPO', 'VALOR'],
   ];
