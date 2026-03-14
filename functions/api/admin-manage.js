@@ -63,9 +63,35 @@ async function handlePost(supabase, request) {
   if (action === 'aprobar') {
     const { data: sol, error: solErr } = await supabase.from('solicitudes').select('*').eq('id', body.id).single();
     if (solErr) throw solErr;
-    const primaryCat = Array.isArray(sol.categorias) ? sol.categorias[0] : sol.categorias;
+
+    // Obtener la categoría primaria desde la solicitud
+    const rawCat = Array.isArray(sol.categorias) ? sol.categorias[0] : sol.categorias;
+
+    // Resolver el slug correcto buscando en etiquetas por nombre o id
+    let primaryCat = rawCat || '';
+    if (rawCat) {
+      const { data: etiquetas } = await supabase.from('etiquetas').select('id, nombre');
+      if (etiquetas?.length) {
+        const match = etiquetas.find(e =>
+          e.nombre.toLowerCase() === rawCat.toLowerCase() ||
+          e.id.toLowerCase() === rawCat.toLowerCase()
+        );
+        if (match) {
+          primaryCat = match.id;  // usar siempre el slug/id correcto
+        } else {
+          // Fallback: convertir el nombre a slug
+          primaryCat = rawCat.toLowerCase()
+            .replace(/á/g,'a').replace(/é/g,'e').replace(/í/g,'i').replace(/ó/g,'o').replace(/ú/g,'u')
+            .replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
+        }
+      }
+    }
+
     const { data: existing } = await supabase.from('proveedores').select('posicion').eq('categoria', primaryCat).order('posicion', { ascending: false }).limit(1);
-    const nextPos = body.posicion || (existing?.[0]?.posicion ? existing[0].posicion + 1 : 4);
+    // Usar !== undefined para que posicion:0 (básico) no sea ignorado por ser falsy
+    const nextPos = (body.posicion !== undefined && body.posicion !== null)
+      ? body.posicion
+      : (existing?.[0]?.posicion ? existing[0].posicion + 1 : 4);
     const { data: prov, error: provErr } = await supabase.from('proveedores').insert([{
       nombre: sol.nombre, responsable: sol.responsable, descripcion: sol.descripcion,
       diferenciador: sol.diferenciador, tagline: sol.diferenciador,

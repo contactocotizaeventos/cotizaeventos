@@ -81,7 +81,7 @@ function buildGruposDynamic(providers, cats, tags) {
       id:         cat.id,
       ico:        cat.ico || '🍽️',
       nombre:     cat.nombre,
-      categorias: categorias.filter(c => c.proveedores.length > 0 || catTags.length > 0),
+      categorias: categorias.filter(c => c.proveedores.length > 0),
     };
   }).filter(g => g.categorias.length > 0);
 }
