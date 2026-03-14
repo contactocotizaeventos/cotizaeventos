@@ -240,66 +240,55 @@
     .section-header h2 { font-size: clamp(1.6rem, 3vw, 2.4rem); margin-bottom: 10px; color: var(--ink); }
     .section-header p { font-size: .9rem; color: var(--muted); }
 
-    /* ── CATEGORÍAS: grid de tarjetas ── */
-    .cat-groups-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 12px;
+    /* Category groups */
+    /* ── CHIPS DE CATEGORÍAS ── */
+    /* Fila de chips de grupos (categorías padre) */
+    .cat-chips-row {
+      display: flex; flex-wrap: wrap; gap: 8px;
       margin-bottom: 0;
     }
-    @media(max-width:600px){ .cat-groups-grid{ grid-template-columns: repeat(2, 1fr); gap:8px; } }
+    .cat-chip-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 7px 14px;
+      background: var(--white); border: 1.5px solid var(--border2);
+      border-radius: 99px; cursor: pointer;
+      font-family: 'Outfit', sans-serif; font-size: .8rem; font-weight: 600;
+      color: var(--ink2); transition: .18s var(--ease);
+      white-space: nowrap;
+    }
+    .cat-chip-btn:hover { border-color: var(--coral-md); color: var(--coral); background: var(--coral-lt); }
+    .cat-chip-btn.open {
+      background: var(--coral); border-color: var(--coral);
+      color: #fff;
+    }
+    .cat-chip-btn .chip-arrow {
+      font-size: .55rem; transition: transform .22s var(--ease); opacity: .6;
+    }
+    .cat-chip-btn.open .chip-arrow { transform: rotate(180deg); opacity: 1; }
 
-    .cat-card {
-      background: var(--white);
-      border: 1.5px solid var(--border);
-      border-radius: 16px;
-      overflow: hidden;
-      cursor: pointer;
-      transition: .22s var(--ease);
-    }
-    .cat-card:hover { border-color: var(--coral-md); box-shadow: 0 6px 24px rgba(232,84,42,.10); transform: translateY(-2px); }
-    .cat-card.open { border-color: var(--coral); box-shadow: 0 6px 24px rgba(232,84,42,.13); }
-
-    .cat-card-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 14px 16px; gap: 10px;
-    }
-    .cat-card-label {
-      font-size: .88rem; font-weight: 700; color: var(--ink);
-    }
-    .cat-card-meta {
-      font-size: .7rem; color: var(--muted); margin-top: 2px;
-    }
-    .cat-card-arrow {
-      font-size: .6rem; color: var(--muted);
-      transition: transform .22s var(--ease), color .18s;
-      flex-shrink: 0;
-    }
-    .cat-card.open .cat-card-arrow { transform: rotate(180deg); color: var(--coral); }
-    .cat-card.open .cat-card-label { color: var(--coral); }
-
-    /* Panel etiquetas */
-    .cat-card-panel {
+    /* Panel de etiquetas desplegable */
+    .cat-chip-panel {
       display: grid; grid-template-rows: 0fr;
       transition: grid-template-rows .28s var(--ease);
     }
-    .cat-card.open .cat-card-panel { grid-template-rows: 1fr; }
-    .cat-card-panel-inner {
+    .cat-chip-panel.open { grid-template-rows: 1fr; }
+    .cat-chip-panel-inner {
       overflow: hidden;
+      border: 1.5px solid var(--coral-md);
+      border-top: none; border-radius: 0 0 12px 12px;
       background: var(--coral-lt);
-      border-top: 1.5px solid var(--coral-md);
     }
-    .cat-tag-row { display: flex; flex-wrap: wrap; gap: 5px; padding: 10px 12px; }
+    /* Etiquetas: chips chicos en fila flexible */
+    .cat-tag-row { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 12px; }
     .cat-tag-chip {
-      display: inline-flex; align-items: center; gap: 4px;
-      padding: 4px 11px;
+      display: inline-flex; align-items: center;
+      padding: 5px 12px;
       background: var(--white); border: 1.5px solid var(--border);
-      border-radius: 99px; font-size: .72rem; font-weight: 500;
-      color: var(--ink2); text-decoration: none;
+      border-radius: 99px; font-size: .74rem; font-weight: 500;
+      color: var(--ink2); text-decoration: none; cursor: pointer;
       transition: .15s var(--ease); white-space: nowrap;
     }
     .cat-tag-chip:hover { border-color: var(--coral); color: var(--coral); background: #fff; }
-    .cat-tag-chip .tag-count { font-size: .6rem; color: var(--muted); margin-left: 3px; }
 
     /* view all */
     .view-all-wrap {
@@ -598,8 +587,7 @@
   .car-cover-ph::after{content:'img';font-size:.65rem;letter-spacing:.12em;color:rgba(255,255,255,.22)}
   .car-body{padding:20px 24px 14px}
   .car-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:99px;font-size:.7rem;font-weight:700;margin-bottom:10px;width:fit-content}
-  .car-gold{background:#FFF8E1;color:#B8860B;border:1px solid #F9D849}
-  .car-silver{background:#F3F4F6;color:#555;border:1px solid #C0C0C0}
+  .car-dest{background:var(--coral-lt);color:var(--coral);border:1px solid var(--coral-md);font-weight:700}
   .car-name{font-size:1.15rem;font-weight:700;color:var(--ink);margin-bottom:4px}
   .car-tagline{font-size:.83rem;color:var(--muted);line-height:1.5;margin-bottom:10px}
   .car-price{font-size:.85rem;font-weight:600;color:var(--coral)}
@@ -744,16 +732,15 @@
     <div class="section-header reveal">
       <div class="tag">Nuestros proveedores</div>
       <h2>Explora por categoría</h2>
-      <p>Selecciona una categoría para ver los tipos de servicio disponibles.</p>
+      <p>Haz clic en cualquier categoría para ver proveedores, precios y contacto directo.</p>
     </div>
 
     <!-- CATEGORÍAS — generado dinámicamente desde Supabase -->
     <div id="cat-groups-container">
-      <div class="cat-groups-grid" id="cat-skeleton" style="opacity:.35;pointer-events:none">
-        <div style="height:64px;background:var(--bg2);border-radius:16px;border:1.5px solid var(--border)"></div>
-        <div style="height:64px;background:var(--bg2);border-radius:16px;border:1.5px solid var(--border)"></div>
-        <div style="height:64px;background:var(--bg2);border-radius:16px;border:1.5px solid var(--border)"></div>
-        <div style="height:64px;background:var(--bg2);border-radius:16px;border:1.5px solid var(--border)"></div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;opacity:.4;pointer-events:none" id="cat-skeleton">
+        <span style="height:34px;width:90px;background:var(--bg2);border-radius:99px;display:inline-block"></span>
+        <span style="height:34px;width:110px;background:var(--bg2);border-radius:99px;display:inline-block"></span>
+        <span style="height:34px;width:80px;background:var(--bg2);border-radius:99px;display:inline-block"></span>
       </div>
     </div>
 
@@ -926,39 +913,41 @@ async function loadCategories() {
       completos:'🌭', torta:'🎂', barra:'🍹',
     };
 
-    // Grid de tarjetas por grupo, con panel de etiquetas desplegable
-    const grid = document.createElement('div');
-    grid.className = 'cat-groups-grid';
+    // Chips de grupos en fila + panel de etiquetas
+    const chipsRow  = document.createElement('div');
+    chipsRow.className = 'cat-chips-row';
+    const panelWrap = document.createElement('div');
+    panelWrap.style.cssText = 'margin-top:-1px'; // pega al chip abierto
 
-    grupos.forEach(g => {
-      const total = g.categorias.reduce((s, cat) => s + cat.proveedores.length, 0);
-      const card = document.createElement('div');
-      card.className = 'cat-card';
-      card.id = 'cgb-' + g.id;
-      card.innerHTML = `
-        <div class="cat-card-header" onclick="toggleCatGroup('${g.id}')">
-          <div>
-            <div class="cat-card-label">${g.nombre}</div>
-            <div class="cat-card-meta">${g.categorias.length} tipo${g.categorias.length!==1?'s':''} · ${total} proveedor${total!==1?'es':''}</div>
-          </div>
-          <span class="cat-card-arrow">▼</span>
-        </div>
-        <div class="cat-card-panel" id="cgp-${g.id}">
-          <div class="cat-card-panel-inner">
-            <div class="cat-tag-row">
-              ${g.categorias.map(cat => `
-                <a class="cat-tag-chip" href="proveedores.html?cat=${cat.id}&scroll=1">
-                  ${cat.nombre}
-                  <span class="tag-count">${cat.proveedores.length}</span>
-                </a>
-              `).join('')}
-            </div>
+    grupos.forEach((g, gi) => {
+      // Panel de etiquetas (oculto por defecto)
+      const panel = document.createElement('div');
+      panel.className = 'cat-chip-panel';
+      panel.id = 'cgp-' + g.id;
+      panel.innerHTML = `
+        <div class="cat-chip-panel-inner">
+          <div class="cat-tag-row">
+            ${g.categorias.map(cat => `
+              <a class="cat-tag-chip" href="proveedores.html?cat=${cat.id}&scroll=1">
+                ${cat.nombre}
+                <span style="margin-left:4px;font-size:.62rem;color:var(--muted)">${cat.proveedores.length}</span>
+              </a>
+            `).join('')}
           </div>
         </div>`;
-      grid.appendChild(card);
+      panelWrap.appendChild(panel);
+
+      // Chip del grupo
+      const chip = document.createElement('div');
+      chip.className = 'cat-chip-btn';
+      chip.id = 'cgb-' + g.id;
+      chip.innerHTML = `${g.nombre} <span class="chip-arrow">▼</span>`;
+      chip.addEventListener('click', () => toggleCatGroup(g.id));
+      chipsRow.appendChild(chip);
     });
 
-    container.appendChild(grid);
+    container.appendChild(chipsRow);
+    container.appendChild(panelWrap);
 
     // Actualizar SERVICIOS para el formulario de cotización
     SERVICIOS.length = 0;
@@ -972,16 +961,19 @@ async function loadCategories() {
     }));
     if (document.getElementById('checklist-grid')) renderChecklist(); // re-render el checklist con datos actualizados
 
-    // ── Carrusel: Oro (pos=1) + Plata (pos=2), orden aleatorio ──
+    // ── Carrusel: solo Destacados (posicion = 5), orden aleatorio por carga ──
     const carProviders = [];
     grupos.forEach(g => g.categorias.forEach(cat => {
       cat.proveedores.forEach(p => {
-        if (p.pos === 1 || p.pos === 2) carProviders.push({ ...p, catNombre: cat.nombre, catIco: cat.ico });
+        if (p.pos === 5 || p.posicion === 5) carProviders.push({ ...p, catNombre: cat.nombre, catIco: cat.ico });
       });
     }));
 
-    // Shuffle
-    carProviders.sort(() => Math.random() - 0.5);
+    // Shuffle distinto en cada carga
+    for (let i = carProviders.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [carProviders[i], carProviders[j]] = [carProviders[j], carProviders[i]];
+    }
     const carTrack = document.getElementById('carousel-track');
     const carDots  = document.getElementById('carousel-dots');
     if (carTrack) {
@@ -993,12 +985,12 @@ async function loadCategories() {
           const cover = prov.cover_url
             ? `<img class="car-cover" src="${prov.cover_url}" alt="${prov.nombre}" loading="lazy" />`
             : `<div class="car-cover-ph">${prov.logo || '🎉'}</div>`;
-          const badgeCls = prov.pos === 1 ? 'car-gold' : 'car-silver';
-          const badgeLbl = prov.pos === 1 ? '🥇 Posición Oro' : '🥈 Posición Plata';
+          const badgeCls = 'car-dest';
+          const badgeLbl = '✦ Destacado';
           return `<div class="car-slide${i===0?' active':''}" data-idx="${i}">
             ${cover}
             <div class="car-body">
-              <div class="car-badge ${badgeCls}">${badgeLbl} &middot; ${prov.catIco} ${prov.catNombre}</div>
+              <div class="car-badge ${badgeCls}">${badgeLbl} &middot; ${prov.catIco || ''} ${prov.catNombre}</div>
               <div class="car-name">${prov.nombre}</div>
               <div class="car-tagline">${prov.tagline || prov.diff || ''}</div>
               <div class="car-price">Desde ${prov.minimo || '—'}</div>

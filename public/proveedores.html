@@ -519,52 +519,38 @@
     .expand-btn:hover{border-color:var(--coral);color:var(--coral);background:var(--coral-lt)}
     /* CAT TILES */
     /* ── CHIPS DE CATEGORÍAS (proveedores) ── */
-/* ── TARJETAS DE CATEGORÍAS ── */
-    .cat-groups-grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
-      gap:10px;
+    .grp-chip{
+      display:inline-flex;align-items:center;gap:5px;
+      padding:7px 14px;
+      background:var(--white);border:1.5px solid var(--border2);
+      border-radius:99px;cursor:pointer;
+      font-family:'Outfit',sans-serif;font-size:.8rem;font-weight:600;
+      color:var(--ink2);transition:.18s var(--ease);white-space:nowrap;
     }
-    @media(max-width:560px){.cat-groups-grid{grid-template-columns:repeat(2,1fr);gap:8px}}
+    .grp-chip:hover{border-color:var(--coral-md);color:var(--coral);background:var(--coral-lt)}
+    .grp-chip.open{background:var(--coral);border-color:var(--coral);color:#fff}
+    .grp-chip .chip-arrow{font-size:.55rem;transition:transform .22s var(--ease);opacity:.6}
+    .grp-chip.open .chip-arrow{transform:rotate(180deg);opacity:1}
 
-    .cat-card{
-      background:var(--white);
-      border:1.5px solid var(--border);
-      border-radius:14px;
-      overflow:hidden;
-      cursor:pointer;
-      transition:.22s var(--ease);
+    .grp-panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .28s var(--ease)}
+    .grp-panel.open{grid-template-rows:1fr}
+    .grp-panel-inner{
+      overflow:hidden;background:var(--coral-lt);
+      border:1.5px solid var(--coral-md);border-top:none;
+      border-radius:0 0 10px 10px;
     }
-    .cat-card:hover{border-color:var(--coral-md);box-shadow:0 4px 18px rgba(232,84,42,.09);transform:translateY(-2px)}
-    .cat-card.open{border-color:var(--coral);box-shadow:0 4px 18px rgba(232,84,42,.12)}
-
-    .cat-card-header{
-      display:flex;align-items:center;justify-content:space-between;
-      padding:12px 14px;gap:8px;
-    }
-    .cat-card-label{font-size:.84rem;font-weight:700;color:var(--ink)}
-    .cat-card-meta{font-size:.67rem;color:var(--muted);margin-top:2px}
-    .cat-card-arrow{font-size:.58rem;color:var(--muted);flex-shrink:0;transition:transform .22s var(--ease),color .18s}
-    .cat-card.open .cat-card-arrow{transform:rotate(180deg);color:var(--coral)}
-    .cat-card.open .cat-card-label{color:var(--coral)}
-
-    .cat-card-panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .28s var(--ease)}
-    .cat-card.open .cat-card-panel{grid-template-rows:1fr}
-    .cat-card-panel-inner{overflow:hidden;background:var(--coral-lt);border-top:1.5px solid var(--coral-md)}
-
-    /* Etiquetas */
-    .tag-chips-row{display:flex;flex-wrap:wrap;gap:5px;padding:8px 10px}
+    .tag-chips-row{display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px}
     .tag-chip{
-      display:inline-flex;align-items:center;gap:3px;
-      padding:4px 10px;
+      display:inline-flex;align-items:center;gap:4px;
+      padding:5px 12px;
       background:var(--white);border:1.5px solid var(--border);
-      border-radius:99px;font-size:.71rem;font-weight:500;
+      border-radius:99px;font-size:.74rem;font-weight:500;
       color:var(--ink2);cursor:pointer;text-decoration:none;
       transition:.15s var(--ease);white-space:nowrap;
     }
     .tag-chip:hover{border-color:var(--coral);color:var(--coral)}
     .tag-chip.active{border-color:var(--coral);background:var(--coral-lt);color:var(--coral);font-weight:600}
-    .tag-chip-count{font-size:.6rem;color:var(--muted)}
+    .tag-chip-count{font-size:.62rem;color:var(--muted)}
 
     /* GOLD GALLERY */
     .gold-gallery{margin-top:52px;padding-top:28px;border-top:1px solid var(--border)}
@@ -655,7 +641,8 @@
 
 <!-- ── CATEGORÍAS ── -->
 <div id="cat-nav" style="background:var(--white);border-bottom:1px solid var(--border);padding:14px 24px;display:none">
-  <div id="cat-groups-grid" class="cat-groups-grid"></div>
+  <div id="cat-chips-row" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:0"></div>
+  <div id="cat-panels-wrap"></div>
 </div>
 
 <div class="page-body">
@@ -782,45 +769,47 @@ const RANK = {
 let _openGrp = null;
 
 function buildCatBar() {
-  const nav  = document.getElementById('cat-nav');
-  const grid = document.getElementById('cat-groups-grid');
-  if (!nav || !grid) return;
+  const nav       = document.getElementById('cat-nav');
+  const chipsRow  = document.getElementById('cat-chips-row');
+  const panelWrap = document.getElementById('cat-panels-wrap');
+  if (!nav || !chipsRow || !panelWrap) return;
 
-  grid.innerHTML = GRUPOS.map(g => {
-    const total = g.categorias.reduce((s, cat) => s + cat.proveedores.length, 0);
-    return `
-    <div class="cat-card" id="grp-chip-${g.id}">
-      <div class="cat-card-header" onclick="toggleGrp('${g.id}')">
-        <div>
-          <div class="cat-card-label">${g.nombre}</div>
-          <div class="cat-card-meta">${g.categorias.length} tipo${g.categorias.length!==1?'s':''} · ${total} prov.</div>
+  GRUPOS.forEach(g => {
+    // Chip del grupo
+    const chip = document.createElement('div');
+    chip.className = 'grp-chip';
+    chip.id = 'grp-chip-' + g.id;
+    chip.innerHTML = g.nombre + ' <span class="chip-arrow">▼</span>';
+    chip.addEventListener('click', () => toggleGrp(g.id));
+    chipsRow.appendChild(chip);
+
+    // Panel de etiquetas
+    const panel = document.createElement('div');
+    panel.className = 'grp-panel';
+    panel.id = 'grp-panel-' + g.id;
+    panel.innerHTML = `
+      <div class="grp-panel-inner">
+        <div class="tag-chips-row">
+          ${g.categorias.map(cat => `
+            <span class="tag-chip" id="tag-chip-${cat.id}"
+              onclick="selectTag('${g.id}','${cat.id}')">
+              ${cat.nombre}
+              <span class="tag-chip-count">${cat.proveedores.length}</span>
+            </span>
+          `).join('')}
         </div>
-        <span class="cat-card-arrow">▼</span>
-      </div>
-      <div class="cat-card-panel" id="grp-panel-${g.id}">
-        <div class="cat-card-panel-inner">
-          <div class="tag-chips-row">
-            ${g.categorias.map(cat => `
-              <span class="tag-chip" id="tag-chip-${cat.id}"
-                onclick="selectTag('${g.id}','${cat.id}')">
-                ${cat.nombre}
-                <span class="tag-chip-count">${cat.proveedores.length}</span>
-              </span>
-            `).join('')}
-          </div>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
+      </div>`;
+    panelWrap.appendChild(panel);
+  });
 
   nav.style.display = 'block';
 }
 
 function toggleGrp(groupId) {
-  const card  = document.getElementById('grp-chip-'  + groupId);
+  const chip  = document.getElementById('grp-chip-'  + groupId);
   const panel = document.getElementById('grp-panel-' + groupId);
-  if (!card || !panel) return;
-  const isOpen = card.classList.contains('open');
+  if (!chip || !panel) return;
+  const isOpen = chip.classList.contains('open');
 
   // Cierra el anterior
   if (_openGrp && _openGrp !== groupId) {
@@ -828,7 +817,7 @@ function toggleGrp(groupId) {
     document.getElementById('grp-panel-' + _openGrp)?.classList.remove('open');
   }
 
-  card.classList.toggle('open', !isOpen);
+  chip.classList.toggle('open', !isOpen);
   panel.classList.toggle('open', !isOpen);
   _openGrp = isOpen ? null : groupId;
 
@@ -904,15 +893,10 @@ function render() {
     if (!filtered.length) return;
     totalVisible += filtered.length;
 
-    const gold   = filtered.find(p => p.pos === 1);
-    const silver = filtered.find(p => p.pos === 2);
-    const bronze = filtered.find(p => p.pos === 3);
-    const secondary = [silver, bronze].filter(Boolean);
-    const paidCount = [gold,silver,bronze].filter(Boolean).length;
-
-    // Basics: shuffle, show 3 random
-    const allBasics = filtered.filter(p => p.pos > 3 || !p.pos);
-    const basics = shuffle([...allBasics]).slice(0, 3);
+    // Destacados (pos 5) y básicos (cualquier otro)
+    const destacados = filtered.filter(p => p.pos === 5 || p.posicion === 5);
+    const allBasics  = filtered.filter(p => p.pos !== 5 && p.posicion !== 5);
+    const basics     = shuffle([...allBasics]).slice(0, 3);
 
     html += `
       <div class="cat-section" id="${cat.id}">
@@ -925,8 +909,14 @@ function render() {
           <div class="cat-badge">${filtered.length} proveedor${filtered.length!==1?'es':''}</div>
         </div>
 
-        ${gold ? `<div class="top-positions">${paidCardHTML(gold)}</div>` : ''}
-        ${secondary.length ? `<div class="top-positions-secondary">${secondary.map(paidCardHTML).join('')}</div>` : ''}
+        ${destacados.length ? `
+          <div style="margin-bottom:8px;display:flex;align-items:center;gap:8px">
+            <span style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--coral)">✦ Destacados</span>
+            <span style="flex:1;height:1px;background:var(--coral-md);opacity:.4"></span>
+          </div>
+          <div class="top-positions" style="margin-bottom:18px">
+            ${destacados.map(p => paidCardHTML(p)).join('')}
+          </div>` : ''}
 
         ${basics.length ? `
           <div class="basics-section">
@@ -941,13 +931,13 @@ function render() {
               </button>` : ''}
           </div>` : ''}
 
-        ${paidCount < 3 ? `
+        ${!destacados.length ? `
           <div class="upgrade-cta" onclick="window.location='/form.html'" style="margin-top:16px">
             <div class="upgrade-inner">
-              <span class="upgrade-icon">🏆</span>
+              <span class="upgrade-icon">✦</span>
               <div>
-                <div class="upgrade-title">¿Tu negocio aquí?</div>
-                <div class="upgrade-sub">${3-paidCount} posición${3-paidCount!==1?'es':''} disponible${3-paidCount!==1?'s':''}</div>
+                <div class="upgrade-title">¿Eres proveedor aquí?</div>
+                <div class="upgrade-sub">Sé el primero Destacado — gratis por 3 meses</div>
               </div>
               <div class="upgrade-btn">Registrarme →</div>
             </div>
@@ -977,7 +967,7 @@ function render() {
 function showAllBasics(btn, catId) {
   const cat = CAT_INDEX[catId];
   if (!cat) return;
-  const allBasics = cat.proveedores.filter(p => p.pos > 3 || !p.pos);
+  const allBasics = cat.proveedores.filter(p => p.pos !== 5 && p.posicion !== 5);
   const listEl = btn.previousElementSibling;
   listEl.innerHTML = allBasics.map(basicHTML).join('');
   btn.remove();
@@ -986,43 +976,47 @@ function showAllBasics(btn, catId) {
 /* ═══════════════════════════════════════════
    GOLD GALLERY (bottom of page)
 ═══════════════════════════════════════════ */
-function buildGoldGallery(shownCatIds) {
-  // Collect all gold providers NOT in the current shown cats (if mode=cat/group)
-  // If mode=all, collect all gold
-  let golds = [];
-  GRUPOS.forEach(g => g.categorias.forEach(cat => {
-    if (VIEW.mode === 'all' || !shownCatIds.includes(cat.id)) {
-      const p = cat.proveedores.find(p => p.pos === 1);
-      if (p) golds.push({ ...p, catNombre: cat.nombre, catIco: cat.ico });
-    }
-  }));
-  // If all are shown (mode=cat, same cat), still show from other cats
-  if (!golds.length) {
-    GRUPOS.forEach(g => g.categorias.forEach(cat => {
-      const p = cat.proveedores.find(p => p.pos === 1);
-      if (p) golds.push({ ...p, catNombre: cat.nombre, catIco: cat.ico });
-    }));
-  }
-  if (!golds.length) return '';
+// Orden de Destacados fijado una vez por sesión (no cambia al filtrar)
+let _destOrder = null;
 
-  const picks = shuffle([...golds]).slice(0, 6);
+function buildGoldGallery(shownCatIds) {
+  // Recoger TODOS los Destacados (pos 5 o posicion 5) de todas las categorías
+  if (!_destOrder) {
+    const all = [];
+    GRUPOS.forEach(g => g.categorias.forEach(cat => {
+      cat.proveedores.forEach(p => {
+        if (p.pos === 5 || p.posicion === 5) {
+          all.push({ ...p, catNombre: cat.nombre, catIco: cat.ico, _catId: cat.id });
+        }
+      });
+    }));
+    // Mezclar una sola vez al cargar la página
+    _destOrder = shuffle([...all]);
+  }
+
+  if (!_destOrder.length) return '';
+
+  // Priorizar los que NO están en la vista actual, y rellenar si faltan
+  const notShown = _destOrder.filter(p => !shownCatIds.includes(p._catId));
+  const picks    = (notShown.length >= 3 ? notShown : _destOrder).slice(0, 6);
+
   return `
     <div class="gold-gallery">
       <div class="gold-gallery-header">
-        <span style="font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">⭐ También te puede interesar</span>
+        <span style="font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--coral)">✦ Destacados que podrían interesarte</span>
       </div>
       <div class="gold-gallery-grid">
         ${picks.map(p => {
           const waMsg = encodeURIComponent('Hola ' + p.nombre + '! Los vi en CotizaEventos.cl y me interesa cotizar sus servicios.');
           const cover = p.cover_url
             ? `<img src="${p.cover_url}" style="width:100%;height:100%;object-fit:cover" loading="lazy">`
-            : `<div style="width:100%;height:100%;background:#111;display:flex;align-items:center;justify-content:center;font-size:2rem;color:rgba(255,255,255,.2)">img</div>`;
+            : `<div style="width:100%;height:100%;background:#111;display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:rgba(255,255,255,.18)">✦</div>`;
           return `<div class="gg-card" onclick="openModal('${p.id}')">
             <div class="gg-cover">${cover}</div>
             <div class="gg-body">
-              <div class="gg-cat">${p.catIco} ${p.catNombre}</div>
+              <div class="gg-cat" style="color:var(--coral)">✦ Destacado · ${p.catNombre}</div>
               <div class="gg-name">${p.nombre}</div>
-              <div class="gg-tagline">${p.tagline || ''}</div>
+              <div class="gg-tagline">${p.tagline || p.diff || ''}</div>
             </div>
             <div class="gg-footer">
               <span class="gg-price">Desde ${p.minimo || '—'}</span>
@@ -1162,7 +1156,7 @@ function basicHTML(p) {
 ═══════════════════════════════════════════ */
 function openModal(id) {
   const p = PROV_INDEX[id];
-  if (!p || p.pos > 3) return;
+  if (!p || (p.pos !== 5 && p.posicion !== 5 && !(p.pos >= 1 && p.pos <= 3))) return;
   const r = RANK[p.pos];
   const waMsg = encodeURIComponent('Hola ' + p.nombre + '! Los vi en CotizaEventos.cl y quiero cotizar sus servicios para mi evento.');
   document.getElementById('modal-inner').innerHTML = `
