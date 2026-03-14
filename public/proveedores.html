@@ -130,69 +130,60 @@
     }
     @keyframes slideDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
 
-    /* Row 2: category pills */
+    /* Row 2: category buttons grid */
     .sb-pills-row{
-      overflow-x:auto;
-      -webkit-overflow-scrolling:touch;
-      scrollbar-width:none;
+      padding: 10px 24px 14px;
     }
-    .sb-pills-row::-webkit-scrollbar{display:none}
-    .sb-pills-inner{
-      display:flex;align-items:center;gap:0;
-      padding:6px 32px 10px;
-      white-space:nowrap;
-    }
+    @media(max-width:600px){ .sb-pills-row{ padding: 8px 14px 12px; } }
 
-    /* Parent category pill — igual al cat-tile del index */
-    .cat-pill{
-      display:inline-flex;align-items:center;gap:6px;
-      padding:6px 14px;border-radius:99px;
-      font-size:.78rem;font-weight:600;color:var(--ink2);
-      cursor:pointer;border:1.5px solid var(--border);background:var(--white);
-      transition:.2s;white-space:nowrap;flex-shrink:0;margin-right:6px;
-      user-select:none;
+    /* ── NUEVO: grupos como botones 4 por fila ── */
+    .cat-groups-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 7px;
+      margin-bottom: 0;
     }
-    .cat-pill:hover{border-color:var(--coral);background:var(--coral-lt);color:var(--coral);transform:translateY(-1px)}
-    .cat-pill.active{border-color:var(--coral-md);background:var(--coral-lt);color:var(--coral)}
-    .cat-pill.open{border-color:var(--coral);background:var(--coral-lt);color:var(--coral)}
-    .cat-pill .cp-arr{font-size:.6rem;transition:transform .2s;display:inline-block;opacity:.6}
-    .cat-pill.open .cp-arr{transform:rotate(180deg)}
+    @media(max-width:600px){ .cat-groups-bar{ grid-template-columns: repeat(2, 1fr); } }
+    @media(min-width:601px) and (max-width:860px){ .cat-groups-bar{ grid-template-columns: repeat(3, 1fr); } }
 
-    /* Sub-tag pills — igual al cat-tile del index pero más chico */
-    .tag-pill-group{
-      display:inline-flex;align-items:center;gap:5px;
-      margin-right:8px;
-      animation:fadeInPills .18s ease;
+    .cat-group-btn {
+      display: flex; align-items: center; justify-content: space-between; gap: 5px;
+      padding: 7px 13px; border-radius: 99px;
+      font-family: 'Outfit', sans-serif; font-size: .76rem; font-weight: 600;
+      color: var(--ink2); background: var(--white);
+      border: 1.5px solid var(--border);
+      cursor: pointer; user-select: none;
+      transition: .18s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    @keyframes fadeInPills{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:none}}
-    .tag-pill{
-      display:inline-flex;align-items:center;
-      padding:5px 12px;border-radius:99px;
-      font-size:.74rem;font-weight:500;color:var(--ink2);
-      cursor:pointer;border:1.5px solid var(--border);background:var(--white);
-      transition:.18s;white-space:nowrap;flex-shrink:0;
-      user-select:none;
-    }
-    .tag-pill:hover{border-color:var(--coral);color:var(--coral);background:var(--coral-lt);transform:translateY(-1px)}
-    .tag-pill.active{border-color:var(--coral);background:var(--coral-lt);color:var(--coral);font-weight:600}
+    .cat-group-btn:hover { border-color: var(--coral-md); background: var(--coral-lt); color: var(--coral); transform: translateY(-1px); }
+    .cat-group-btn.open { border-color: var(--coral); background: var(--coral-lt); color: var(--coral); }
+    .cat-group-btn .cg-arr { font-size: .58rem; transition: transform .2s; flex-shrink: 0; opacity: .6; }
+    .cat-group-btn.open .cg-arr { transform: rotate(180deg); opacity: 1; }
 
-    /* Separator between parent group and tag group */
-    .pill-sep{color:var(--border2);font-size:.65rem;margin-right:4px;flex-shrink:0}
-
-    /* Responsive */
-    @media(max-width:600px){
-      .sb-search-row{padding:8px 14px}
-      .sb-input-wrap{display:none}
-      .sb-lupa-btn{display:inline-flex}
-      .sb-input-expanded .sb-lupa-pos{position:relative}
-      .sb-pills-inner{padding:5px 14px 9px}
-      .cat-pill{font-size:.76rem;padding:6px 12px}
-      .tag-pill{font-size:.72rem;padding:5px 10px}
+    /* Etiquetas panel — ocupa toda la fila */
+    .cat-tags-panel {
+      grid-column: 1 / -1;
+      overflow: hidden; max-height: 0;
+      transition: max-height .3s ease;
     }
-    @media(min-width:601px) and (max-width:860px){
-      .sb-search-row{padding:9px 20px}
-      .sb-pills-inner{padding:5px 20px 10px}
+    .cat-tags-panel.open { max-height: 400px; }
+    .cat-tags-inner {
+      display: flex; flex-wrap: wrap; gap: 6px;
+      padding: 10px 2px 4px;
+      border-top: 1px solid var(--border);
+      animation: fadeInTags .18s ease;
     }
+    @keyframes fadeInTags { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:none} }
+    .tag-pill {
+      display: inline-flex; align-items: center;
+      padding: 5px 12px; border-radius: 99px;
+      font-size: .74rem; font-weight: 500; color: var(--ink2);
+      cursor: pointer; border: 1.5px solid var(--border); background: var(--white);
+      transition: .18s; white-space: nowrap; flex-shrink: 0;
+      user-select: none;
+    }
+    .tag-pill:hover { border-color: var(--coral); color: var(--coral); background: var(--coral-lt); transform: translateY(-1px); }
+    .tag-pill.active { border-color: var(--coral); background: var(--coral-lt); color: var(--coral); font-weight: 600; }
 
     /* LAYOUT — sin sidebar, full width */
     .page-body{max-width:1200px;margin:0 auto;padding:0 0 100px}
@@ -624,9 +615,9 @@
     </div>
   </div>
 
-  <!-- Fila 2: pills de categorías (scroll horizontal) -->
+  <!-- Fila 2: grid de categorías (4 por fila) + etiquetas expandibles -->
   <div class="sb-pills-row">
-    <div class="sb-pills-inner" id="cat-pills-track">
+    <div class="cat-groups-bar" id="cat-groups-bar">
       <!-- generado por JS -->
     </div>
   </div>
@@ -744,56 +735,53 @@ const RANK = {
    PILLS BAR
 ═══════════════════════════════════════════ */
 function buildCatBar() {
-  const track = document.getElementById('cat-pills-track');
-  if (!track) return;
-  track.innerHTML = '';
+  const bar = document.getElementById('cat-groups-bar');
+  if (!bar) return;
 
-  // "Todos" pill
-  const allPill = document.createElement('span');
-  allPill.className = 'cat-pill';
-  allPill.id = 'pill-all';
-  allPill.innerHTML = 'Todos';
-  allPill.addEventListener('click', () => setView({ mode: 'all' }));
-  track.appendChild(allPill);
+  let html = '';
 
-  // One pill per GRUPO (parent) — click toggles sub-tag pills inline
+  // Botones de grupo (4 por fila via CSS grid)
   GRUPOS.forEach(g => {
-    const pill = document.createElement('span');
-    pill.className = 'cat-pill';
-    pill.id = 'pill-g-' + g.id;
-    pill.innerHTML = g.nombre + ' <span class="cp-arr">▾</span>';
+    html += `<button class="cat-group-btn" id="cgb-${g.id}" onclick="toggleCatGroupBar('${g.id}')">
+      <span>${g.nombre}</span>
+      <span class="cg-arr">▾</span>
+    </button>`;
+  });
 
-    // Build sub-tag group (hidden by default)
-    const tagGroup = document.createElement('span');
-    tagGroup.className = 'tag-pill-group';
-    tagGroup.id = 'tags-g-' + g.id;
-    tagGroup.style.display = 'none';
-    tagGroup.innerHTML = '<span class="pill-sep">›</span>' +
-      g.categorias.map(cat =>
-        `<span class="tag-pill" id="tp-${cat.id}" onclick="setView({mode:'cat',groupId:'${g.id}',catId:'${cat.id}'})">${cat.nombre}</span>`
-      ).join('');
+  // Paneles de etiquetas — full-width (grid-column: 1/-1)
+  GRUPOS.forEach(g => {
+    html += `<div class="cat-tags-panel" id="ctp-${g.id}">
+      <div class="cat-tags-inner">
+        ${g.categorias.map(cat =>
+          `<span class="tag-pill" id="tp-${cat.id}" onclick="setView({mode:'cat',groupId:'${g.id}',catId:'${cat.id}'})">${cat.nombre}</span>`
+        ).join('')}
+      </div>
+    </div>`;
+  });
 
-    pill.addEventListener('click', () => {
-      const isOpen = pill.classList.contains('open');
-      // Close all others
-      document.querySelectorAll('.cat-pill.open').forEach(p => {
-        p.classList.remove('open');
-        const gid = p.id.replace('pill-g-', '');
-        const tg = document.getElementById('tags-g-' + gid);
-        if (tg) tg.style.display = 'none';
-      });
-      if (!isOpen) {
-        pill.classList.add('open');
-        tagGroup.style.display = 'inline-flex';
-        setView({ mode: 'group', groupId: g.id });
-      } else {
-        setView({ mode: 'all' });
-      }
+  bar.innerHTML = html;
+
+  window.toggleCatGroupBar = function(gid) {
+    const btn = document.getElementById('cgb-' + gid);
+    const panel = document.getElementById('ctp-' + gid);
+    const isOpen = btn.classList.contains('open');
+
+    // Cerrar todos
+    document.querySelectorAll('.cat-group-btn.open').forEach(b => {
+      b.classList.remove('open');
+      const id = b.id.replace('cgb-', '');
+      document.getElementById('ctp-' + id)?.classList.remove('open');
     });
 
-    track.appendChild(pill);
-    track.appendChild(tagGroup);
-  });
+    // Toggle
+    if (!isOpen) {
+      btn.classList.add('open');
+      panel?.classList.add('open');
+      setView({ mode: 'group', groupId: gid });
+    } else {
+      setView({ mode: 'all' });
+    }
+  };
 
   buildCatTiles();
 }
@@ -832,6 +820,16 @@ function buildCatTiles() {
 ═══════════════════════════════════════════ */
 function setView(v) {
   VIEW = { mode: v.mode, groupId: v.groupId || null, catId: v.catId || null };
+  // Auto-open the correct group panel
+  document.querySelectorAll('.cat-group-btn.open').forEach(b => {
+    b.classList.remove('open');
+    const id = b.id.replace('cgb-', '');
+    document.getElementById('ctp-' + id)?.classList.remove('open');
+  });
+  if (VIEW.groupId) {
+    document.getElementById('cgb-' + VIEW.groupId)?.classList.add('open');
+    document.getElementById('ctp-' + VIEW.groupId)?.classList.add('open');
+  }
   syncActivePillToView();
   syncActiveTile();
   render();
@@ -844,14 +842,12 @@ function setView(v) {
 }
 
 function syncActivePillToView() {
-  document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.cat-group-btn').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tag-pill').forEach(t => t.classList.remove('active'));
-  if (VIEW.mode === 'all') {
-    document.getElementById('pill-all')?.classList.add('active');
-  } else if (VIEW.mode === 'group' && VIEW.groupId) {
-    document.getElementById('pill-g-' + VIEW.groupId)?.classList.add('active');
+  if (VIEW.mode === 'group' && VIEW.groupId) {
+    document.getElementById('cgb-' + VIEW.groupId)?.classList.add('active');
   } else if (VIEW.mode === 'cat' && VIEW.groupId) {
-    document.getElementById('pill-g-' + VIEW.groupId)?.classList.add('active');
+    document.getElementById('cgb-' + VIEW.groupId)?.classList.add('active');
     if (VIEW.catId) document.getElementById('tp-' + VIEW.catId)?.classList.add('active');
   }
 }

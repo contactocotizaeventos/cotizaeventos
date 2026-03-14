@@ -240,52 +240,55 @@
     .section-header h2 { font-size: clamp(1.6rem, 3vw, 2.4rem); margin-bottom: 10px; color: var(--ink); }
     .section-header p { font-size: .9rem; color: var(--muted); }
 
-    /* Category groups */
-    .cat-group { margin-bottom: 16px; }
-    .cat-group-label {
-      font-size: .75rem; font-weight: 700; letter-spacing: .08em;
-      text-transform: uppercase; color: var(--ink2);
-      padding: 10px 14px; margin-bottom: 0;
-      display: flex; align-items: center; gap: 10px;
-      cursor: pointer; border-radius: 10px; border: 1.5px solid var(--border);
-      background: var(--bg); transition: .18s; user-select: none;
-    }
-    .cat-group-label:hover { border-color: var(--coral-md); background: var(--coral-lt); color: var(--coral); }
-    .cat-group-label.open { border-color: var(--coral); color: var(--coral); background: var(--coral-lt); }
-    .cat-group-label .cg-arr { margin-left: auto; font-size: .65rem; transition: transform .22s; }
-    .cat-group-label.open .cg-arr { transform: rotate(180deg); }
-    .cat-grid-wrap { overflow: hidden; transition: max-height .28s ease; max-height: 0; }
-    .cat-grid-wrap.open { max-height: 600px; }
-    .cat-grid-wrap .cat-grid { padding: 10px 0 4px; }
-
-    .cat-grid {
+    /* ── Category buttons grid (4 por fila) + etiquetas expandibles ── */
+    .cat-groups-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 7px;
+      gap: 8px;
     }
-    @media(max-width:600px){ .cat-grid{ grid-template-columns: repeat(2, 1fr); } }
-    @media(min-width:601px) and (max-width:860px){ .cat-grid{ grid-template-columns: repeat(3, 1fr); } }
-    .cat-tile {
-      background: var(--white);
-      border: 1.5px solid var(--border);
-      border-radius: 99px;
-      padding: 6px 14px;
-      transition: .2s var(--ease);
-      cursor: pointer;
+    @media(max-width:600px){ .cat-groups-grid{ grid-template-columns: repeat(2, 1fr); } }
+    @media(min-width:601px) and (max-width:860px){ .cat-groups-grid{ grid-template-columns: repeat(3, 1fr); } }
+
+    .cat-group-btn {
       display: flex; align-items: center; justify-content: space-between; gap: 6px;
-      text-decoration: none; color: var(--ink2);
+      padding: 8px 14px; border-radius: 99px;
+      font-family: 'Outfit', sans-serif; font-size: .78rem; font-weight: 600;
+      color: var(--ink2); background: var(--white);
+      border: 1.5px solid var(--border);
+      cursor: pointer; user-select: none;
+      transition: .2s var(--ease);
+      white-space: nowrap; overflow: hidden;
     }
-    .cat-tile:hover {
-      border-color: var(--coral);
-      background: var(--coral-lt);
-      color: var(--coral);
-      transform: translateY(-1px);
+    .cat-group-btn:hover { border-color: var(--coral-md); background: var(--coral-lt); color: var(--coral); transform: translateY(-1px); }
+    .cat-group-btn.open { border-color: var(--coral); background: var(--coral-lt); color: var(--coral); }
+    .cat-group-btn .cg-arr { font-size: .6rem; transition: transform .2s; flex-shrink: 0; opacity: .6; }
+    .cat-group-btn.open .cg-arr { transform: rotate(180deg); }
+
+    /* Panel de etiquetas — ancho completo, debajo del grid */
+    .cat-tags-panel {
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height .32s cubic-bezier(.4,0,.2,1), opacity .25s ease;
     }
-    .cat-tile h4 { font-family: 'Outfit', sans-serif; font-size: .78rem; font-weight: 600; margin: 0; color: inherit; }
-    .cat-tile .count { font-size: .65rem; color: var(--muted); flex-shrink: 0; }
-    .cat-tile-parent { border-color: var(--coral-md); background: var(--coral-lt); color: var(--coral); }
-    .cat-tile-parent h4 { color: var(--coral); font-weight: 700; }
-    .cat-tile-parent .count { color: var(--coral); opacity: .7; }
+    .cat-tags-panel.open {
+      max-height: 500px;
+      opacity: 1;
+    }
+    .cat-tags-inner {
+      display: flex; flex-wrap: wrap; gap: 7px;
+      padding: 14px 2px 6px;
+    }
+    .cat-tag-pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 6px 16px; border-radius: 99px;
+      font-size: .76rem; font-weight: 500; color: var(--ink2);
+      background: var(--white); border: 1.5px solid var(--border);
+      text-decoration: none; cursor: pointer;
+      transition: .18s var(--ease);
+    }
+    .cat-tag-pill:hover { border-color: var(--coral); color: var(--coral); background: var(--coral-lt); transform: translateY(-1px); }
+    .cat-tag-pill .tag-count { font-size: .65rem; color: var(--muted); }
 
     /* view all */
     .view-all-wrap {
@@ -737,17 +740,16 @@
 
     <!-- CATEGORÍAS — generado dinámicamente desde Supabase -->
     <div id="cat-groups-container">
-      <div class="cat-group reveal" id="cat-skeleton">
-        <div class="cat-group-label">🍽️ Catering</div>
-        <div class="cat-grid" style="opacity:.35;pointer-events:none">
-          <div style="min-height:90px;background:var(--bg2);border-radius:16px;border:1px solid var(--border)"></div>
-          <div style="min-height:90px;background:var(--bg2);border-radius:16px;border:1px solid var(--border)"></div>
-          <div style="min-height:90px;background:var(--bg2);border-radius:16px;border:1px solid var(--border)"></div>
-          <div style="min-height:90px;background:var(--bg2);border-radius:16px;border:1px solid var(--border)"></div>
-          <div style="min-height:90px;background:var(--bg2);border-radius:16px;border:1px solid var(--border)"></div>
-          <div style="min-height:90px;background:var(--bg2);border-radius:16px;border:1px solid var(--border)"></div>
-          <div style="min-height:90px;background:var(--bg2);border-radius:16px;border:1px solid var(--border)"></div>
-        </div>
+      <!-- Skeleton: botones pill placeholder -->
+      <div class="cat-groups-grid" style="opacity:.35;pointer-events:none">
+        <div style="height:36px;background:var(--bg2);border-radius:99px;border:1px solid var(--border)"></div>
+        <div style="height:36px;background:var(--bg2);border-radius:99px;border:1px solid var(--border)"></div>
+        <div style="height:36px;background:var(--bg2);border-radius:99px;border:1px solid var(--border)"></div>
+        <div style="height:36px;background:var(--bg2);border-radius:99px;border:1px solid var(--border)"></div>
+        <div style="height:36px;background:var(--bg2);border-radius:99px;border:1px solid var(--border)"></div>
+        <div style="height:36px;background:var(--bg2);border-radius:99px;border:1px solid var(--border)"></div>
+        <div style="height:36px;background:var(--bg2);border-radius:99px;border:1px solid var(--border)"></div>
+        <div style="height:36px;background:var(--bg2);border-radius:99px;border:1px solid var(--border)"></div>
       </div>
     </div>
 
@@ -920,36 +922,63 @@ async function loadCategories() {
       completos:'🌭', torta:'🎂', barra:'🍹',
     };
 
-    container.innerHTML = grupos.map((g, gi) => `
-      <div class="cat-group reveal visible">
-        <div class="cat-group-label${gi===0?' open':''}" onclick="toggleCatGroup(this)">
-          ${g.nombre}
-          <span class="cg-arr">▾</span>
-        </div>
-        <div class="cat-grid-wrap${gi===0?' open':''}">
-          <div class="cat-grid">
-            ${g.categorias.map((cat, i) => `
-              <a class="cat-tile${i===0?' cat-tile-parent':''}" href="proveedores.html?cat=${cat.id}">
-                <h4>${cat.nombre}</h4>
-                <span class="count">(${cat.proveedores.length})</span>
-              </a>
-            `).join('')}
-          </div>
-        </div>
-      </div>
-    `).join('');
+    // Render groups: grilla de botones 4 por fila + panel de etiquetas por grupo
+    const CAT_ICONS = {
+      banqueteria:'🍽️', pizzas:'🍕', hamburguesas:'🍔', churrascos:'🥩',
+      completos:'🌭', torta:'🎂', barra:'🍹',
+    };
 
-    // Toggle function
-    window.toggleCatGroup = function(label) {
-      const isOpen = label.classList.contains('open');
-      // close all
-      document.querySelectorAll('.cat-group-label').forEach(l => {
-        l.classList.remove('open');
-        l.nextElementSibling?.classList.remove('open');
+    // Botones de categorías en grilla
+    const gridDiv = document.createElement('div');
+    gridDiv.className = 'cat-groups-grid reveal visible';
+    grupos.forEach(g => {
+      const btn = document.createElement('button');
+      btn.className = 'cat-group-btn';
+      btn.id = 'cgb-' + g.id;
+      btn.innerHTML = `<span>${g.nombre}</span><span class="cg-arr">▾</span>`;
+      btn.addEventListener('click', () => toggleCatGroup(g.id));
+      gridDiv.appendChild(btn);
+    });
+
+    // Paneles de etiquetas (uno por grupo, ancho completo)
+    const panelsDiv = document.createElement('div');
+    panelsDiv.id = 'cat-panels';
+    grupos.forEach(g => {
+      const panel = document.createElement('div');
+      panel.className = 'cat-tags-panel';
+      panel.id = 'ctp-' + g.id;
+      panel.innerHTML = `<div class="cat-tags-inner">${
+        g.categorias.map(cat => `
+          <a class="cat-tag-pill" href="proveedores.html?cat=${cat.id}">
+            ${cat.nombre}
+            <span class="tag-count">(${cat.proveedores.length})</span>
+          </a>
+        `).join('')
+      }</div>`;
+      panelsDiv.appendChild(panel);
+    });
+
+    container.innerHTML = '';
+    container.appendChild(gridDiv);
+    container.appendChild(panelsDiv);
+
+    // Toggle: click abre etiquetas del grupo, vuelve a clickear las cierra
+    window.toggleCatGroup = function(gid) {
+      const btn   = document.getElementById('cgb-' + gid);
+      const panel = document.getElementById('ctp-' + gid);
+      const isOpen = btn.classList.contains('open');
+
+      // Cerrar todos
+      document.querySelectorAll('.cat-group-btn.open').forEach(b => {
+        b.classList.remove('open');
+        const id = b.id.replace('cgb-', '');
+        document.getElementById('ctp-' + id)?.classList.remove('open');
       });
+
+      // Si no estaba abierto, abrirlo
       if (!isOpen) {
-        label.classList.add('open');
-        label.nextElementSibling?.classList.add('open');
+        btn.classList.add('open');
+        panel?.classList.add('open');
       }
     };
 
