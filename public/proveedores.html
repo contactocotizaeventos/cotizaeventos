@@ -518,39 +518,12 @@
     .expand-btn{width:100%;padding:10px;margin-top:8px;border:1.5px dashed var(--border);border-radius:10px;background:var(--bg);color:var(--muted);font-size:.82rem;font-weight:600;cursor:pointer;transition:.18s}
     .expand-btn:hover{border-color:var(--coral);color:var(--coral);background:var(--coral-lt)}
     /* CAT TILES */
-    /* ── CHIPS DE CATEGORÍAS (proveedores) ── */
-    .grp-chip{
-      display:inline-flex;align-items:center;gap:5px;
-      padding:7px 14px;
-      background:var(--white);border:1.5px solid var(--border2);
-      border-radius:99px;cursor:pointer;
-      font-family:'Outfit',sans-serif;font-size:.8rem;font-weight:600;
-      color:var(--ink2);transition:.18s var(--ease);white-space:nowrap;
-    }
-    .grp-chip:hover{border-color:var(--coral-md);color:var(--coral);background:var(--coral-lt)}
-    .grp-chip.open{background:var(--coral);border-color:var(--coral);color:#fff}
-    .grp-chip .chip-arrow{font-size:.55rem;transition:transform .22s var(--ease);opacity:.6}
-    .grp-chip.open .chip-arrow{transform:rotate(180deg);opacity:1}
-
-    .grp-panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .28s var(--ease)}
-    .grp-panel.open{grid-template-rows:1fr}
-    .grp-panel-inner{
-      overflow:hidden;background:var(--coral-lt);
-      border:1.5px solid var(--coral-md);border-top:none;
-      border-radius:0 0 10px 10px;
-    }
-    .tag-chips-row{display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px}
-    .tag-chip{
-      display:inline-flex;align-items:center;gap:4px;
-      padding:5px 12px;
-      background:var(--white);border:1.5px solid var(--border);
-      border-radius:99px;font-size:.74rem;font-weight:500;
-      color:var(--ink2);cursor:pointer;text-decoration:none;
-      transition:.15s var(--ease);white-space:nowrap;
-    }
-    .tag-chip:hover{border-color:var(--coral);color:var(--coral)}
-    .tag-chip.active{border-color:var(--coral);background:var(--coral-lt);color:var(--coral);font-weight:600}
-    .tag-chip-count{font-size:.62rem;color:var(--muted)}
+    .ct-tile{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 10px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);text-decoration:none;text-align:center;transition:.18s;cursor:pointer}
+    .ct-tile:hover{border-color:var(--coral-md);background:var(--coral-lt);transform:translateY(-2px)}
+    .ct-tile.active{border-color:var(--coral);background:var(--coral-lt);box-shadow:0 0 0 3px var(--coral-lt)}
+    .ct-ico{font-size:1.7rem;display:block}
+    .ct-name{font-size:.78rem;font-weight:600;color:var(--ink);line-height:1.2}
+    .ct-count{font-size:.62rem;color:var(--muted)}
 
     /* GOLD GALLERY */
     .gold-gallery{margin-top:52px;padding-top:28px;border-top:1px solid var(--border)}
@@ -572,6 +545,26 @@
     .upgrade-title{font-size:.92rem;font-weight:700;color:var(--ink);margin-bottom:3px}
     .upgrade-sub{font-size:.78rem;color:var(--muted)}
     .upgrade-btn{margin-left:auto;padding:8px 18px;background:var(--coral);color:#fff;border-radius:99px;font-size:.8rem;font-weight:700;white-space:nowrap;flex-shrink:0}
+  /* compact accordion */
+/* ── PATCH: botones acordeón más compactos ── */
+.acc-btn {
+  padding: 9px 16px !important;
+}
+.acc-btn .acc-lbl .acc-name {
+  font-size: .85rem !important;
+}
+.acc-btn .acc-lbl .acc-sub {
+  font-size: .67rem !important;
+}
+.cat-group-btn {
+  padding: 9px 16px !important;
+}
+.cat-group-btn .cgb-name {
+  font-size: .88rem !important;
+}
+.cat-group-btn .cgb-sub {
+  font-size: .67rem !important;
+}
   </style>
 </head>
 <body>
@@ -615,6 +608,21 @@
   </div>
 </div>
 
+<!-- ── BANNER PROVEEDOR ── -->
+<div id="pv-banner" style="background:linear-gradient(90deg,var(--coral-lt),#fff8f6);border-bottom:1px solid var(--coral-md);padding:10px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+  <div style="display:flex;align-items:center;gap:10px">
+    <span style="font-size:1.2rem">🏆</span>
+    <div>
+      <div style="font-size:.82rem;font-weight:700;color:var(--ink)">¿Eres proveedor de eventos?</div>
+      <div style="font-size:.74rem;color:var(--muted)">Aparece en el directorio y recibe clientes directamente</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+    <span style="font-size:.72rem;color:var(--coral);font-weight:600;background:#fff;border:1px solid var(--coral-md);border-radius:99px;padding:3px 10px">Gratis ahora</span>
+    <a href="form.html" class="btn btn-coral" style="padding:8px 18px;font-size:.8rem">Registrar mi negocio →</a>
+  </div>
+</div>
+
 <!-- ── STICKY BAR: BUSCAR + CATEGORÍAS ── -->
 <div class="sticky-bar" id="sticky-bar">
 
@@ -637,12 +645,20 @@
     </div>
   </div>
 
+  <!-- Fila 2: pills de categorías (scroll horizontal) -->
+  <div class="sb-pills-row">
+    <div class="sb-pills-inner" id="cat-pills-track">
+      <!-- generado por JS -->
+    </div>
+  </div>
+
 </div>
 
-<!-- ── CATEGORÍAS ── -->
-<div id="cat-nav" style="background:var(--white);border-bottom:1px solid var(--border);padding:14px 24px;display:none">
-  <div id="cat-chips-row" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:0"></div>
-  <div id="cat-panels-wrap"></div>
+<!-- ── CATEGORY TILES (like index) ── -->
+<div id="cat-tiles-section" style="background:var(--white);border-bottom:1px solid var(--border);padding:20px 24px 24px;display:none">
+  <div style="max-width:1080px;margin:0 auto" id="cat-tiles-container">
+    <!-- generado por JS -->
+  </div>
 </div>
 
 <div class="page-body">
@@ -697,25 +713,8 @@ async function loadProviders() {
     GRUPOS = data.grupos || [];
     buildIndex();
     buildCatBar();
-    // URL params: ?cat=ID | ?grupo=ID | ?all=1 | ?scroll=1 (desde index)
-    const _p = new URLSearchParams(location.search);
-    const _pCat    = _p.get('cat');
-    const _pGrupo  = _p.get('grupo');
-    const _pAll    = _p.get('all');
-    const _pScroll = _p.get('scroll') === '1';
-
+    // Default: first category whose name includes 'pizza', else first cat of first group
     const defaultCat = (() => {
-      if (_pAll) return { mode: 'all', groupId: null, catId: null };
-      if (_pGrupo) {
-        const g = GRUPOS.find(g => g.id === _pGrupo);
-        if (g) return { mode: 'group', groupId: g.id, catId: null };
-      }
-      if (_pCat) {
-        for (const g of GRUPOS) {
-          const cat = g.categorias.find(c => c.id === _pCat);
-          if (cat) return { mode: 'cat', groupId: g.id, catId: cat.id };
-        }
-      }
       for (const g of GRUPOS) {
         for (const cat of g.categorias) {
           if (cat.nombre.toLowerCase().includes('pizza')) return { mode: 'cat', groupId: g.id, catId: cat.id };
@@ -724,28 +723,8 @@ async function loadProviders() {
       if (GRUPOS[0]?.categorias[0]) return { mode: 'cat', groupId: GRUPOS[0].id, catId: GRUPOS[0].categorias[0].id };
       return { mode: 'all', groupId: null, catId: null };
     })();
-
     VIEW = defaultCat;
     render();
-
-    // Auto-abrir el grupo por defecto
-    if (defaultCat.groupId) {
-      setTimeout(() => {
-        const chip  = document.getElementById('grp-chip-'  + defaultCat.groupId);
-        const panel = document.getElementById('grp-panel-' + defaultCat.groupId);
-        if (chip && panel) {
-          chip.classList.add('open'); panel.classList.add('open');
-          _openGrp = defaultCat.groupId;
-        }
-        if (defaultCat.catId)
-          document.getElementById('tag-chip-' + defaultCat.catId)?.classList.add('active');
-        if (_pScroll) {
-          const area = document.getElementById('content-area');
-          if (area) window.scrollTo({ top: area.getBoundingClientRect().top + window.scrollY - 130, behavior: 'smooth' });
-        }
-      }, 150);
-    }
-
     window.addEventListener('scroll', updateActivePill, { passive: true });
   } catch (e) {
     area.innerHTML = `<div style="text-align:center;padding:60px 24px;color:var(--muted)"><span style="font-size:3rem;display:block;margin-bottom:14px">⚠️</span><h3 style="font-size:1.2rem;color:var(--ink);margin-bottom:8px">Error al cargar proveedores</h3><p style="font-size:.88rem">${e.message}</p></div>`;
@@ -761,104 +740,95 @@ const RANK = {
 /* ═══════════════════════════════════════════
    PILLS BAR
 ═══════════════════════════════════════════ */
-/* ═══════════════════════════════════════════
-   CHIPS DE CATEGORÍAS
-   Grupos = chips pequeños en fila horizontal
-   Etiquetas = chips chicos bajo el grupo abierto
-═══════════════════════════════════════════ */
-let _openGrp = null;
-
 function buildCatBar() {
-  const nav       = document.getElementById('cat-nav');
-  const chipsRow  = document.getElementById('cat-chips-row');
-  const panelWrap = document.getElementById('cat-panels-wrap');
-  if (!nav || !chipsRow || !panelWrap) return;
+  const track = document.getElementById('cat-pills-track');
+  if (!track) return;
+  track.innerHTML = '';
 
+  // "Todos" pill
+  const allPill = document.createElement('span');
+  allPill.className = 'cat-pill';
+  allPill.id = 'pill-all';
+  allPill.innerHTML = '✦ Todos';
+  allPill.addEventListener('click', () => setView({ mode: 'all' }));
+  track.appendChild(allPill);
+
+  // One pill per GRUPO (parent)
   GRUPOS.forEach(g => {
-    // Chip del grupo
-    const chip = document.createElement('div');
-    chip.className = 'grp-chip';
-    chip.id = 'grp-chip-' + g.id;
-    chip.innerHTML = g.nombre + ' <span class="chip-arrow">▼</span>';
-    chip.addEventListener('click', () => toggleGrp(g.id));
-    chipsRow.appendChild(chip);
-
-    // Panel de etiquetas
-    const panel = document.createElement('div');
-    panel.className = 'grp-panel';
-    panel.id = 'grp-panel-' + g.id;
-    panel.innerHTML = `
-      <div class="grp-panel-inner">
-        <div class="tag-chips-row">
-          ${g.categorias.map(cat => `
-            <span class="tag-chip" id="tag-chip-${cat.id}"
-              onclick="selectTag('${g.id}','${cat.id}')">
-              ${cat.nombre}
-              <span class="tag-chip-count">${cat.proveedores.length}</span>
-            </span>
-          `).join('')}
-        </div>
-      </div>`;
-    panelWrap.appendChild(panel);
+    const pill = document.createElement('span');
+    pill.className = 'cat-pill';
+    pill.id = 'pill-g-' + g.id;
+    pill.innerHTML = g.ico + ' ' + g.nombre;
+    pill.addEventListener('click', () => setView({ mode: 'group', groupId: g.id }));
+    track.appendChild(pill);
   });
 
-  nav.style.display = 'block';
+  buildCatTiles();
 }
 
-function toggleGrp(groupId) {
-  const chip  = document.getElementById('grp-chip-'  + groupId);
-  const panel = document.getElementById('grp-panel-' + groupId);
-  if (!chip || !panel) return;
-  const isOpen = chip.classList.contains('open');
+/* ═══════════════════════════════════════════
+   CAT TILES GRID
+═══════════════════════════════════════════ */
+function buildCatTiles() {
+  const section   = document.getElementById('cat-tiles-section');
+  const container = document.getElementById('cat-tiles-container');
+  if (!section || !container) return;
 
-  // Cierra el anterior
-  if (_openGrp && _openGrp !== groupId) {
-    document.getElementById('grp-chip-'  + _openGrp)?.classList.remove('open');
-    document.getElementById('grp-panel-' + _openGrp)?.classList.remove('open');
-  }
+  container.innerHTML = GRUPOS.map(g => `
+    <div style="margin-bottom:16px">
+      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:8px">
+        ${g.ico} ${g.nombre}
+        <span style="flex:1;height:1px;background:var(--border);display:inline-block"></span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px">
+        ${g.categorias.map(cat => `
+          <a class="ct-tile" id="ct-${cat.id}" onclick="setView({mode:'cat',groupId:'${g.id}',catId:'${cat.id}'});return false" href="#">
+            <span class="ct-ico">${cat.ico}</span>
+            <span class="ct-name">${cat.nombre}</span>
+            <span class="ct-count">${cat.proveedores.length} proveedor${cat.proveedores.length!==1?'es':''}</span>
+          </a>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
 
-  chip.classList.toggle('open', !isOpen);
-  panel.classList.toggle('open', !isOpen);
-  _openGrp = isOpen ? null : groupId;
-
-  // Clic en categoría: mostrar todos sus proveedores SIN scroll
-  if (!isOpen) setView({ mode: 'group', groupId }, false);
-  else         setView({ mode: 'all'   }, false);
-}
-
-function selectTag(groupId, catId) {
-  // Clic en etiqueta: filtrar y hacer scroll
-  document.querySelectorAll('.tag-chip').forEach(t => t.classList.remove('active'));
-  document.getElementById('tag-chip-' + catId)?.classList.add('active');
-  setView({ mode: 'cat', groupId, catId }, true);
-}
-
-function syncChipState() {
-  document.querySelectorAll('.tag-chip').forEach(t => t.classList.remove('active'));
-  if (VIEW.mode === 'cat' && VIEW.catId) {
-    document.getElementById('tag-chip-' + VIEW.catId)?.classList.add('active');
-  }
+  section.style.display = 'block';
+  syncActiveTile();
 }
 
 /* ═══════════════════════════════════════════
    VIEW STATE MANAGER
 ═══════════════════════════════════════════ */
-function setView(v, doScroll) {
+function setView(v) {
   VIEW = { mode: v.mode, groupId: v.groupId || null, catId: v.catId || null };
-  syncChipState();
+  syncActivePillToView();
+  syncActiveTile();
   render();
-  if (doScroll) {
-    const area = document.getElementById('content-area');
-    if (area) {
-      const y = area.getBoundingClientRect().top + window.scrollY - 130;
-      window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
-    }
+  // Scroll to top of content area
+  const area = document.getElementById('content-area');
+  if (area) {
+    const y = area.getBoundingClientRect().top + window.scrollY - 130;
+    window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
   }
 }
 
-// syncActivePillToView reemplazado por syncChipState en setView
+function syncActivePillToView() {
+  document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+  if (VIEW.mode === 'all') {
+    document.getElementById('pill-all')?.classList.add('active');
+  } else if (VIEW.mode === 'group' && VIEW.groupId) {
+    document.getElementById('pill-g-' + VIEW.groupId)?.classList.add('active');
+  } else if (VIEW.mode === 'cat' && VIEW.groupId) {
+    document.getElementById('pill-g-' + VIEW.groupId)?.classList.add('active');
+  }
+}
 
-// syncActiveTile reemplazado por syncChipState
+function syncActiveTile() {
+  document.querySelectorAll('.ct-tile').forEach(t => t.classList.remove('active'));
+  if (VIEW.mode === 'cat' && VIEW.catId) {
+    document.getElementById('ct-' + VIEW.catId)?.classList.add('active');
+  }
+}
 
 /* ═══════════════════════════════════════════
    RENDER
