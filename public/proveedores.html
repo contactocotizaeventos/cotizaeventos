@@ -386,6 +386,7 @@
     .basic-wa:hover{background:#1db954;transform:scale(1.06)}
     .basic-detail{padding:3px 10px;font-size:.68rem;font-weight:600;border-radius:99px;border:1.5px solid var(--border2);background:var(--bg);color:var(--muted);cursor:pointer;transition:.18s;white-space:nowrap}
     .basic-detail:hover{border-color:var(--coral);color:var(--coral)}
+    @media(max-width:700px){#cat-chips-row{grid-template-columns:repeat(2,1fr)}}
     @media(max-width:560px){
       /* En móvil: quitar precio pero MANTENER diff y tagline */
       .basic-price{display:none}
@@ -520,12 +521,12 @@
     /* CAT TILES */
     /* ── CHIPS DE CATEGORÍAS (proveedores) ── */
     .grp-chip{
-      display:inline-flex;align-items:center;gap:5px;
-      padding:7px 14px;
+      display:flex;align-items:center;justify-content:space-between;gap:5px;
+      padding:10px 16px;
       background:var(--white);border:1.5px solid var(--border2);
-      border-radius:99px;cursor:pointer;
-      font-family:'Outfit',sans-serif;font-size:.8rem;font-weight:600;
-      color:var(--ink2);transition:.18s var(--ease);white-space:nowrap;
+      border-radius:12px;cursor:pointer;
+      font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:600;
+      color:var(--ink2);transition:.18s var(--ease);
     }
     .grp-chip:hover{border-color:var(--coral-md);color:var(--coral);background:var(--coral-lt)}
     .grp-chip.open{background:var(--coral);border-color:var(--coral);color:#fff}
@@ -639,7 +640,7 @@
 
 <!-- ── CATEGORÍAS ── -->
 <div id="cat-nav" style="background:var(--white);border-bottom:1px solid var(--border);padding:14px 24px;display:none">
-  <div id="cat-chips-row" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:0"></div>
+  <div id="cat-chips-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:0"></div>
   <div id="cat-panels-wrap"></div>
 </div>
 
@@ -892,10 +893,8 @@ function render() {
     if (!filtered.length) return;
     totalVisible += filtered.length;
 
-    // pos 5 = Destacado (pago, aparece primero con tarjeta grande)
-    // básico = cualquier otro pos (o sin pos)
     const destacados = filtered.filter(p => p.pos === 5 || p.posicion === 5);
-    const allBasics  = filtered.filter(p => p.pos !== 5 && p.posicion !== 5 && !(!p.pos && p.posicion));
+    const allBasics  = filtered.filter(p => p.pos !== 5 && p.posicion !== 5);
     const basics     = shuffle([...allBasics]).slice(0, 3);
 
     html += `
@@ -982,15 +981,15 @@ function buildGoldGallery(shownCatIds) {
   let golds = [];
   GRUPOS.forEach(g => g.categorias.forEach(cat => {
     if (VIEW.mode === 'all' || !shownCatIds.includes(cat.id)) {
-      cat.proveedores.filter(p => p.pos === 5 || p.posicion === 5)
-        .forEach(p => golds.push({ ...p, catNombre: cat.nombre, catIco: cat.ico }));
+      const p = cat.proveedores.find(p => p.pos === 5 || p.posicion === 5);
+      if (p) golds.push({ ...p, catNombre: cat.nombre, catIco: cat.ico });
     }
   }));
-  // Fallback: mostrar todos los Destacados si no hay suficientes
+  // If all are shown (mode=cat, same cat), still show from other cats
   if (!golds.length) {
     GRUPOS.forEach(g => g.categorias.forEach(cat => {
-      cat.proveedores.filter(p => p.pos === 5 || p.posicion === 5)
-        .forEach(p => golds.push({ ...p, catNombre: cat.nombre, catIco: cat.ico }));
+      const p = cat.proveedores.find(p => p.pos === 5 || p.posicion === 5);
+      if (p) golds.push({ ...p, catNombre: cat.nombre, catIco: cat.ico });
     }));
   }
   if (!golds.length) return '';
@@ -1084,7 +1083,7 @@ document.head.appendChild(_spinStyle);
    CARD HTML HELPERS
 ═══════════════════════════════════════════ */
 function paidCardHTML(p) {
-  const r = RANK[p.pos] || { label:"✦ Destacado", stars:"✦", cls:"pos-dest", tag:"pt-dest" };
+  const r = RANK[p.pos] || RANK[5];
   const waMsg = encodeURIComponent('Hola ' + p.nombre + '! Los vi en CotizaEventos.cl y me interesa cotizar sus servicios.');
   const coverHTML = p.cover_url
     ? `<img class="pos-cover-img" src="${p.cover_url}" alt="${p.nombre}" loading="lazy" />`
