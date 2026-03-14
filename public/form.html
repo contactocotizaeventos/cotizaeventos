@@ -207,6 +207,12 @@
     }
     .pb-dest{background:var(--coral-lt);color:var(--coral);border:1px solid var(--coral-md)}
     .pb-basic{background:var(--bg2);color:var(--muted);border:1px solid var(--border2)}
+    .pb-gold{background:#FFF8E1;color:#8B6914;border:1px solid #E8C84A}
+    .pb-silver{background:#F3F4F6;color:#4B5563;border:1px solid #C0C0C0}
+    .pb-bronze{background:#FDF3E6;color:#7C4F1E;border:1px solid #CD7F32}
+    .pos-option-gold.selected{border-color:#E8C84A;background:#FFFDF0}
+    .pos-option-silver.selected{border-color:#C0C0C0;background:#F8F8FA}
+    .pos-option-bronze.selected{border-color:#CD7F32;background:#FDF5EC}
 
     /* PRICE RANGE */
     .price-row{display:grid;grid-template-columns:1fr 24px 1fr;align-items:center;gap:8px}
@@ -621,43 +627,78 @@
         </div>
       </div>
       <div class="form-card-body">
-        <div class="pos-grid" style="grid-template-columns:1fr 1fr">
-          <!-- Destacado -->
+
+        <!-- Nota informativa -->
+        <div style="margin-bottom:18px;padding:12px 16px;background:var(--bg);border-radius:10px;border:1px solid var(--border);font-size:.8rem;color:var(--muted);line-height:1.55">
+          Selecciona el plan que te interesa. Las posiciones <strong style="color:var(--ink)">Oro, Plata y Bronce</strong> son asignadas por el administrador según disponibilidad. El plan <strong style="color:var(--ink)">Destacado</strong> es el acceso estándar de pago — queda en rango 5 y aparece en las recomendaciones.
+        </div>
+
+        <div class="pos-grid">
+
+          <!-- Oro — Rango 1 -->
+          <label class="pos-option pos-option-gold" onclick="selectPos(this, 'Oro')">
+            <input type="radio" name="posicion" value="Oro" />
+            <span class="pos-badge pb-gold">★ Rango 1</span>
+            <div class="pos-name" style="color:#8B6914">Oro</div>
+            <div class="pos-price">
+              Posición #1 en tu categoría.<br/>
+              Máxima visibilidad + carrusel inicio.<br/>
+              <strong style="color:#8B6914">Asignado por admin</strong>
+            </div>
+          </label>
+
+          <!-- Plata — Rango 2 -->
+          <label class="pos-option pos-option-silver" onclick="selectPos(this, 'Plata')">
+            <input type="radio" name="posicion" value="Plata" />
+            <span class="pos-badge pb-silver">★ Rango 2</span>
+            <div class="pos-name" style="color:#4B5563">Plata</div>
+            <div class="pos-price">
+              Posición #2 en tu categoría.<br/>
+              Alta visibilidad + carrusel inicio.<br/>
+              <strong style="color:#4B5563">Asignado por admin</strong>
+            </div>
+          </label>
+
+          <!-- Bronce — Rango 3 -->
+          <label class="pos-option pos-option-bronze" onclick="selectPos(this, 'Bronce')">
+            <input type="radio" name="posicion" value="Bronce" />
+            <span class="pos-badge pb-bronze">★ Rango 3</span>
+            <div class="pos-name" style="color:#7C4F1E">Bronce</div>
+            <div class="pos-price">
+              Posición #3 en tu categoría.<br/>
+              Tarjeta destacada con foto.<br/>
+              <strong style="color:#7C4F1E">Asignado por admin</strong>
+            </div>
+          </label>
+
+          <!-- Destacado — Rango 5 (pago estándar) -->
           <label class="pos-option pos-dest-option" onclick="selectPos(this, 'Destacado')">
             <input type="radio" name="posicion" value="Destacado" />
             <span class="pos-badge pb-dest">✦ Recomendado</span>
-            <span class="pos-ico">🏆</span>
             <div class="pos-name">Destacado</div>
             <div class="pos-price">
-              Tarjeta grande con foto, descripción completa y botón directo.<br/>
-              Apareces en el carrusel del inicio.<br/>
+              Tarjeta grande con foto y descripción.<br/>
+              Apareces en recomendaciones.<br/>
               <strong style="color:var(--teal)">Gratis ahora</strong>
-              <s style="font-size:.73rem;color:var(--muted)">$30.000/mes</s>
+              <s style="font-size:.72rem;color:var(--muted)">$25.000/mes</s>
             </div>
           </label>
-          <!-- Básico -->
-          <label class="pos-option" onclick="selectPos(this, 'Listado Básico')">
+
+          <!-- Básico — Gratis -->
+          <label class="pos-option" onclick="selectPos(this, 'Listado Básico')" style="grid-column:1/-1">
             <input type="radio" name="posicion" value="Listado Básico" />
-            <span class="pos-badge pb-basic">Básico</span>
-            <span class="pos-ico">📋</span>
+            <span class="pos-badge pb-basic">Gratis</span>
             <div class="pos-name">Listado Básico</div>
             <div class="pos-price">
-              Apareces en el listado simple de tu categoría.<br/>
-              Sin foto de portada ni descripción destacada.<br/>
+              Apareces en el listado simple de tu categoría. Sin foto de portada ni descripción destacada.<br/>
               <strong style="color:var(--teal)">Siempre gratis</strong>
             </div>
           </label>
+
         </div>
 
-        <!-- Aviso promocional -->
-        <div style="margin-top:16px;padding:14px 18px;background:#f0fdf4;border-radius:12px;border:1.5px solid #86efac">
-          <p style="font-size:.82rem;color:#166534;line-height:1.65">
-            🎉 <strong>¡Lanzamiento gratuito!</strong> Por orden de llegada, las posiciones destacadas son <strong>gratis durante los primeros 2 meses</strong>. Luego se confirmará la suscripción al valor indicado, por orden de quién paga primero. ¡Aprovecha ahora antes que se acaben!
-          </p>
-        </div>
-
-        <div style="margin-top:10px;padding:14px 18px;background:var(--bg);border-radius:12px;border:1px solid var(--border)">
-          <p style="font-size:.82rem;color:var(--muted);line-height:1.6">💡 <strong style="color:var(--ink)">¿Cómo funciona?</strong> Las posiciones se asignan por orden de solicitud. Una vez revisemos tu registro, te contactaremos para confirmar tu posición y activar tu publicación.</p>
+        <div style="margin-top:14px;padding:13px 16px;background:var(--bg);border-radius:10px;border:1px solid var(--border)">
+          <p style="font-size:.8rem;color:var(--muted);line-height:1.6">Las posiciones se asignan por orden de solicitud. Una vez revisemos tu registro, te contactaremos para confirmar tu posición y activar tu publicación.</p>
         </div>
       </div>
     </div>

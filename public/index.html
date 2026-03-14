@@ -241,14 +241,22 @@
     .section-header p { font-size: .9rem; color: var(--muted); }
 
     /* Category groups */
-    .cat-group { margin-bottom: 36px; }
+    .cat-group { margin-bottom: 16px; }
     .cat-group-label {
-      font-size: .68rem; font-weight: 700; letter-spacing: .12em;
-      text-transform: uppercase; color: var(--muted);
-      padding: 0 4px; margin-bottom: 12px;
+      font-size: .75rem; font-weight: 700; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--ink2);
+      padding: 10px 14px; margin-bottom: 0;
       display: flex; align-items: center; gap: 10px;
+      cursor: pointer; border-radius: 10px; border: 1.5px solid var(--border);
+      background: var(--bg); transition: .18s; user-select: none;
     }
-    .cat-group-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .cat-group-label:hover { border-color: var(--coral-md); background: var(--coral-lt); color: var(--coral); }
+    .cat-group-label.open { border-color: var(--coral); color: var(--coral); background: var(--coral-lt); }
+    .cat-group-label .cg-arr { margin-left: auto; font-size: .65rem; transition: transform .22s; }
+    .cat-group-label.open .cg-arr { transform: rotate(180deg); }
+    .cat-grid-wrap { overflow: hidden; transition: max-height .28s ease; max-height: 0; }
+    .cat-grid-wrap.open { max-height: 600px; }
+    .cat-grid-wrap .cat-grid { padding: 10px 0 4px; }
 
     .cat-grid {
       display: grid;
@@ -273,15 +281,10 @@
       transform: translateY(-3px);
       box-shadow: 0 8px 24px rgba(232,84,42,.12);
     }
-    .cat-tile .ico { font-size: 1.4rem; margin-bottom: 5px; display: block; }
-    .cat-tile h4 { font-family: 'Outfit', sans-serif; font-size: .78rem; font-weight: 600; line-height: 1.3; color: var(--ink); }
-    .cat-tile .count { font-size: .65rem; color: var(--muted); margin-top: 2px; }
-    .cat-tile-parent {
-      border-color: var(--border2);
-      background: var(--bg);
-    }
-    .cat-tile-parent .ico { font-size: 2rem; }
-    .cat-tile-parent h4 { font-size: .88rem; font-weight: 700; }
+    .cat-tile h4 { font-family: 'Outfit', sans-serif; font-size: .82rem; font-weight: 600; line-height: 1.3; color: var(--ink); }
+    .cat-tile .count { font-size: .68rem; color: var(--muted); margin-top: 3px; }
+    .cat-tile-parent { border-color: var(--coral-md); background: var(--coral-lt); }
+    .cat-tile-parent h4 { color: var(--coral); font-size: .88rem; font-weight: 700; }
 
     /* view all */
     .view-all-wrap {
@@ -916,20 +919,38 @@ async function loadCategories() {
       completos:'🌭', torta:'🎂', barra:'🍹',
     };
 
-    container.innerHTML = grupos.map(g => `
+    container.innerHTML = grupos.map((g, gi) => `
       <div class="cat-group reveal visible">
-        <div class="cat-group-label">${g.ico} ${g.nombre}</div>
-        <div class="cat-grid">
-          ${g.categorias.map((cat, i) => `
-            <a class="cat-tile${i===0?' cat-tile-parent':''}" href="proveedores.html?cat=${cat.id}">
-              <span class="ico">${cat.ico || CAT_ICONS[cat.id] || '🍽️'}</span>
-              <h4>${cat.nombre}</h4>
-              <span class="count">${cat.proveedores.length} proveedor${cat.proveedores.length!==1?'es':''}</span>
-            </a>
-          `).join('')}
+        <div class="cat-group-label${gi===0?' open':''}" onclick="toggleCatGroup(this)">
+          ${g.nombre}
+          <span class="cg-arr">▾</span>
+        </div>
+        <div class="cat-grid-wrap${gi===0?' open':''}">
+          <div class="cat-grid">
+            ${g.categorias.map((cat, i) => `
+              <a class="cat-tile${i===0?' cat-tile-parent':''}" href="proveedores.html?cat=${cat.id}">
+                <h4>${cat.nombre}</h4>
+                <span class="count">${cat.proveedores.length} proveedor${cat.proveedores.length!==1?'es':''}</span>
+              </a>
+            `).join('')}
+          </div>
         </div>
       </div>
     `).join('');
+
+    // Toggle function
+    window.toggleCatGroup = function(label) {
+      const isOpen = label.classList.contains('open');
+      // close all
+      document.querySelectorAll('.cat-group-label').forEach(l => {
+        l.classList.remove('open');
+        l.nextElementSibling?.classList.remove('open');
+      });
+      if (!isOpen) {
+        label.classList.add('open');
+        label.nextElementSibling?.classList.add('open');
+      }
+    };
 
     // Actualizar SERVICIOS para el formulario de cotización
     SERVICIOS.length = 0;
@@ -947,7 +968,7 @@ async function loadCategories() {
     const carProviders = [];
     grupos.forEach(g => g.categorias.forEach(cat => {
       cat.proveedores.forEach(p => {
-        if (p.pos >= 1 && p.pos <= 3) carProviders.push({ ...p, catNombre: cat.nombre, catIco: cat.ico });
+        if (p.pos === 1 || p.pos === 2 || p.pos === 5) carProviders.push({ ...p, catNombre: cat.nombre, catIco: cat.ico });
       });
     }));
 
