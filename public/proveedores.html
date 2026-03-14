@@ -304,32 +304,6 @@
     }
     .pos-card.pos-2{border:1.5px solid #C0C0C0}
     .pos-card.pos-3{border:1.5px solid #CD7F32}
-    /* Destacado (pos 5) — coral brand, aparece en galería recomendados */
-    .pos-card.pos-dest{
-      border:2.5px solid var(--coral);
-      box-shadow:0 6px 32px rgba(232,84,42,.14), 0 2px 0 0 var(--coral) inset;
-      background:linear-gradient(160deg,#FFF9F7,#fff);
-    }
-    .pos-card.pos-dest:hover{box-shadow:0 16px 48px rgba(232,84,42,.20),0 2px 0 0 var(--coral) inset}
-    .pos-dest .pos-ribbon{background:linear-gradient(90deg,#C94520,var(--coral),#FF7A54);box-shadow:0 2px 12px rgba(232,84,42,.4)}
-    .pos-dest .pos-logo-circle{border:2.5px solid var(--coral)}
-    .pos-dest .pb-min{color:var(--coral)}
-    .pos-dest .pos-diff{background:var(--coral-lt);color:var(--coral);border:1px solid var(--coral-md)}
-    .modal-band.pos-dest{background:linear-gradient(90deg,#C94520,var(--coral),#FF7A54)}
-    .pt-dest{background:var(--coral-lt);color:var(--coral);border:1px solid var(--coral-md)}
-    /* Destacado (pos 5) — coral brand, aparece en galería recomendados */
-    .pos-card.pos-dest{
-      border:2.5px solid var(--coral);
-      box-shadow:0 6px 32px rgba(232,84,42,.14), 0 2px 0 0 var(--coral) inset;
-      background:linear-gradient(160deg,#FFF9F7,#fff);
-    }
-    .pos-card.pos-dest:hover{box-shadow:0 16px 48px rgba(232,84,42,.20), 0 2px 0 0 var(--coral) inset}
-    .pos-dest .pos-ribbon{background:linear-gradient(90deg,#C94520,var(--coral),#FF7A54);box-shadow:0 2px 12px rgba(232,84,42,.4)}
-    .pos-dest .pos-logo-circle{border:2.5px solid var(--coral)}
-    .pos-dest .pb-min{color:var(--coral)}
-    .pos-dest .pos-diff{background:var(--coral-lt);color:var(--coral);border:1px solid var(--coral-md)}
-    .modal-band.pos-dest{background:linear-gradient(90deg,#C94520,var(--coral),#FF7A54)}
-    .pt-dest{background:var(--coral-lt);color:var(--coral);border:1px solid var(--coral-md)}
 
     /* COVER PHOTO */
     .pos-cover{position:relative;width:100%;height:170px;flex-shrink:0;overflow:hidden;border-radius:18px 18px 0 0}
@@ -544,12 +518,52 @@
     .expand-btn{width:100%;padding:10px;margin-top:8px;border:1.5px dashed var(--border);border-radius:10px;background:var(--bg);color:var(--muted);font-size:.82rem;font-weight:600;cursor:pointer;transition:.18s}
     .expand-btn:hover{border-color:var(--coral);color:var(--coral);background:var(--coral-lt)}
     /* CAT TILES */
-    .ct-tile{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 10px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);text-decoration:none;text-align:center;transition:.18s;cursor:pointer}
-    .ct-tile:hover{border-color:var(--coral-md);background:var(--coral-lt);transform:translateY(-2px)}
-    .ct-tile.active{border-color:var(--coral);background:var(--coral-lt);box-shadow:0 0 0 3px var(--coral-lt)}
-    .ct-ico{font-size:1.7rem;display:block}
-    .ct-name{font-size:.78rem;font-weight:600;color:var(--ink);line-height:1.2}
-    .ct-count{font-size:.62rem;color:var(--muted)}
+    /* ── ACORDEÓN GRUPOS proveedores ── */
+    .acc-grp { margin-bottom: 8px; }
+    .acc-btn {
+      width:100%; display:flex; align-items:center; gap:12px;
+      padding:13px 18px; background:var(--white);
+      border:1.5px solid var(--border2); border-radius:12px;
+      cursor:pointer; font-family:'Outfit',sans-serif; text-align:left;
+      transition:.2s var(--ease);
+    }
+    .acc-btn:hover { border-color:var(--coral-md); background:var(--coral-lt); }
+    .acc-btn.open {
+      border-color:var(--coral); background:var(--coral-lt);
+      border-radius:12px 12px 0 0; border-bottom-color:transparent;
+    }
+    .acc-ico  { font-size:1.4rem; flex-shrink:0; }
+    .acc-lbl  { flex:1; min-width:0; }
+    .acc-name { font-size:.88rem; font-weight:700; color:var(--ink); display:block; }
+    .acc-sub  { font-size:.7rem; color:var(--muted); margin-top:1px; display:block; }
+    .acc-arrow{ font-size:.7rem; color:var(--muted); flex-shrink:0; transition:transform .28s var(--ease); }
+    .acc-btn.open .acc-arrow { transform:rotate(180deg); color:var(--coral); }
+    .acc-panel {
+      display:grid; grid-template-rows:0fr;
+      transition:grid-template-rows .3s var(--ease);
+    }
+    .acc-panel.open { grid-template-rows:1fr; }
+    .acc-panel-inner {
+      overflow:hidden; background:var(--coral-lt);
+      border:1.5px solid var(--coral);
+      border-top:none; border-radius:0 0 12px 12px;
+    }
+    .acc-tags {
+      display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
+      gap:8px; padding:12px 14px;
+    }
+    .acc-tag {
+      display:flex; flex-direction:column; align-items:center; gap:4px;
+      padding:12px 8px; border-radius:10px;
+      border:1.5px solid var(--border); background:var(--white);
+      text-decoration:none; text-align:center;
+      transition:.18s var(--ease); cursor:pointer;
+    }
+    .acc-tag:hover { border-color:var(--coral); transform:translateY(-2px); box-shadow:0 4px 14px rgba(232,84,42,.12); }
+    .acc-tag.active { border-color:var(--coral); background:var(--coral-lt); }
+    .acc-tag-ico   { font-size:1.5rem; }
+    .acc-tag-name  { font-size:.74rem; font-weight:600; color:var(--ink); line-height:1.2; }
+    .acc-tag-count { font-size:.6rem; color:var(--muted); }
 
     /* GOLD GALLERY */
     .gold-gallery{margin-top:52px;padding-top:28px;border-top:1px solid var(--border)}
@@ -614,21 +628,6 @@
   </div>
 </div>
 
-<!-- ── BANNER PROVEEDOR ── -->
-<div id="pv-banner" style="background:linear-gradient(90deg,var(--coral-lt),#fff8f6);border-bottom:1px solid var(--coral-md);padding:10px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
-  <div style="display:flex;align-items:center;gap:10px">
-    <span style="font-size:1.2rem">🏆</span>
-    <div>
-      <div style="font-size:.82rem;font-weight:700;color:var(--ink)">¿Eres proveedor de eventos?</div>
-      <div style="font-size:.74rem;color:var(--muted)">Aparece en el directorio y recibe clientes directamente</div>
-    </div>
-  </div>
-  <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-    <span style="font-size:.72rem;color:var(--coral);font-weight:600;background:#fff;border:1px solid var(--coral-md);border-radius:99px;padding:3px 10px">Gratis ahora</span>
-    <a href="form.html" class="btn btn-coral" style="padding:8px 18px;font-size:.8rem">Registrar mi negocio →</a>
-  </div>
-</div>
-
 <!-- ── STICKY BAR: BUSCAR + CATEGORÍAS ── -->
 <div class="sticky-bar" id="sticky-bar">
 
@@ -651,20 +650,11 @@
     </div>
   </div>
 
-  <!-- Fila 2: pills de categorías (scroll horizontal) -->
-  <div class="sb-pills-row">
-    <div class="sb-pills-inner" id="cat-pills-track">
-      <!-- generado por JS -->
-    </div>
-  </div>
-
 </div>
 
-<!-- ── CATEGORY TILES (like index) ── -->
-<div id="cat-tiles-section" style="background:var(--white);border-bottom:1px solid var(--border);padding:20px 24px 24px;display:none">
-  <div style="max-width:1080px;margin:0 auto" id="cat-tiles-container">
-    <!-- generado por JS -->
-  </div>
+<!-- ── ACORDEÓN DE CATEGORÍAS ── -->
+<div id="cat-accordion" style="background:var(--white);border-bottom:1px solid var(--border);padding:12px 24px;display:none">
+  <!-- generado por JS -->
 </div>
 
 <div class="page-body">
@@ -731,6 +721,21 @@ async function loadProviders() {
     })();
     VIEW = defaultCat;
     render();
+    // Auto-abrir el grupo por defecto en el acordeón
+    if (defaultCat.groupId) {
+      setTimeout(() => {
+        const btn   = document.getElementById('acc-btn-'   + defaultCat.groupId);
+        const panel = document.getElementById('acc-panel-' + defaultCat.groupId);
+        if (btn && panel) {
+          btn.classList.add('open');
+          panel.classList.add('open');
+          _accOpen = defaultCat.groupId;
+          if (defaultCat.catId) {
+            document.getElementById('acc-tag-' + defaultCat.catId)?.classList.add('active');
+          }
+        }
+      }, 100);
+    }
     window.addEventListener('scroll', updateActivePill, { passive: true });
   } catch (e) {
     area.innerHTML = `<div style="text-align:center;padding:60px 24px;color:var(--muted)"><span style="font-size:3rem;display:block;margin-bottom:14px">⚠️</span><h3 style="font-size:1.2rem;color:var(--ink);margin-bottom:8px">Error al cargar proveedores</h3><p style="font-size:.88rem">${e.message}</p></div>`;
@@ -738,76 +743,89 @@ async function loadProviders() {
 }
 
 const RANK = {
-  1:{label:"#1 Posición Oro",  stars:"★★★", cls:"pos-1",    tag:"pt-1"},
-  2:{label:"#2 Posición Plata",stars:"★★☆", cls:"pos-2",    tag:"pt-2"},
-  3:{label:"#3 Posición Bronce",stars:"★☆☆",cls:"pos-3",    tag:"pt-3"},
-  5:{label:"✦ Destacado",      stars:"✦",   cls:"pos-dest",  tag:"pt-dest"},
+  1:{label:"#1 Posición Oro",stars:"★★★",cls:"pos-1",tag:"pt-1"},
+  2:{label:"#2 Posición Plata",stars:"★★☆",cls:"pos-2",tag:"pt-2"},
+  3:{label:"#3 Posición Bronce",stars:"★☆☆",cls:"pos-3",tag:"pt-3"}
 };
-// pos 5 = Destacado (pago separado, aparece en carrusel + galería)
-// pos 1-3 = Oro/Plata/Bronce (posición en directorio)
-// básico = sin pos o pos > 5 (excepto 5)
-const IS_PAID = p => p.pos >= 1 && p.pos <= 3;
-const IS_DEST = p => p.pos === 5;
-const IS_BASIC = p => !p.pos || (p.pos > 3 && p.pos !== 5);
-const IS_RECOMMENDED = p => p.pos === 1 || p.pos === 2 || p.pos === 5;
 
 /* ═══════════════════════════════════════════
    PILLS BAR
 ═══════════════════════════════════════════ */
+/* ═══════════════════════════════════════════
+   ACORDEÓN — reemplaza pills + tiles grid
+═══════════════════════════════════════════ */
+let _accOpen = null;  // id del grupo actualmente abierto
+
 function buildCatBar() {
-  const track = document.getElementById('cat-pills-track');
-  if (!track) return;
-  track.innerHTML = '';
-
-  // "Todos" pill
-  const allPill = document.createElement('span');
-  allPill.className = 'cat-pill';
-  allPill.id = 'pill-all';
-  allPill.innerHTML = '✦ Todos';
-  allPill.addEventListener('click', () => setView({ mode: 'all' }));
-  track.appendChild(allPill);
-
-  // One pill per GRUPO (parent)
-  GRUPOS.forEach(g => {
-    const pill = document.createElement('span');
-    pill.className = 'cat-pill';
-    pill.id = 'pill-g-' + g.id;
-    pill.innerHTML = g.ico + ' ' + g.nombre;
-    pill.addEventListener('click', () => setView({ mode: 'group', groupId: g.id }));
-    track.appendChild(pill);
-  });
-
-  buildCatTiles();
+  buildAccordion();
 }
 
-/* ═══════════════════════════════════════════
-   CAT TILES GRID
-═══════════════════════════════════════════ */
-function buildCatTiles() {
-  const section   = document.getElementById('cat-tiles-section');
-  const container = document.getElementById('cat-tiles-container');
-  if (!section || !container) return;
+function buildAccordion() {
+  const acc = document.getElementById('cat-accordion');
+  if (!acc) return;
 
-  container.innerHTML = GRUPOS.map(g => `
-    <div style="margin-bottom:16px">
-      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:8px">
-        ${g.ico} ${g.nombre}
-        <span style="flex:1;height:1px;background:var(--border);display:inline-block"></span>
+  acc.innerHTML = GRUPOS.map(g => {
+    const total = g.categorias.reduce((s, cat) => s + cat.proveedores.length, 0);
+    return `
+    <div class="acc-grp">
+      <button class="acc-btn" id="acc-btn-${g.id}" onclick="toggleAcc('${g.id}')">
+        <span class="acc-ico">${g.ico}</span>
+        <span class="acc-lbl">
+          <span class="acc-name">${g.nombre}</span>
+          <span class="acc-sub">${g.categorias.length} tipo${g.categorias.length!==1?'s':''} · ${total} proveedor${total!==1?'es':''}</span>
+        </span>
+        <span class="acc-arrow">▼</span>
+      </button>
+      <div class="acc-panel" id="acc-panel-${g.id}">
+        <div class="acc-panel-inner">
+          <div class="acc-tags">
+            ${g.categorias.map(cat => `
+              <a class="acc-tag" id="acc-tag-${cat.id}"
+                 onclick="selectTag('${g.id}','${cat.id}');return false" href="#">
+                <span class="acc-tag-ico">${cat.ico || '🍽️'}</span>
+                <span class="acc-tag-name">${cat.nombre}</span>
+                <span class="acc-tag-count">${cat.proveedores.length} prov.</span>
+              </a>
+            `).join('')}
+          </div>
+        </div>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px">
-        ${g.categorias.map(cat => `
-          <a class="ct-tile" id="ct-${cat.id}" onclick="setView({mode:'cat',groupId:'${g.id}',catId:'${cat.id}'});return false" href="#">
-            <span class="ct-ico">${cat.ico}</span>
-            <span class="ct-name">${cat.nombre}</span>
-            <span class="ct-count">${cat.proveedores.length} proveedor${cat.proveedores.length!==1?'es':''}</span>
-          </a>
-        `).join('')}
-      </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 
-  section.style.display = 'block';
-  syncActiveTile();
+  acc.style.display = 'block';
+}
+
+function toggleAcc(groupId) {
+  const btn   = document.getElementById('acc-btn-'   + groupId);
+  const panel = document.getElementById('acc-panel-' + groupId);
+  if (!btn || !panel) return;
+  const isOpen = btn.classList.contains('open');
+
+  // Cierra el anterior
+  if (_accOpen && _accOpen !== groupId) {
+    document.getElementById('acc-btn-'   + _accOpen)?.classList.remove('open');
+    document.getElementById('acc-panel-' + _accOpen)?.classList.remove('open');
+  }
+
+  btn.classList.toggle('open', !isOpen);
+  panel.classList.toggle('open', !isOpen);
+  _accOpen = isOpen ? null : groupId;
+
+  if (!isOpen) {
+    // Mostrar todos los proveedores del grupo al abrir
+    setView({ mode: 'group', groupId });
+    setTimeout(() => btn.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 60);
+  } else {
+    // Al cerrar, volver a "todos"
+    setView({ mode: 'all' });
+  }
+}
+
+function selectTag(groupId, catId) {
+  document.querySelectorAll('.acc-tag').forEach(t => t.classList.remove('active'));
+  document.getElementById('acc-tag-' + catId)?.classList.add('active');
+  setView({ mode: 'cat', groupId, catId });
 }
 
 /* ═══════════════════════════════════════════
@@ -827,20 +845,18 @@ function setView(v) {
 }
 
 function syncActivePillToView() {
-  document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
-  if (VIEW.mode === 'all') {
-    document.getElementById('pill-all')?.classList.add('active');
-  } else if (VIEW.mode === 'group' && VIEW.groupId) {
-    document.getElementById('pill-g-' + VIEW.groupId)?.classList.add('active');
-  } else if (VIEW.mode === 'cat' && VIEW.groupId) {
-    document.getElementById('pill-g-' + VIEW.groupId)?.classList.add('active');
+  // Pills reemplazadas por acordeón — sync visual de etiqueta activa
+  document.querySelectorAll('.acc-tag').forEach(t => t.classList.remove('active'));
+  if (VIEW.mode === 'cat' && VIEW.catId) {
+    document.getElementById('acc-tag-' + VIEW.catId)?.classList.add('active');
   }
 }
 
 function syncActiveTile() {
-  document.querySelectorAll('.ct-tile').forEach(t => t.classList.remove('active'));
+  // Sync en el acordeón
+  document.querySelectorAll('.acc-tag').forEach(t => t.classList.remove('active'));
   if (VIEW.mode === 'cat' && VIEW.catId) {
-    document.getElementById('ct-' + VIEW.catId)?.classList.add('active');
+    document.getElementById('acc-tag-' + VIEW.catId)?.classList.add('active');
   }
 }
 
@@ -877,15 +893,14 @@ function render() {
     if (!filtered.length) return;
     totalVisible += filtered.length;
 
-    const gold      = filtered.find(p => p.pos === 1);
-    const silver    = filtered.find(p => p.pos === 2);
-    const bronze    = filtered.find(p => p.pos === 3);
-    const destList  = filtered.filter(IS_DEST);   // pos 5: Destacados en esta cat
+    const gold   = filtered.find(p => p.pos === 1);
+    const silver = filtered.find(p => p.pos === 2);
+    const bronze = filtered.find(p => p.pos === 3);
     const secondary = [silver, bronze].filter(Boolean);
     const paidCount = [gold,silver,bronze].filter(Boolean).length;
 
     // Basics: shuffle, show 3 random
-    const allBasics = filtered.filter(IS_BASIC);
+    const allBasics = filtered.filter(p => p.pos > 3 || !p.pos);
     const basics = shuffle([...allBasics]).slice(0, 3);
 
     html += `
@@ -899,20 +914,6 @@ function render() {
           <div class="cat-badge">${filtered.length} proveedor${filtered.length!==1?'es':''}</div>
         </div>
 
-        ${destList.length ? `
-          <div style="margin-bottom:6px;display:flex;align-items:center;gap:8px">
-            <span style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--coral)">✦ Destacados</span>
-            <span style="flex:1;height:1px;background:var(--coral-md);opacity:.5"></span>
-          </div>
-          <div class="top-positions" style="margin-bottom:20px">
-            ${destList.map(p => paidCardHTML(p)).join('')}
-          </div>` : ''}
-
-        ${gold || secondary.length ? `
-          <div style="margin-bottom:6px;display:flex;align-items:center;gap:8px">
-            <span style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)">🏅 Posiciones en el directorio</span>
-            <span style="flex:1;height:1px;background:var(--border)"></span>
-          </div>` : ''}
         ${gold ? `<div class="top-positions">${paidCardHTML(gold)}</div>` : ''}
         ${secondary.length ? `<div class="top-positions-secondary">${secondary.map(paidCardHTML).join('')}</div>` : ''}
 
@@ -965,7 +966,7 @@ function render() {
 function showAllBasics(btn, catId) {
   const cat = CAT_INDEX[catId];
   if (!cat) return;
-  const allBasics = cat.proveedores.filter(IS_BASIC);
+  const allBasics = cat.proveedores.filter(p => p.pos > 3 || !p.pos);
   const listEl = btn.previousElementSibling;
   listEl.innerHTML = allBasics.map(basicHTML).join('');
   btn.remove();
@@ -980,14 +981,14 @@ function buildGoldGallery(shownCatIds) {
   let golds = [];
   GRUPOS.forEach(g => g.categorias.forEach(cat => {
     if (VIEW.mode === 'all' || !shownCatIds.includes(cat.id)) {
-      const p = cat.proveedores.find(IS_RECOMMENDED);
+      const p = cat.proveedores.find(p => p.pos === 1);
       if (p) golds.push({ ...p, catNombre: cat.nombre, catIco: cat.ico });
     }
   }));
   // If all are shown (mode=cat, same cat), still show from other cats
   if (!golds.length) {
     GRUPOS.forEach(g => g.categorias.forEach(cat => {
-      const p = cat.proveedores.find(IS_RECOMMENDED);
+      const p = cat.proveedores.find(p => p.pos === 1);
       if (p) golds.push({ ...p, catNombre: cat.nombre, catIco: cat.ico });
     }));
   }
@@ -1150,7 +1151,7 @@ function basicHTML(p) {
 ═══════════════════════════════════════════ */
 function openModal(id) {
   const p = PROV_INDEX[id];
-  if (!p || IS_BASIC(p)) return;
+  if (!p || p.pos > 3) return;
   const r = RANK[p.pos];
   const waMsg = encodeURIComponent('Hola ' + p.nombre + '! Los vi en CotizaEventos.cl y quiero cotizar sus servicios para mi evento.');
   document.getElementById('modal-inner').innerHTML = `

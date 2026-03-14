@@ -241,47 +241,64 @@
     .section-header p { font-size: .9rem; color: var(--muted); }
 
     /* Category groups */
-    .cat-group { margin-bottom: 36px; }
-    .cat-group-label {
-      font-size: .68rem; font-weight: 700; letter-spacing: .12em;
-      text-transform: uppercase; color: var(--muted);
-      padding: 0 4px; margin-bottom: 12px;
-      display: flex; align-items: center; gap: 10px;
+    /* ── ACCORDION CATEGORÍAS ── */
+    .cat-group { margin-bottom: 8px; }
+
+    .cat-group-btn {
+      width: 100%; display: flex; align-items: center; gap: 14px;
+      padding: 15px 20px; background: var(--white);
+      border: 1.5px solid var(--border2); border-radius: 14px;
+      cursor: pointer; font-family: 'Outfit', sans-serif; text-align: left;
+      transition: .22s var(--ease);
     }
-    .cat-group-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .cat-group-btn:hover { border-color: var(--coral-md); background: var(--coral-lt); }
+    .cat-group-btn.open {
+      border-color: var(--coral); background: var(--coral-lt);
+      border-radius: 14px 14px 0 0; border-bottom-color: transparent;
+    }
+    .cgb-ico  { font-size: 1.5rem; flex-shrink: 0; }
+    .cgb-label { flex: 1; min-width: 0; }
+    .cgb-name { font-size: .92rem; font-weight: 700; color: var(--ink); display: block; }
+    .cgb-sub  { font-size: .7rem; color: var(--muted); margin-top: 1px; display: block; }
+    .cgb-arrow {
+      font-size: .7rem; color: var(--muted); flex-shrink: 0;
+      transition: transform .28s var(--ease);
+    }
+    .cat-group-btn.open .cgb-arrow { transform: rotate(180deg); color: var(--coral); }
+
+    /* Panel desplegable con grid-template-rows para animación suave */
+    .cat-group-panel {
+      display: grid; grid-template-rows: 0fr;
+      transition: grid-template-rows .3s var(--ease);
+    }
+    .cat-group-panel.open { grid-template-rows: 1fr; }
+    .cat-group-panel-inner {
+      overflow: hidden;
+      background: var(--coral-lt);
+      border: 1.5px solid var(--coral);
+      border-top: none; border-radius: 0 0 14px 14px;
+    }
 
     .cat-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 10px;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 10px; padding: 14px 16px;
     }
     .cat-tile {
-      background: var(--white);
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      padding: 16px 12px;
-      text-align: center;
-      transition: .25s var(--ease);
-      cursor: pointer;
+      background: var(--white); border: 1.5px solid var(--border);
+      border-radius: 12px; padding: 14px 10px;
+      text-align: center; transition: .22s var(--ease); cursor: pointer;
       display: flex; flex-direction: column; align-items: center;
       text-decoration: none; color: var(--ink);
-      position: relative; overflow: hidden;
     }
     .cat-tile:hover {
-      border-color: var(--coral);
-      background: var(--coral-lt);
+      border-color: var(--coral); background: var(--white);
       transform: translateY(-3px);
-      box-shadow: 0 8px 24px rgba(232,84,42,.12);
+      box-shadow: 0 6px 20px rgba(232,84,42,.13);
     }
-    .cat-tile .ico { font-size: 1.8rem; margin-bottom: 7px; display: block; }
-    .cat-tile h4 { font-family: 'Outfit', sans-serif; font-size: .82rem; font-weight: 600; line-height: 1.3; color: var(--ink); }
-    .cat-tile .count { font-size: .68rem; color: var(--muted); margin-top: 3px; }
-    .cat-tile-parent {
-      border-color: var(--border2);
-      background: var(--bg);
-    }
-    .cat-tile-parent .ico { font-size: 2rem; }
-    .cat-tile-parent h4 { font-size: .88rem; font-weight: 700; }
+    .cat-tile .ico  { font-size: 1.7rem; margin-bottom: 6px; display: block; }
+    .cat-tile h4    { font-size: .8rem; font-weight: 600; line-height: 1.3; color: var(--ink); }
+    .cat-tile .count{ font-size: .66rem; color: var(--muted); margin-top: 3px; }
 
     /* view all */
     .view-all-wrap {
@@ -584,7 +601,6 @@
   .car-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:99px;font-size:.7rem;font-weight:700;margin-bottom:10px;width:fit-content}
   .car-gold{background:#FFF8E1;color:#B8860B;border:1px solid #F9D849}
   .car-silver{background:#F3F4F6;color:#555;border:1px solid #C0C0C0}
-  .car-dest{background:var(--coral-lt);color:var(--coral);border:1px solid var(--coral-md);font-weight:700}
   .car-name{font-size:1.15rem;font-weight:700;color:var(--ink);margin-bottom:4px}
   .car-tagline{font-size:.83rem;color:var(--muted);line-height:1.5;margin-bottom:10px}
   .car-price{font-size:.85rem;font-weight:600;color:var(--coral)}
@@ -734,16 +750,10 @@
 
     <!-- CATEGORÍAS — generado dinámicamente desde Supabase -->
     <div id="cat-groups-container">
-      <div class="cat-group reveal" id="cat-skeleton">
-        <div class="cat-group-label">🍽️ Catering</div>
-        <div class="cat-grid" style="opacity:.35;pointer-events:none">
-          <div style="min-height:90px;background:var(--bg2);border-radius:16px;border:1px solid var(--border)"></div>
-          <div style="min-height:90px;background:var(--bg2);border-radius:16px;border:1px solid var(--border)"></div>
-          <div style="min-height:90px;background:var(--bg2);border-radius:16px;border:1px solid var(--border)"></div>
-          <div style="min-height:90px;background:var(--bg2);border-radius:16px;border:1px solid var(--border)"></div>
-          <div style="min-height:90px;background:var(--bg2);border-radius:16px;border:1px solid var(--border)"></div>
-          <div style="min-height:90px;background:var(--bg2);border-radius:16px;border:1px solid var(--border)"></div>
-          <div style="min-height:90px;background:var(--bg2);border-radius:16px;border:1px solid var(--border)"></div>
+      <div class="cat-group" id="cat-skeleton">
+        <div class="cat-group-btn" style="opacity:.4;pointer-events:none">
+          <span class="cgb-ico">🍽️</span>
+          <span class="cgb-label"><span class="cgb-name">Cargando categorías...</span></span>
         </div>
       </div>
     </div>
@@ -917,20 +927,33 @@ async function loadCategories() {
       completos:'🌭', torta:'🎂', barra:'🍹',
     };
 
-    container.innerHTML = grupos.map(g => `
-      <div class="cat-group reveal visible">
-        <div class="cat-group-label">${g.ico} ${g.nombre}</div>
-        <div class="cat-grid">
-          ${g.categorias.map((cat, i) => `
-            <a class="cat-tile${i===0?' cat-tile-parent':''}" href="proveedores.html#${cat.id}">
-              <span class="ico">${cat.ico || CAT_ICONS[cat.id] || '🍽️'}</span>
-              <h4>${cat.nombre}</h4>
-              <span class="count">${cat.proveedores.length} proveedor${cat.proveedores.length!==1?'es':''}</span>
-            </a>
-          `).join('')}
+    container.innerHTML = grupos.map(g => {
+      const total = g.categorias.reduce((s, c) => s + c.proveedores.length, 0);
+      return `
+      <div class="cat-group">
+        <button class="cat-group-btn" id="cgb-${g.id}" onclick="toggleCatGroup('${g.id}')">
+          <span class="cgb-ico">${g.ico}</span>
+          <span class="cgb-label">
+            <span class="cgb-name">${g.nombre}</span>
+            <span class="cgb-sub">${g.categorias.length} tipo${g.categorias.length!==1?'s':''} · ${total} proveedor${total!==1?'es':''}</span>
+          </span>
+          <span class="cgb-arrow">▼</span>
+        </button>
+        <div class="cat-group-panel" id="cgp-${g.id}">
+          <div class="cat-group-panel-inner">
+            <div class="cat-grid">
+              ${g.categorias.map(cat => `
+                <a class="cat-tile" href="proveedores.html?cat=${cat.id}">
+                  <span class="ico">${cat.ico || CAT_ICONS[cat.id] || '🍽️'}</span>
+                  <h4>${cat.nombre}</h4>
+                  <span class="count">${cat.proveedores.length} proveedor${cat.proveedores.length!==1?'es':''}</span>
+                </a>
+              `).join('')}
+            </div>
+          </div>
         </div>
-      </div>
-    `).join('');
+      </div>`;
+    }).join('');
 
     // Actualizar SERVICIOS para el formulario de cotización
     SERVICIOS.length = 0;
@@ -948,7 +971,7 @@ async function loadCategories() {
     const carProviders = [];
     grupos.forEach(g => g.categorias.forEach(cat => {
       cat.proveedores.forEach(p => {
-        if (p.pos === 1 || p.pos === 2 || p.pos === 5) carProviders.push({ ...p, catNombre: cat.nombre, catIco: cat.ico });
+        if (p.pos === 1 || p.pos === 2) carProviders.push({ ...p, catNombre: cat.nombre, catIco: cat.ico });
       });
     }));
 
@@ -965,8 +988,8 @@ async function loadCategories() {
           const cover = prov.cover_url
             ? `<img class="car-cover" src="${prov.cover_url}" alt="${prov.nombre}" loading="lazy" />`
             : `<div class="car-cover-ph">${prov.logo || '🎉'}</div>`;
-          const badgeCls = prov.pos === 5 ? 'car-dest' : prov.pos === 1 ? 'car-gold' : 'car-silver';
-          const badgeLbl = prov.pos === 5 ? '✦ Destacado' : prov.pos === 1 ? '🥇 Posición Oro' : '🥈 Posición Plata';
+          const badgeCls = prov.pos === 1 ? 'car-gold' : 'car-silver';
+          const badgeLbl = prov.pos === 1 ? '🥇 Posición Oro' : '🥈 Posición Plata';
           return `<div class="car-slide${i===0?' active':''}" data-idx="${i}">
             ${cover}
             <div class="car-body">
@@ -1221,6 +1244,26 @@ function carGoTo(idx) {
 function carMove(dir) { carGoTo(_carIdx + dir); }
 
 /* ── Init ── */
+/* ── ACCORDION categorías index ── */
+let _openGrp = null;
+function toggleCatGroup(id) {
+  const btn   = document.getElementById('cgb-' + id);
+  const panel = document.getElementById('cgp-' + id);
+  if (!btn || !panel) return;
+  const isOpen = btn.classList.contains('open');
+
+  // Cerrar el grupo anterior si es diferente
+  if (_openGrp && _openGrp !== id) {
+    document.getElementById('cgb-' + _openGrp)?.classList.remove('open');
+    document.getElementById('cgp-' + _openGrp)?.classList.remove('open');
+  }
+
+  // Toggle: abierto → cerrar, cerrado → abrir
+  btn.classList.toggle('open', !isOpen);
+  panel.classList.toggle('open', !isOpen);
+  _openGrp = isOpen ? null : id;
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   loadCategories();
   loadCookies();
