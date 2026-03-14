@@ -209,14 +209,14 @@
 
     /* ── HOW IT WORKS ── */
     #como {
-      padding: 80px 24px;
+      padding: 52px 24px;
       background: var(--bg);
       border-top: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
     }
     .steps {
       display: grid; grid-template-columns: repeat(3,1fr);
-      gap: 0; margin-top: 48px;
+      gap: 0; margin-top: 32px;
       position: relative;
     }
     .steps::before {
@@ -228,23 +228,22 @@
     }
     .step {
       background: var(--white); border: 1px solid var(--border);
-      border-radius: 20px; padding: 32px 24px 28px; text-align: center;
+      border-radius: 16px; padding: 24px 20px 20px; text-align: center;
       transition: .3s var(--ease); position: relative; overflow: hidden;
-      margin: 0 8px;
-      z-index: 1;
+      margin: 0 8px; z-index: 1;
     }
-    .step:hover { border-color: var(--coral-md); transform: translateY(-6px); box-shadow: var(--shadow-md); }
+    .step:hover { border-color: var(--coral-md); transform: translateY(-4px); box-shadow: var(--shadow-md); }
     .step-num {
       display: inline-flex; align-items: center; justify-content: center;
-      width: 48px; height: 48px; border-radius: 50%;
+      width: 38px; height: 38px; border-radius: 50%;
       background: var(--coral); color: #fff;
-      font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: 900;
-      margin: 0 auto 18px; position: relative; z-index: 1;
-      box-shadow: 0 4px 16px rgba(232,84,42,.3);
+      font-family: 'Fraunces', serif; font-size: 1.1rem; font-weight: 900;
+      margin: 0 auto 14px; position: relative; z-index: 1;
+      box-shadow: 0 4px 14px rgba(232,84,42,.28);
     }
-    .step-ico { font-size: 1.6rem; margin-bottom: 10px; display: block; }
-    .step h3 { font-size: 1rem; margin-bottom: 8px; font-family: 'Outfit', sans-serif; font-weight: 700; color: var(--ink); }
-    .step p  { font-size: .83rem; color: var(--muted); line-height: 1.7; }
+    .step-ico { font-size: 1.4rem; margin-bottom: 8px; display: block; }
+    .step h3 { font-size: .9rem; margin-bottom: 6px; font-family: 'Outfit', sans-serif; font-weight: 700; color: var(--ink); }
+    .step p  { font-size: .78rem; color: var(--muted); line-height: 1.65; }
     @media (max-width: 860px) {
       .steps { grid-template-columns: 1fr; gap: 12px; }
       .steps::before { display: none; }
@@ -256,14 +255,14 @@
 
     /* ── CATEGORÍAS ── */
     #categorias {
-      padding: 72px 24px;
+      padding: 52px 24px;
       background: var(--white);
     }
     .section-header {
-      text-align: center; max-width: 520px; margin: 0 auto 40px;
+      text-align: center; max-width: 520px; margin: 0 auto 28px;
     }
-    .section-header h2 { font-size: clamp(1.6rem, 3vw, 2.4rem); margin-bottom: 10px; color: var(--ink); }
-    .section-header p { font-size: .9rem; color: var(--muted); }
+    .section-header h2 { font-size: clamp(1.3rem, 2.5vw, 1.9rem); margin-bottom: 8px; color: var(--ink); }
+    .section-header p { font-size: .85rem; color: var(--muted); }
 
     /* ── CHIPS DE CATEGORÍAS (index — mismo estilo que proveedores) ── */
     .cat-chips-row {
@@ -539,7 +538,7 @@
 
     /* ── FINAL CTA ── */
     #cta-final {
-      padding: 72px 24px; text-align: center;
+      padding: 52px 24px; text-align: center;
       background: linear-gradient(160deg, var(--coral-lt) 0%, var(--white) 100%);
       border-top: 1px solid var(--border);
       position: relative; overflow: hidden;
@@ -551,8 +550,8 @@
       background: radial-gradient(ellipse, rgba(232,84,42,.06), transparent 70%);
     }
     #cta-final .container { position: relative; }
-    #cta-final h2 { font-size: clamp(1.8rem, 3.5vw, 3rem); margin-bottom: 12px; color: var(--ink); }
-    #cta-final p  { font-size: .95rem; color: var(--muted); margin-bottom: 32px; }
+    #cta-final h2 { font-size: clamp(1.4rem, 2.8vw, 2.2rem); margin-bottom: 10px; color: var(--ink); }
+    #cta-final p  { font-size: .88rem; color: var(--muted); margin-bottom: 24px; }
 
     /* ── FOOTER ── */
     footer {
@@ -793,7 +792,7 @@
 </section>
 
 <!-- ══ CARRUSEL PROVEEDORES RECOMENDADOS ══ -->
-<section id="destacados" style="padding:72px 0;background:var(--ink);border-top:1px solid rgba(255,255,255,.08)">
+<section id="destacados" style="padding:52px 0;background:var(--ink);border-top:1px solid rgba(255,255,255,.08)">
   <div class="container">
     <div class="section-header reveal" style="color:#fff">
       <div class="tag" style="background:rgba(255,255,255,.1);color:rgba(255,255,255,.85);border-color:rgba(255,255,255,.15)">⭐ Recomendados del mes</div>
@@ -850,28 +849,27 @@
 
 
 <!-- ══ NOSOTROS PREVIEW ══ -->
-<section style="padding:72px 0;background:var(--bg2);border-top:1px solid var(--border)">
+<section style="padding:52px 0;background:var(--bg2);border-top:1px solid var(--border)">
   <div class="container">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;max-width:920px;margin:0 auto" class="rev-grid reveal">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;max-width:900px;margin:0 auto" class="rev-grid reveal">
       <div>
         <div class="tag">Quiénes somos</div>
-        <h2 style="font-size:clamp(1.4rem,2.6vw,2rem);margin-bottom:16px;line-height:1.2">El puente entre tus celebraciones y los mejores proveedores</h2>
-        <p style="font-size:.9rem;color:var(--ink2);line-height:1.8;margin-bottom:24px">Soy emprendedor con años de experiencia en el mundo de los eventos. Creé <strong>CotizaEventos.cl</strong> para simplificar el proceso de buscar servicios confiables, reuniendo opciones seleccionadas en cada categoría.</p>
-        <a href="nosotros.html" class="btn btn-ghost" style="display:inline-flex;align-items:center;gap:6px">Conocer más sobre nosotros →</a>
+        <h2 style="font-size:clamp(1.2rem,2.2vw,1.7rem);margin-bottom:14px;line-height:1.25">El puente entre tus celebraciones y los mejores proveedores</h2>
+        <p style="font-size:.85rem;color:var(--ink2);line-height:1.75;margin-bottom:20px">Soy emprendedor con años de experiencia en el mundo de los eventos. Creé <strong>CotizaEventos.cl</strong> para simplificar el proceso de buscar servicios confiables, reuniendo opciones seleccionadas en cada categoría.</p>
+        <a href="nosotros.html" class="btn btn-primary" style="display:inline-flex;align-items:center;gap:6px">Conocer más sobre nosotros →</a>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-        <div style="background:#fff;border:1.5px solid var(--border);border-radius:20px;padding:24px;text-align:center;transition:.25s" onmouseover="this.style.borderColor='var(--coral)';this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform='none'">
-          <div style="font-family:'Fraunces',serif;font-size:2.6rem;font-weight:900;color:var(--coral);line-height:1">+20</div>
-          <div style="font-size:.76rem;color:var(--muted);margin-top:5px;font-weight:500">Categorías</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div style="background:#fff;border:1.5px solid var(--border);border-radius:16px;padding:18px;text-align:center;transition:.25s" onmouseover="this.style.borderColor='var(--coral)';this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform='none'">
+          <div style="font-family:'Fraunces',serif;font-size:2rem;font-weight:900;color:var(--coral);line-height:1">+20</div>
+          <div style="font-size:.72rem;color:var(--muted);margin-top:4px;font-weight:500">Categorías</div>
         </div>
-        <div style="background:#fff;border:1.5px solid var(--border);border-radius:20px;padding:24px;text-align:center;transition:.25s" onmouseover="this.style.borderColor='var(--coral)';this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform='none'">
-          <div style="font-family:'Fraunces',serif;font-size:2.6rem;font-weight:900;color:var(--coral);line-height:1">100%</div>
-          <div style="font-size:.76rem;color:var(--muted);margin-top:5px;font-weight:500">Verificados</div>
+        <div style="background:#fff;border:1.5px solid var(--border);border-radius:16px;padding:18px;text-align:center;transition:.25s" onmouseover="this.style.borderColor='var(--coral)';this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform='none'">
+          <div style="font-family:'Fraunces',serif;font-size:2rem;font-weight:900;color:var(--coral);line-height:1">100%</div>
+          <div style="font-size:.72rem;color:var(--muted);margin-top:4px;font-weight:500">Verificados</div>
         </div>
-        <div style="background:var(--ink);border-radius:20px;padding:22px;text-align:center;grid-column:1/-1;transition:.25s" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='none'">
-          <div style="font-size:1.5rem;margin-bottom:8px">🎊</div>
-          <div style="font-size:.9rem;font-weight:700;color:#fff;margin-bottom:4px">Cada evento es único</div>
-          <div style="font-size:.78rem;color:rgba(255,255,255,.5)">Proveedores que se destacan por calidad y dedicación.</div>
+        <div style="background:var(--ink);border-radius:16px;padding:16px;text-align:center;grid-column:1/-1;transition:.25s" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='none'">
+          <div style="font-size:.88rem;font-weight:700;color:#fff;margin-bottom:3px">Cada evento es único</div>
+          <div style="font-size:.74rem;color:rgba(255,255,255,.5)">Proveedores que se destacan por calidad y dedicación.</div>
         </div>
       </div>
     </div>
@@ -879,21 +877,21 @@
 </section>
 
 <!-- ══ CONTACTO ══ -->
-<section id="contacto" style="padding:80px 0;background:var(--white);border-top:1px solid var(--border)">
+<section id="contacto" style="padding:52px 0;background:var(--white);border-top:1px solid var(--border)">
   <div class="container">
-    <div style="text-align:center;max-width:540px;margin:0 auto 44px" class="reveal">
+    <div style="text-align:center;max-width:480px;margin:0 auto 32px" class="reveal">
       <div class="tag">Estamos aquí para ayudarte</div>
-      <h2 style="font-size:clamp(1.4rem,2.8vw,2.1rem);margin-bottom:12px">¿Tienes alguna consulta?</h2>
-      <p style="font-size:.9rem;color:var(--muted)">Tanto si buscas un servicio específico como si quieres publicar tu negocio, con gusto te ayudamos.</p>
+      <h2 style="font-size:clamp(1.2rem,2.2vw,1.7rem);margin-bottom:10px">¿Tienes alguna consulta?</h2>
+      <p style="font-size:.85rem;color:var(--muted)">Tanto si buscas un servicio específico como si quieres publicar tu negocio, con gusto te ayudamos.</p>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:580px;margin:0 auto" class="reveal">
-      <a href="/cdn-cgi/l/email-protection#8eede1e0faefedfae1ede1fae7f4efebf8ebe0fae1fdcee9e3efe7e2a0ede1e3" style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:28px 20px;background:var(--bg2);border:1.5px solid var(--border);border-radius:18px;text-align:center;transition:.22s" onmouseover="this.style.borderColor='var(--coral)'" onmouseout="this.style.borderColor='var(--border)'">
-        <span style="font-size:2rem">📧</span>
-        <div><div style="font-size:.88rem;font-weight:700;margin-bottom:4px">Correo electrónico</div><div style="font-size:.75rem;color:var(--coral)"><span class="__cf_email__" data-cfemail="31525e5f455052455e525e45584b505447545f455e4271565c50585d1f525e5c">[email&#160;protected]</span></div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:480px;margin:0 auto" class="reveal">
+      <a href="mailto:contactocotizaeventos@gmail.com" style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:20px 16px;background:var(--bg2);border:1.5px solid var(--border);border-radius:14px;text-align:center;transition:.22s" onmouseover="this.style.borderColor='var(--coral)'" onmouseout="this.style.borderColor='var(--border)'">
+        <span style="font-size:1.6rem">📧</span>
+        <div><div style="font-size:.82rem;font-weight:700;margin-bottom:3px">Correo</div><div style="font-size:.72rem;color:var(--coral)">contactocotizaeventos@gmail.com</div></div>
       </a>
-      <a href="https://wa.me/56991999301?text=Hola%2C%20tengo%20una%20consulta%20sobre%20CotizaEventos.cl" target="_blank" style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:28px 20px;background:#f0fdf4;border:1.5px solid #86efac;border-radius:18px;text-align:center;transition:.22s" onmouseover="this.style.borderColor='#22c55e'" onmouseout="this.style.borderColor='#86efac'">
-        <span style="font-size:2rem">💬</span>
-        <div><div style="font-size:.88rem;font-weight:700;margin-bottom:4px">WhatsApp</div><div style="font-size:.75rem;color:#16a34a">+56 9 9199 9301</div></div>
+      <a href="https://wa.me/56991999301?text=Hola%2C%20tengo%20una%20consulta%20sobre%20CotizaEventos.cl" target="_blank" style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:20px 16px;background:#f0fdf4;border:1.5px solid #86efac;border-radius:14px;text-align:center;transition:.22s" onmouseover="this.style.borderColor='#22c55e'" onmouseout="this.style.borderColor='#86efac'">
+        <span style="font-size:1.6rem">💬</span>
+        <div><div style="font-size:.82rem;font-weight:700;margin-bottom:3px">WhatsApp</div><div style="font-size:.72rem;color:#16a34a">+56 9 9199 9301</div></div>
       </a>
     </div>
   </div>
