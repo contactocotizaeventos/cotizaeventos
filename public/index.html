@@ -244,19 +244,17 @@
     /* ── CHIPS DE CATEGORÍAS ── */
     /* Fila de chips de grupos (categorías padre) */
     .cat-chips-row {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
+      display: flex; flex-wrap: wrap; gap: 8px;
       margin-bottom: 0;
     }
-    @media(max-width:700px){ .cat-chips-row{ grid-template-columns: repeat(2,1fr); } }
     .cat-chip-btn {
-      display: flex; align-items: center; justify-content: space-between; gap: 5px;
-      padding: 10px 16px;
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 7px 14px;
       background: var(--white); border: 1.5px solid var(--border2);
-      border-radius: 12px; cursor: pointer;
-      font-family: 'Outfit', sans-serif; font-size: .85rem; font-weight: 600;
+      border-radius: 99px; cursor: pointer;
+      font-family: 'Outfit', sans-serif; font-size: .8rem; font-weight: 600;
       color: var(--ink2); transition: .18s var(--ease);
+      white-space: nowrap;
     }
     .cat-chip-btn:hover { border-color: var(--coral-md); color: var(--coral); background: var(--coral-lt); }
     .cat-chip-btn.open {
@@ -589,8 +587,7 @@
   .car-cover-ph::after{content:'img';font-size:.65rem;letter-spacing:.12em;color:rgba(255,255,255,.22)}
   .car-body{padding:20px 24px 14px}
   .car-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:99px;font-size:.7rem;font-weight:700;margin-bottom:10px;width:fit-content}
-  .car-gold{background:#FFF8E1;color:#B8860B;border:1px solid #F9D849}
-  .car-silver{background:#F3F4F6;color:#555;border:1px solid #C0C0C0}
+  .car-dest{background:var(--coral-lt);color:var(--coral);border:1px solid var(--coral-md);font-weight:700}
   .car-name{font-size:1.15rem;font-weight:700;color:var(--ink);margin-bottom:4px}
   .car-tagline{font-size:.83rem;color:var(--muted);line-height:1.5;margin-bottom:10px}
   .car-price{font-size:.85rem;font-weight:600;color:var(--coral)}
@@ -964,16 +961,19 @@ async function loadCategories() {
     }));
     if (document.getElementById('checklist-grid')) renderChecklist(); // re-render el checklist con datos actualizados
 
-    // ── Carrusel: Oro (pos=1) + Plata (pos=2), orden aleatorio ──
+    // ── Carrusel: solo Destacados (posicion = 5), orden aleatorio por carga ──
     const carProviders = [];
     grupos.forEach(g => g.categorias.forEach(cat => {
       cat.proveedores.forEach(p => {
-        if (p.pos === 1 || p.pos === 2) carProviders.push({ ...p, catNombre: cat.nombre, catIco: cat.ico });
+        if (p.pos === 5 || p.posicion === 5) carProviders.push({ ...p, catNombre: cat.nombre, catIco: cat.ico });
       });
     }));
 
-    // Shuffle
-    carProviders.sort(() => Math.random() - 0.5);
+    // Shuffle distinto en cada carga
+    for (let i = carProviders.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [carProviders[i], carProviders[j]] = [carProviders[j], carProviders[i]];
+    }
     const carTrack = document.getElementById('carousel-track');
     const carDots  = document.getElementById('carousel-dots');
     if (carTrack) {
@@ -985,12 +985,12 @@ async function loadCategories() {
           const cover = prov.cover_url
             ? `<img class="car-cover" src="${prov.cover_url}" alt="${prov.nombre}" loading="lazy" />`
             : `<div class="car-cover-ph">${prov.logo || '🎉'}</div>`;
-          const badgeCls = prov.pos === 1 ? 'car-gold' : 'car-silver';
-          const badgeLbl = prov.pos === 1 ? '🥇 Posición Oro' : '🥈 Posición Plata';
+          const badgeCls = 'car-dest';
+          const badgeLbl = '✦ Destacado';
           return `<div class="car-slide${i===0?' active':''}" data-idx="${i}">
             ${cover}
             <div class="car-body">
-              <div class="car-badge ${badgeCls}">${badgeLbl} &middot; ${prov.catIco} ${prov.catNombre}</div>
+              <div class="car-badge ${badgeCls}">${badgeLbl} &middot; ${prov.catIco || ''} ${prov.catNombre}</div>
               <div class="car-name">${prov.nombre}</div>
               <div class="car-tagline">${prov.tagline || prov.diff || ''}</div>
               <div class="car-price">Desde ${prov.minimo || '—'}</div>

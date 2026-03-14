@@ -386,7 +386,6 @@
     .basic-wa:hover{background:#1db954;transform:scale(1.06)}
     .basic-detail{padding:3px 10px;font-size:.68rem;font-weight:600;border-radius:99px;border:1.5px solid var(--border2);background:var(--bg);color:var(--muted);cursor:pointer;transition:.18s;white-space:nowrap}
     .basic-detail:hover{border-color:var(--coral);color:var(--coral)}
-    @media(max-width:700px){#cat-chips-row{grid-template-columns:repeat(2,1fr)}}
     @media(max-width:560px){
       /* En móvil: quitar precio pero MANTENER diff y tagline */
       .basic-price{display:none}
@@ -521,12 +520,12 @@
     /* CAT TILES */
     /* ── CHIPS DE CATEGORÍAS (proveedores) ── */
     .grp-chip{
-      display:flex;align-items:center;justify-content:space-between;gap:5px;
-      padding:10px 16px;
+      display:inline-flex;align-items:center;gap:5px;
+      padding:7px 14px;
       background:var(--white);border:1.5px solid var(--border2);
-      border-radius:12px;cursor:pointer;
-      font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:600;
-      color:var(--ink2);transition:.18s var(--ease);
+      border-radius:99px;cursor:pointer;
+      font-family:'Outfit',sans-serif;font-size:.8rem;font-weight:600;
+      color:var(--ink2);transition:.18s var(--ease);white-space:nowrap;
     }
     .grp-chip:hover{border-color:var(--coral-md);color:var(--coral);background:var(--coral-lt)}
     .grp-chip.open{background:var(--coral);border-color:var(--coral);color:#fff}
@@ -593,7 +592,9 @@
       <p>Encuentra el proveedor ideal por categoría. Las 3 primeras posiciones incluyen información completa y contacto directo.</p>
     </div>
     <div class="ph-legend">
-      <div class="legend-item"><div class="legend-dot" style="background:var(--coral)"></div> ✦ Destacado</div>
+      <div class="legend-item"><div class="legend-dot ld-1"></div> Posición #1 — Oro</div>
+      <div class="legend-item"><div class="legend-dot ld-2"></div> Posición #2 — Plata</div>
+      <div class="legend-item"><div class="legend-dot ld-3"></div> Posición #3 — Bronce</div>
       <div class="legend-item"><div class="legend-dot ld-basic"></div> Listado básico</div>
     </div>
   </div>
@@ -640,7 +641,7 @@
 
 <!-- ── CATEGORÍAS ── -->
 <div id="cat-nav" style="background:var(--white);border-bottom:1px solid var(--border);padding:14px 24px;display:none">
-  <div id="cat-chips-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:0"></div>
+  <div id="cat-chips-row" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:0"></div>
   <div id="cat-panels-wrap"></div>
 </div>
 
@@ -752,10 +753,9 @@ async function loadProviders() {
 }
 
 const RANK = {
-  1:{label:"#1 Posición Oro",  stars:"★★★",cls:"pos-1",   tag:"pt-1"},
-  2:{label:"#2 Posición Plata",stars:"★★☆",cls:"pos-2",   tag:"pt-2"},
-  3:{label:"#3 Posición Bronce",stars:"★☆☆",cls:"pos-3",  tag:"pt-3"},
-  5:{label:"✦ Destacado",      stars:"✦",  cls:"pos-dest", tag:"pt-dest"},
+  1:{label:"#1 Posición Oro",stars:"★★★",cls:"pos-1",tag:"pt-1"},
+  2:{label:"#2 Posición Plata",stars:"★★☆",cls:"pos-2",tag:"pt-2"},
+  3:{label:"#3 Posición Bronce",stars:"★☆☆",cls:"pos-3",tag:"pt-3"}
 };
 
 /* ═══════════════════════════════════════════
@@ -893,6 +893,7 @@ function render() {
     if (!filtered.length) return;
     totalVisible += filtered.length;
 
+    // Destacados (pos 5) y básicos (cualquier otro)
     const destacados = filtered.filter(p => p.pos === 5 || p.posicion === 5);
     const allBasics  = filtered.filter(p => p.pos !== 5 && p.posicion !== 5);
     const basics     = shuffle([...allBasics]).slice(0, 3);
@@ -909,9 +910,9 @@ function render() {
         </div>
 
         ${destacados.length ? `
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-            <span style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--coral)">✦ Destacados</span>
-            <span style="flex:1;height:1px;background:var(--coral-md);opacity:.5"></span>
+          <div style="margin-bottom:8px;display:flex;align-items:center;gap:8px">
+            <span style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--coral)">✦ Destacados</span>
+            <span style="flex:1;height:1px;background:var(--coral-md);opacity:.4"></span>
           </div>
           <div class="top-positions" style="margin-bottom:18px">
             ${destacados.map(p => paidCardHTML(p)).join('')}
@@ -957,7 +958,7 @@ function render() {
   html += buildGoldGallery(catsToShow.map(x => x.cat.id));
 
   area.innerHTML = html;
-  syncChipState();
+  syncActiveTile();
 }
 
 /* ═══════════════════════════════════════════
@@ -975,43 +976,47 @@ function showAllBasics(btn, catId) {
 /* ═══════════════════════════════════════════
    GOLD GALLERY (bottom of page)
 ═══════════════════════════════════════════ */
-function buildGoldGallery(shownCatIds) {
-  // Collect all gold providers NOT in the current shown cats (if mode=cat/group)
-  // If mode=all, collect all gold
-  let golds = [];
-  GRUPOS.forEach(g => g.categorias.forEach(cat => {
-    if (VIEW.mode === 'all' || !shownCatIds.includes(cat.id)) {
-      const p = cat.proveedores.find(p => p.pos === 5 || p.posicion === 5);
-      if (p) golds.push({ ...p, catNombre: cat.nombre, catIco: cat.ico });
-    }
-  }));
-  // If all are shown (mode=cat, same cat), still show from other cats
-  if (!golds.length) {
-    GRUPOS.forEach(g => g.categorias.forEach(cat => {
-      const p = cat.proveedores.find(p => p.pos === 5 || p.posicion === 5);
-      if (p) golds.push({ ...p, catNombre: cat.nombre, catIco: cat.ico });
-    }));
-  }
-  if (!golds.length) return '';
+// Orden de Destacados fijado una vez por sesión (no cambia al filtrar)
+let _destOrder = null;
 
-  const picks = shuffle([...golds]).slice(0, 6);
+function buildGoldGallery(shownCatIds) {
+  // Recoger TODOS los Destacados (pos 5 o posicion 5) de todas las categorías
+  if (!_destOrder) {
+    const all = [];
+    GRUPOS.forEach(g => g.categorias.forEach(cat => {
+      cat.proveedores.forEach(p => {
+        if (p.pos === 5 || p.posicion === 5) {
+          all.push({ ...p, catNombre: cat.nombre, catIco: cat.ico, _catId: cat.id });
+        }
+      });
+    }));
+    // Mezclar una sola vez al cargar la página
+    _destOrder = shuffle([...all]);
+  }
+
+  if (!_destOrder.length) return '';
+
+  // Priorizar los que NO están en la vista actual, y rellenar si faltan
+  const notShown = _destOrder.filter(p => !shownCatIds.includes(p._catId));
+  const picks    = (notShown.length >= 3 ? notShown : _destOrder).slice(0, 6);
+
   return `
     <div class="gold-gallery">
       <div class="gold-gallery-header">
-        <span style="font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--coral)">✦ Proveedores Destacados</span>
+        <span style="font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--coral)">✦ Destacados que podrían interesarte</span>
       </div>
       <div class="gold-gallery-grid">
         ${picks.map(p => {
           const waMsg = encodeURIComponent('Hola ' + p.nombre + '! Los vi en CotizaEventos.cl y me interesa cotizar sus servicios.');
           const cover = p.cover_url
             ? `<img src="${p.cover_url}" style="width:100%;height:100%;object-fit:cover" loading="lazy">`
-            : `<div style="width:100%;height:100%;background:#111;display:flex;align-items:center;justify-content:center;font-size:2rem;color:rgba(255,255,255,.2)">img</div>`;
+            : `<div style="width:100%;height:100%;background:#111;display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:rgba(255,255,255,.18)">✦</div>`;
           return `<div class="gg-card" onclick="openModal('${p.id}')">
             <div class="gg-cover">${cover}</div>
             <div class="gg-body">
-              <div class="gg-cat">${p.catIco} ${p.catNombre}</div>
+              <div class="gg-cat" style="color:var(--coral)">✦ Destacado · ${p.catNombre}</div>
               <div class="gg-name">${p.nombre}</div>
-              <div class="gg-tagline">${p.tagline || ''}</div>
+              <div class="gg-tagline">${p.tagline || p.diff || ''}</div>
             </div>
             <div class="gg-footer">
               <span class="gg-price">Desde ${p.minimo || '—'}</span>
@@ -1083,7 +1088,7 @@ document.head.appendChild(_spinStyle);
    CARD HTML HELPERS
 ═══════════════════════════════════════════ */
 function paidCardHTML(p) {
-  const r = RANK[p.pos] || RANK[5];
+  const r = RANK[p.pos];
   const waMsg = encodeURIComponent('Hola ' + p.nombre + '! Los vi en CotizaEventos.cl y me interesa cotizar sus servicios.');
   const coverHTML = p.cover_url
     ? `<img class="pos-cover-img" src="${p.cover_url}" alt="${p.nombre}" loading="lazy" />`
@@ -1151,7 +1156,7 @@ function basicHTML(p) {
 ═══════════════════════════════════════════ */
 function openModal(id) {
   const p = PROV_INDEX[id];
-  if (!p || (p.pos > 3 && p.pos !== 5 && p.posicion !== 5)) return;
+  if (!p || (p.pos !== 5 && p.posicion !== 5 && !(p.pos >= 1 && p.pos <= 3))) return;
   const r = RANK[p.pos];
   const waMsg = encodeURIComponent('Hola ' + p.nombre + '! Los vi en CotizaEventos.cl y quiero cotizar sus servicios para mi evento.');
   document.getElementById('modal-inner').innerHTML = `
