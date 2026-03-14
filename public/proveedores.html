@@ -736,7 +736,7 @@ async function loadProviders() {
         }
       }, 100);
     }
-    window.addEventListener('scroll', updateActivePill, { passive: true });
+  
   } catch (e) {
     area.innerHTML = `<div style="text-align:center;padding:60px 24px;color:var(--muted)"><span style="font-size:3rem;display:block;margin-bottom:14px">⚠️</span><h3 style="font-size:1.2rem;color:var(--ink);margin-bottom:8px">Error al cargar proveedores</h3><p style="font-size:.88rem">${e.message}</p></div>`;
   }
