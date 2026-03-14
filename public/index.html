@@ -117,12 +117,12 @@
       position: relative; overflow: hidden;
       min-height: 100svh;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      background-image: url('img/IMG_9996.jpg');
-      background-size: cover; background-position: center 40%;
+      background-image: var(--hero-bg, linear-gradient(160deg,#1A1410 0%,#2D1810 100%));
+      background-size: cover; background-position: center;
     }
     #hero::before {
       content: ''; position: absolute; inset: 0;
-      background: linear-gradient(to bottom,rgba(10,8,6,.65) 0%,rgba(10,8,6,.45) 40%,rgba(10,8,6,.72) 100%);
+      background: linear-gradient(to bottom,rgba(10,8,6,.7) 0%,rgba(10,8,6,.5) 50%,rgba(10,8,6,.75) 100%);
       z-index: 0;
     }
     .hero-inner {
@@ -240,55 +240,48 @@
     .section-header h2 { font-size: clamp(1.6rem, 3vw, 2.4rem); margin-bottom: 10px; color: var(--ink); }
     .section-header p { font-size: .9rem; color: var(--muted); }
 
-    /* ── Category buttons grid (4 por fila) + etiquetas expandibles ── */
-    .cat-groups-grid {
+    /* Category groups */
+    .cat-group { margin-bottom: 36px; }
+    .cat-group-label {
+      font-size: .68rem; font-weight: 700; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--muted);
+      padding: 0 4px; margin-bottom: 12px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .cat-group-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    .cat-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 10px;
     }
-    @media(max-width:600px){ .cat-groups-grid{ grid-template-columns: repeat(2, 1fr); } }
-    @media(min-width:601px) and (max-width:860px){ .cat-groups-grid{ grid-template-columns: repeat(3, 1fr); } }
-
-    .cat-group-btn {
-      display: flex; align-items: center; justify-content: space-between; gap: 6px;
-      padding: 8px 14px; border-radius: 99px;
-      font-family: 'Outfit', sans-serif; font-size: .78rem; font-weight: 600;
-      color: var(--ink2); background: var(--white);
+    .cat-tile {
+      background: var(--white);
       border: 1.5px solid var(--border);
-      cursor: pointer; user-select: none;
-      transition: .2s var(--ease);
-      white-space: nowrap; overflow: hidden;
+      border-radius: 12px;
+      padding: 16px 12px;
+      text-align: center;
+      transition: .25s var(--ease);
+      cursor: pointer;
+      display: flex; flex-direction: column; align-items: center;
+      text-decoration: none; color: var(--ink);
+      position: relative; overflow: hidden;
     }
-    .cat-group-btn:hover { border-color: var(--coral-md); background: var(--coral-lt); color: var(--coral); transform: translateY(-1px); }
-    .cat-group-btn.open { border-color: var(--coral); background: var(--coral-lt); color: var(--coral); }
-    .cat-group-btn .cg-arr { font-size: .6rem; transition: transform .2s; flex-shrink: 0; opacity: .6; }
-    .cat-group-btn.open .cg-arr { transform: rotate(180deg); }
-
-    /* Panel de etiquetas — ancho completo, debajo del grid */
-    .cat-tags-panel {
-      overflow: hidden;
-      max-height: 0;
-      opacity: 0;
-      transition: max-height .32s cubic-bezier(.4,0,.2,1), opacity .25s ease;
+    .cat-tile:hover {
+      border-color: var(--coral);
+      background: var(--coral-lt);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(232,84,42,.12);
     }
-    .cat-tags-panel.open {
-      max-height: 500px;
-      opacity: 1;
+    .cat-tile .ico { font-size: 1.8rem; margin-bottom: 7px; display: block; }
+    .cat-tile h4 { font-family: 'Outfit', sans-serif; font-size: .82rem; font-weight: 600; line-height: 1.3; color: var(--ink); }
+    .cat-tile .count { font-size: .68rem; color: var(--muted); margin-top: 3px; }
+    .cat-tile-parent {
+      border-color: var(--border2);
+      background: var(--bg);
     }
-    .cat-tags-inner {
-      display: flex; flex-wrap: wrap; gap: 7px;
-      padding: 14px 2px 6px;
-    }
-    .cat-tag-pill {
-      display: inline-flex; align-items: center; gap: 5px;
-      padding: 6px 16px; border-radius: 99px;
-      font-size: .76rem; font-weight: 500; color: var(--ink2);
-      background: var(--white); border: 1.5px solid var(--border);
-      text-decoration: none; cursor: pointer;
-      transition: .18s var(--ease);
-    }
-    .cat-tag-pill:hover { border-color: var(--coral); color: var(--coral); background: var(--coral-lt); transform: translateY(-1px); }
-    .cat-tag-pill .tag-count { font-size: .65rem; color: var(--muted); }
+    .cat-tile-parent .ico { font-size: 2rem; }
+    .cat-tile-parent h4 { font-size: .88rem; font-weight: 700; }
 
     /* view all */
     .view-all-wrap {
@@ -589,7 +582,8 @@
   .car-cover-ph::after{content:'img';font-size:.65rem;letter-spacing:.12em;color:rgba(255,255,255,.22)}
   .car-body{padding:20px 24px 14px}
   .car-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:99px;font-size:.7rem;font-weight:700;margin-bottom:10px;width:fit-content}
-  .car-dest{background:var(--coral-lt);color:var(--coral);border:1px solid var(--coral-md)}
+  .car-gold{background:#FFF8E1;color:#B8860B;border:1px solid #F9D849}
+  .car-silver{background:#F3F4F6;color:#555;border:1px solid #C0C0C0}
   .car-name{font-size:1.15rem;font-weight:700;color:var(--ink);margin-bottom:4px}
   .car-tagline{font-size:.83rem;color:var(--muted);line-height:1.5;margin-bottom:10px}
   .car-price{font-size:.85rem;font-weight:600;color:var(--coral)}
@@ -654,7 +648,6 @@
     <a href="#como" class="nav-link">¿Cómo funciona?</a>
     <a href="proveedores.html" class="nav-link">Cotizar gratis</a>
     <a href="nosotros.html" class="nav-link">Nosotros</a>
-    <a href="plantillas.html" class="nav-link">Tu web</a>
     <a href="#contacto" class="nav-link">Contacto</a>
   </div>
   <div class="nav-right">
@@ -694,7 +687,7 @@
       Más de 20 categorías · Sin intermediarios · Sin comisiones · Contacto directo por WhatsApp
     </p>
     <div class="hero-ctas">
-      <a href="proveedores.html?all=1" class="btn btn-primary btn-big">🔍 Ver proveedores</a>
+      <a href="proveedores.html" class="btn btn-primary btn-big">🔍 Ver proveedores</a>
       <a href="#como" class="btn btn-ghost btn-big hero-ghost-btn">¿Cómo funciona?</a>
     </div>
     <div class="hero-trust">
@@ -740,21 +733,22 @@
 
     <!-- CATEGORÍAS — generado dinámicamente desde Supabase -->
     <div id="cat-groups-container">
-      <!-- Skeleton: botones pill placeholder -->
-      <div class="cat-groups-grid" style="opacity:.35;pointer-events:none">
-        <div style="height:36px;background:var(--bg2);border-radius:99px;border:1px solid var(--border)"></div>
-        <div style="height:36px;background:var(--bg2);border-radius:99px;border:1px solid var(--border)"></div>
-        <div style="height:36px;background:var(--bg2);border-radius:99px;border:1px solid var(--border)"></div>
-        <div style="height:36px;background:var(--bg2);border-radius:99px;border:1px solid var(--border)"></div>
-        <div style="height:36px;background:var(--bg2);border-radius:99px;border:1px solid var(--border)"></div>
-        <div style="height:36px;background:var(--bg2);border-radius:99px;border:1px solid var(--border)"></div>
-        <div style="height:36px;background:var(--bg2);border-radius:99px;border:1px solid var(--border)"></div>
-        <div style="height:36px;background:var(--bg2);border-radius:99px;border:1px solid var(--border)"></div>
+      <div class="cat-group reveal" id="cat-skeleton">
+        <div class="cat-group-label">🍽️ Catering</div>
+        <div class="cat-grid" style="opacity:.35;pointer-events:none">
+          <div style="min-height:90px;background:var(--bg2);border-radius:16px;border:1px solid var(--border)"></div>
+          <div style="min-height:90px;background:var(--bg2);border-radius:16px;border:1px solid var(--border)"></div>
+          <div style="min-height:90px;background:var(--bg2);border-radius:16px;border:1px solid var(--border)"></div>
+          <div style="min-height:90px;background:var(--bg2);border-radius:16px;border:1px solid var(--border)"></div>
+          <div style="min-height:90px;background:var(--bg2);border-radius:16px;border:1px solid var(--border)"></div>
+          <div style="min-height:90px;background:var(--bg2);border-radius:16px;border:1px solid var(--border)"></div>
+          <div style="min-height:90px;background:var(--bg2);border-radius:16px;border:1px solid var(--border)"></div>
+        </div>
       </div>
     </div>
 
     <div class="view-all-wrap reveal">
-      <a href="proveedores.html?all=1" class="btn btn-ghost btn-big">Ver todos los proveedores →</a>
+      <a href="proveedores.html" class="btn btn-ghost btn-big">Ver todos los proveedores →</a>
     </div>
   </div>
 </section>
@@ -779,7 +773,7 @@
       <div id="carousel-dots" style="display:flex;justify-content:center;gap:7px;margin-top:18px"></div>
     </div>
     <div style="text-align:center;margin-top:36px" class="reveal">
-      <a href="proveedores.html?all=1" class="btn btn-primary btn-big">Ver todos los proveedores →</a>
+      <a href="proveedores.html" class="btn btn-primary btn-big">Ver todos los proveedores →</a>
     </div>
   </div>
 </section>
@@ -922,65 +916,20 @@ async function loadCategories() {
       completos:'🌭', torta:'🎂', barra:'🍹',
     };
 
-    // Render groups: grilla de botones 4 por fila + panel de etiquetas por grupo
-    const CAT_ICONS = {
-      banqueteria:'🍽️', pizzas:'🍕', hamburguesas:'🍔', churrascos:'🥩',
-      completos:'🌭', torta:'🎂', barra:'🍹',
-    };
-
-    // Botones de categorías en grilla
-    const gridDiv = document.createElement('div');
-    gridDiv.className = 'cat-groups-grid reveal visible';
-    grupos.forEach(g => {
-      const btn = document.createElement('button');
-      btn.className = 'cat-group-btn';
-      btn.id = 'cgb-' + g.id;
-      btn.innerHTML = `<span>${g.nombre}</span><span class="cg-arr">▾</span>`;
-      btn.addEventListener('click', () => toggleCatGroup(g.id));
-      gridDiv.appendChild(btn);
-    });
-
-    // Paneles de etiquetas (uno por grupo, ancho completo)
-    const panelsDiv = document.createElement('div');
-    panelsDiv.id = 'cat-panels';
-    grupos.forEach(g => {
-      const panel = document.createElement('div');
-      panel.className = 'cat-tags-panel';
-      panel.id = 'ctp-' + g.id;
-      panel.innerHTML = `<div class="cat-tags-inner">${
-        g.categorias.map(cat => `
-          <a class="cat-tag-pill" href="proveedores.html?cat=${cat.id}">
-            ${cat.nombre}
-            <span class="tag-count">(${cat.proveedores.length})</span>
-          </a>
-        `).join('')
-      }</div>`;
-      panelsDiv.appendChild(panel);
-    });
-
-    container.innerHTML = '';
-    container.appendChild(gridDiv);
-    container.appendChild(panelsDiv);
-
-    // Toggle: click abre etiquetas del grupo, vuelve a clickear las cierra
-    window.toggleCatGroup = function(gid) {
-      const btn   = document.getElementById('cgb-' + gid);
-      const panel = document.getElementById('ctp-' + gid);
-      const isOpen = btn.classList.contains('open');
-
-      // Cerrar todos
-      document.querySelectorAll('.cat-group-btn.open').forEach(b => {
-        b.classList.remove('open');
-        const id = b.id.replace('cgb-', '');
-        document.getElementById('ctp-' + id)?.classList.remove('open');
-      });
-
-      // Si no estaba abierto, abrirlo
-      if (!isOpen) {
-        btn.classList.add('open');
-        panel?.classList.add('open');
-      }
-    };
+    container.innerHTML = grupos.map(g => `
+      <div class="cat-group reveal visible">
+        <div class="cat-group-label">${g.ico} ${g.nombre}</div>
+        <div class="cat-grid">
+          ${g.categorias.map((cat, i) => `
+            <a class="cat-tile${i===0?' cat-tile-parent':''}" href="proveedores.html#${cat.id}">
+              <span class="ico">${cat.ico || CAT_ICONS[cat.id] || '🍽️'}</span>
+              <h4>${cat.nombre}</h4>
+              <span class="count">${cat.proveedores.length} proveedor${cat.proveedores.length!==1?'es':''}</span>
+            </a>
+          `).join('')}
+        </div>
+      </div>
+    `).join('');
 
     // Actualizar SERVICIOS para el formulario de cotización
     SERVICIOS.length = 0;
@@ -994,11 +943,11 @@ async function loadCategories() {
     }));
     if (document.getElementById('checklist-grid')) renderChecklist(); // re-render el checklist con datos actualizados
 
-    // ── Carrusel: todos los Destacados (pos=1-3), orden aleatorio ──
+    // ── Carrusel: Oro (pos=1) + Plata (pos=2), orden aleatorio ──
     const carProviders = [];
     grupos.forEach(g => g.categorias.forEach(cat => {
       cat.proveedores.forEach(p => {
-        if (p.pos === 1 || p.pos === 2 || p.pos === 5) carProviders.push({ ...p, catNombre: cat.nombre, catIco: cat.ico });
+        if (p.pos === 1 || p.pos === 2) carProviders.push({ ...p, catNombre: cat.nombre, catIco: cat.ico });
       });
     }));
 
@@ -1015,8 +964,8 @@ async function loadCategories() {
           const cover = prov.cover_url
             ? `<img class="car-cover" src="${prov.cover_url}" alt="${prov.nombre}" loading="lazy" />`
             : `<div class="car-cover-ph">${prov.logo || '🎉'}</div>`;
-          const badgeCls = 'car-dest';
-          const badgeLbl = '✦ Destacado';
+          const badgeCls = prov.pos === 1 ? 'car-gold' : 'car-silver';
+          const badgeLbl = prov.pos === 1 ? '🥇 Posición Oro' : '🥈 Posición Plata';
           return `<div class="car-slide${i===0?' active':''}" data-idx="${i}">
             ${cover}
             <div class="car-body">

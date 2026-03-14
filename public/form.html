@@ -205,14 +205,10 @@
       font-size:.6rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
       padding:2px 8px;border-radius:99px;white-space:nowrap;
     }
-    .pb-dest{background:var(--coral-lt);color:var(--coral);border:1px solid var(--coral-md)}
+    .pb-gold{background:#FFF3CC;color:#B8860B;border:1px solid #E8C84A}
+    .pb-silver{background:#F3F4F6;color:#6B7280;border:1px solid #C0C0C0}
+    .pb-bronze{background:#FDF3E6;color:#9C6B2E;border:1px solid #CD7F32}
     .pb-basic{background:var(--bg2);color:var(--muted);border:1px solid var(--border2)}
-    .pb-gold{background:#FFF8E1;color:#8B6914;border:1px solid #E8C84A}
-    .pb-silver{background:#F3F4F6;color:#4B5563;border:1px solid #C0C0C0}
-    .pb-bronze{background:#FDF3E6;color:#7C4F1E;border:1px solid #CD7F32}
-    .pos-option-gold.selected{border-color:#E8C84A;background:#FFFDF0}
-    .pos-option-silver.selected{border-color:#C0C0C0;background:#F8F8FA}
-    .pos-option-bronze.selected{border-color:#CD7F32;background:#FDF5EC}
 
     /* PRICE RANGE */
     .price-row{display:grid;grid-template-columns:1fr 24px 1fr;align-items:center;gap:8px}
@@ -627,78 +623,46 @@
         </div>
       </div>
       <div class="form-card-body">
-
-        <!-- Nota informativa -->
-        <div style="margin-bottom:18px;padding:12px 16px;background:var(--bg);border-radius:10px;border:1px solid var(--border);font-size:.8rem;color:var(--muted);line-height:1.55">
-          Selecciona el plan que te interesa. Las posiciones <strong style="color:var(--ink)">Oro, Plata y Bronce</strong> son asignadas por el administrador según disponibilidad. El plan <strong style="color:var(--ink)">Destacado</strong> es el acceso estándar de pago — queda en rango 5 y aparece en las recomendaciones.
-        </div>
-
         <div class="pos-grid">
-
-          <!-- Oro — Rango 1 -->
-          <label class="pos-option pos-option-gold" onclick="selectPos(this, 'Oro')">
-            <input type="radio" name="posicion" value="Oro" />
-            <span class="pos-badge pb-gold">★ Rango 1</span>
-            <div class="pos-name" style="color:#8B6914">Oro</div>
-            <div class="pos-price">
-              Posición #1 en tu categoría.<br/>
-              Máxima visibilidad + carrusel inicio.<br/>
-              <strong style="color:#8B6914">Asignado por admin</strong>
-            </div>
+          <label class="pos-option" onclick="selectPos(this, 'Posición Oro #1')">
+            <input type="radio" name="posicion" value="Posición Oro #1" />
+            <span class="pos-badge pb-gold">★★★ Más visible</span>
+            <span class="pos-ico">🥇</span>
+            <div class="pos-name">Posición #1 Oro</div>
+            <div class="pos-price">Top del listado<br/><strong style="color:var(--teal)">Gratis ahora</strong> <s style="font-size:.73rem;color:var(--muted)">$50.000/mes</s></div>
           </label>
-
-          <!-- Plata — Rango 2 -->
-          <label class="pos-option pos-option-silver" onclick="selectPos(this, 'Plata')">
-            <input type="radio" name="posicion" value="Plata" />
-            <span class="pos-badge pb-silver">★ Rango 2</span>
-            <div class="pos-name" style="color:#4B5563">Plata</div>
-            <div class="pos-price">
-              Posición #2 en tu categoría.<br/>
-              Alta visibilidad + carrusel inicio.<br/>
-              <strong style="color:#4B5563">Asignado por admin</strong>
-            </div>
+          <label class="pos-option" onclick="selectPos(this, 'Posición Plata #2')">
+            <input type="radio" name="posicion" value="Posición Plata #2" />
+            <span class="pos-badge pb-silver">★★☆</span>
+            <span class="pos-ico">🥈</span>
+            <div class="pos-name">Posición #2 Plata</div>
+            <div class="pos-price">Segundo destacado<br/><strong style="color:var(--teal)">Gratis ahora</strong> <s style="font-size:.73rem;color:var(--muted)">$30.000/mes</s></div>
           </label>
-
-          <!-- Bronce — Rango 3 -->
-          <label class="pos-option pos-option-bronze" onclick="selectPos(this, 'Bronce')">
-            <input type="radio" name="posicion" value="Bronce" />
-            <span class="pos-badge pb-bronze">★ Rango 3</span>
-            <div class="pos-name" style="color:#7C4F1E">Bronce</div>
-            <div class="pos-price">
-              Posición #3 en tu categoría.<br/>
-              Tarjeta destacada con foto.<br/>
-              <strong style="color:#7C4F1E">Asignado por admin</strong>
-            </div>
+          <label class="pos-option" onclick="selectPos(this, 'Posición Bronce #3')">
+            <input type="radio" name="posicion" value="Posición Bronce #3" />
+            <span class="pos-badge pb-bronze">★☆☆</span>
+            <span class="pos-ico">🥉</span>
+            <div class="pos-name">Posición #3 Bronce</div>
+            <div class="pos-price">Tercer destacado<br/><strong style="color:var(--teal)">Gratis ahora</strong> <s style="font-size:.73rem;color:var(--muted)">$20.000/mes</s></div>
           </label>
-
-          <!-- Destacado — Rango 5 (pago estándar) -->
-          <label class="pos-option pos-dest-option" onclick="selectPos(this, 'Destacado')">
-            <input type="radio" name="posicion" value="Destacado" />
-            <span class="pos-badge pb-dest">✦ Recomendado</span>
-            <div class="pos-name">Destacado</div>
-            <div class="pos-price">
-              Tarjeta grande con foto y descripción.<br/>
-              Apareces en recomendaciones.<br/>
-              <strong style="color:var(--teal)">Gratis ahora</strong>
-              <s style="font-size:.72rem;color:var(--muted)">$25.000/mes</s>
-            </div>
-          </label>
-
-          <!-- Básico — Gratis -->
-          <label class="pos-option" onclick="selectPos(this, 'Listado Básico')" style="grid-column:1/-1">
+          <label class="pos-option" onclick="selectPos(this, 'Listado Básico')">
             <input type="radio" name="posicion" value="Listado Básico" />
-            <span class="pos-badge pb-basic">Gratis</span>
+            <span class="pos-badge pb-basic">Básico</span>
+            <span class="pos-ico">📋</span>
             <div class="pos-name">Listado Básico</div>
-            <div class="pos-price">
-              Apareces en el listado simple de tu categoría. Sin foto de portada ni descripción destacada.<br/>
-              <strong style="color:var(--teal)">Siempre gratis</strong>
-            </div>
+            <div class="pos-price">Visibilidad básica<br/><strong style="color:var(--teal)">Siempre gratis</strong></div>
           </label>
-
         </div>
 
-        <div style="margin-top:14px;padding:13px 16px;background:var(--bg);border-radius:10px;border:1px solid var(--border)">
-          <p style="font-size:.8rem;color:var(--muted);line-height:1.6">Las posiciones se asignan por orden de solicitud. Una vez revisemos tu registro, te contactaremos para confirmar tu posición y activar tu publicación.</p>
+        <!-- Aviso promocional -->
+        <div style="margin-top:16px;padding:14px 18px;background:#f0fdf4;border-radius:12px;border:1.5px solid #86efac">
+          <p style="font-size:.82rem;color:#166534;line-height:1.65">
+            🎉 <strong>¡Lanzamiento gratuito!</strong> Por orden de llegada, las posiciones destacadas son <strong>gratis durante los primeros 2 meses</strong>. Luego se confirmará la suscripción al valor indicado, por orden de quién paga primero. ¡Aprovecha ahora antes que se acaben!
+          </p>
+        </div>
+
+        <div style="margin-top:10px;padding:14px 18px;background:var(--bg);border-radius:12px;border:1px solid var(--border)">
+          <p style="font-size:.82rem;color:var(--muted);line-height:1.6">💡 <strong style="color:var(--ink)">¿Cómo funciona?</strong> Las posiciones se asignan por orden de solicitud. Una vez revisemos tu registro, te contactaremos para confirmar tu posición y activar tu publicación.</p>
         </div>
       </div>
     </div>
@@ -786,6 +750,106 @@
       </div>
     </div>
 
+    <!-- ═══ CARD: RESEÑAS DE GOOGLE ═══ -->
+    <div class="form-card">
+      <div class="form-card-header">
+        <div class="fch-icon" style="background:#FFF8E1;font-size:1.3rem">⭐</div>
+        <div>
+          <h3>Reseñas de Google</h3>
+          <p>Muestra la opinión real de tus clientes directamente en tu ficha</p>
+        </div>
+      </div>
+      <div class="form-card-body">
+
+        <!-- Explicación del valor -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:24px">
+          <div style="background:var(--bg2);border-radius:12px;padding:14px;text-align:center">
+            <div style="font-size:1.4rem;margin-bottom:6px">🤝</div>
+            <div style="font-size:.78rem;font-weight:700;color:var(--ink);margin-bottom:3px">Más confianza</div>
+            <div style="font-size:.7rem;color:var(--muted)">Los clientes confían más en negocios con reseñas reales</div>
+          </div>
+          <div style="background:var(--bg2);border-radius:12px;padding:14px;text-align:center">
+            <div style="font-size:1.4rem;margin-bottom:6px">✅</div>
+            <div style="font-size:.78rem;font-weight:700;color:var(--ink);margin-bottom:3px">Verificadas</div>
+            <div style="font-size:.7rem;color:var(--muted)">Google verifica que son clientes reales, no inventadas</div>
+          </div>
+          <div style="background:var(--bg2);border-radius:12px;padding:14px;text-align:center">
+            <div style="font-size:1.4rem;margin-bottom:6px">🆓</div>
+            <div style="font-size:.78rem;font-weight:700;color:var(--ink);margin-bottom:3px">Sin costo</div>
+            <div style="font-size:.7rem;color:var(--muted)">Totalmente gratis — solo necesitas tener un perfil de Google</div>
+          </div>
+        </div>
+
+        <!-- Campo URL Google Maps -->
+        <div class="field" style="margin-bottom:16px">
+          <label class="lbl" style="font-size:.85rem;font-weight:700">
+            Link de tu negocio en Google Maps
+            <span style="font-weight:400;color:var(--muted)">(opcional, pero muy recomendado)</span>
+          </label>
+          <input class="inp" type="url" id="google_maps_url" maxlength="400"
+            placeholder="https://maps.app.goo.gl/... o https://g.page/tu-negocio" />
+          <div style="font-size:.72rem;color:var(--muted);margin-top:6px;line-height:1.5">
+            💡 Abre Google Maps, busca tu negocio, toca "Compartir" y pega el link aquí.
+          </div>
+        </div>
+
+        <!-- Cómo conseguir reseñas — guía paso a paso -->
+        <div style="background:#FFFBF0;border:1.5px solid #F9D849;border-radius:14px;padding:20px 22px">
+          <div style="font-size:.85rem;font-weight:700;color:#8B6914;margin-bottom:14px;display:flex;align-items:center;gap:7px">
+            <span>⭐</span> Cómo conseguir tus primeras reseñas
+          </div>
+
+          <!-- Paso 1 -->
+          <div style="display:flex;gap:12px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #F0E07A">
+            <div style="width:26px;height:26px;border-radius:50%;background:#F9D849;color:#8B6914;font-size:.78rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</div>
+            <div>
+              <div style="font-size:.82rem;font-weight:700;color:var(--ink);margin-bottom:3px">Crea o reclama tu ficha en Google Business</div>
+              <div style="font-size:.76rem;color:var(--muted);line-height:1.5">Si aún no tienes ficha, créala gratis en <a href="https://business.google.com" target="_blank" style="color:var(--coral);font-weight:600">business.google.com</a> — solo necesitas una cuenta de Google.</div>
+            </div>
+          </div>
+
+          <!-- Paso 2 -->
+          <div style="display:flex;gap:12px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #F0E07A">
+            <div style="width:26px;height:26px;border-radius:50%;background:#F9D849;color:#8B6914;font-size:.78rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">2</div>
+            <div>
+              <div style="font-size:.82rem;font-weight:700;color:var(--ink);margin-bottom:3px">Obtén tu link directo de reseñas</div>
+              <div style="font-size:.76rem;color:var(--muted);line-height:1.5">Dentro de Google Business Profile → <strong>"Obtener más reseñas"</strong> → copia el link corto. Ese es el enlace que le envías a tus clientes.</div>
+            </div>
+          </div>
+
+          <!-- Paso 3 -->
+          <div style="display:flex;gap:12px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #F0E07A">
+            <div style="width:26px;height:26px;border-radius:50%;background:#F9D849;color:#8B6914;font-size:.78rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">3</div>
+            <div>
+              <div style="font-size:.82rem;font-weight:700;color:var(--ink);margin-bottom:3px">Pídele a tus clientes después del servicio</div>
+              <div style="font-size:.76rem;color:var(--muted);line-height:1.5">El mejor momento es al terminar el evento o al día siguiente. Un mensaje simple funciona muy bien:</div>
+              <div style="margin-top:8px;background:#fff;border:1px solid #F0E07A;border-radius:8px;padding:10px 12px;font-size:.75rem;color:var(--ink2);line-height:1.55;font-style:italic">
+                "¡Hola [nombre]! Fue un gusto servirte hoy 🎉 Si quedaste contento/a con nuestro servicio, nos ayudaría mucho que nos dejaras una reseña rápida en Google. Solo toma 1 minuto 👉 [link]"
+              </div>
+              <button type="button" onclick="copyReviewMsg()" style="margin-top:8px;background:var(--coral-lt);border:1px solid var(--coral-md);color:var(--coral);padding:4px 12px;border-radius:99px;font-size:.72rem;font-weight:600;cursor:pointer" id="copy-review-btn">
+                📋 Copiar mensaje
+              </button>
+            </div>
+          </div>
+
+          <!-- Paso 4 -->
+          <div style="display:flex;gap:12px">
+            <div style="width:26px;height:26px;border-radius:50%;background:#F9D849;color:#8B6914;font-size:.78rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">4</div>
+            <div>
+              <div style="font-size:.82rem;font-weight:700;color:var(--ink);margin-bottom:3px">Mándanos el link cuando lo tengas</div>
+              <div style="font-size:.76rem;color:var(--muted);line-height:1.5">Una vez tengas tu ficha configurada, mándanos el link de Google Maps a <a href="mailto:contactocotizaeventos@gmail.com" style="color:var(--coral);font-weight:600">contactocotizaeventos@gmail.com</a> y nosotros vinculamos las reseñas a tu perfil. ¡Sin que tengas que hacer nada técnico!</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Nota: nosotros lo activamos -->
+        <div style="margin-top:12px;padding:12px 16px;background:var(--bg);border-radius:10px;border:1px solid var(--border);font-size:.76rem;color:var(--muted);line-height:1.5;display:flex;gap:8px">
+          <span style="flex-shrink:0">ℹ️</span>
+          <span>Las reseñas las activamos nosotros en tu ficha una vez estés publicado. Solo necesitamos el link de tu negocio en Google Maps.</span>
+        </div>
+      </div>
+    </div>
+
     <div class="form-nav">
       <button class="btn btn-outline btn-big" onclick="prevStep(5)">← Atrás</button>
       <div class="nav-info">Paso 5 de 6</div>
@@ -833,39 +897,29 @@
         <p style="font-size:.85rem;color:var(--ink2);line-height:1.7">
           ✅ <strong>¿Qué pasa ahora?</strong><br/>
           Nuestro equipo revisará tu información y te contactará en 48 horas para activar tu publicación.<br/>
-          Si necesitas hacer cambios, escríbenos a <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fc9f9392889d9f88939f938895869d998a999288938fbc9b919d9590d29f9391">[email&#160;protected]</a></strong>
+          Si necesitas hacer cambios, escríbenos a <strong>contactocotizaeventos@gmail.com</strong>
         </p>
       </div>
 
-      <!-- CTA: servicios web para proveedores -->
-      <div style="background:linear-gradient(135deg,var(--coral-lt),#fff8f6);border:2px solid var(--coral-md);border-radius:16px;padding:20px 24px;margin-bottom:24px;text-align:center;max-width:480px;margin-left:auto;margin-right:auto">
-        <div style="font-size:1.4rem;margin-bottom:8px">🚀</div>
-        <div style="font-size:.9rem;font-weight:700;color:var(--ink);margin-bottom:6px">¿Quieres destacar aun más?</div>
-        <div style="font-size:.8rem;color:var(--ink2);margin-bottom:14px;line-height:1.55">Tenemos planes de web propia, dominio y hosting para que tus clientes te encuentren en Google directamente.</div>
-        <a href="plantillas.html" class="btn btn-coral" style="font-size:.85rem;padding:9px 22px">Ver planes web →</a>
+      <!-- Recordatorio reseñas -->
+      <div style="background:#FFFBF0;border:1.5px solid #F9D849;border-radius:14px;padding:18px 22px;margin-bottom:24px;text-align:left;max-width:480px;margin-left:auto;margin-right:auto">
+        <div style="font-size:.82rem;font-weight:700;color:#8B6914;margin-bottom:10px">⭐ Mientras esperas — empieza a conseguir reseñas</div>
+        <ol style="font-size:.78rem;color:var(--ink2);line-height:1.7;padding-left:18px;margin:0">
+          <li>Crea o reclama tu ficha en <a href="https://business.google.com" target="_blank" style="color:var(--coral);font-weight:600">Google Business Profile</a></li>
+          <li>Obtén tu link directo de reseñas desde el panel de Google Business</li>
+          <li>Pídeles a tus clientes recientes que te dejen una reseña rápida</li>
+          <li>Cuando estés publicado, mándanos el link y lo vinculamos a tu ficha</li>
+        </ol>
       </div>
 
-      <div class="success-actions" style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:16px">
+      <div class="success-actions" style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:24px">
         <a href="proveedores.html" class="btn btn-teal btn-big" style="min-width:160px;justify-content:center">Ver directorio →</a>
-        <a href="index.html" class="btn btn-outline btn-big" title="Ir al inicio" style="min-width:unset;padding:10px 18px;font-size:1.1rem">Inicio</a>
+        <a href="index.html" class="btn btn-outline btn-big" title="Ir al inicio" style="min-width:unset;padding:10px 18px;font-size:1.1rem">🏠</a>
       </div>
     </div>
   </div>
 
 </div><!-- /form-wrap -->
-
-<!-- CONFIRM OVERLAY -->
-<div id="confirm-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.52);z-index:500;align-items:center;justify-content:center;padding:20px">
-  <div style="background:#fff;border-radius:20px;padding:32px 28px;max-width:440px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.2)">
-    <div style="font-size:2rem;margin-bottom:10px">✦</div>
-    <h3 style="font-family:'Fraunces',serif;font-size:1.25rem;margin-bottom:10px;color:var(--ink)">¿Confirmar envío?</h3>
-    <p style="font-size:.87rem;color:var(--muted);margin-bottom:24px;line-height:1.6">Revisaremos tu solicitud en 24–48 horas hábiles y te contactaremos para activar tu publicación.</p>
-    <div style="display:flex;gap:12px;justify-content:center">
-      <button onclick="closeConfirmPopup()" style="padding:10px 22px;border-radius:99px;border:1.5px solid var(--border2);background:transparent;font-family:'Outfit',sans-serif;font-weight:600;font-size:.85rem;cursor:pointer;color:var(--ink2)">Cancelar</button>
-      <button id="confirm-send-btn" onclick="doSubmitForm()" style="padding:10px 28px;border-radius:99px;border:none;background:var(--teal);color:#fff;font-family:'Outfit',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer">✦ Enviar solicitud</button>
-    </div>
-  </div>
-</div>
 
 <!-- WA FLOTANTE -->
 <a href="https://wa.me/56991999301?text=Hola%2C%20tengo%20una%20consulta%20sobre%20registrar%20mi%20negocio%20en%20CotizaEventos.cl" target="_blank" class="wa-float">
@@ -886,7 +940,7 @@
     </div>
     <div class="faq-item" onclick="toggleFaq(this)">
       <div class="faq-q">¿Cuánto cuesta publicar mi negocio? <span>+</span></div>
-      <div class="faq-a">Registrarte es completamente <strong>gratis</strong>. Existe un plan Destacado con mayor visibilidad, pero la publicación básica no tiene costo. Una vez enviado tu formulario, nuestro equipo revisará tu información y te contactará para explicarte las opciones disponibles.</div>
+      <div class="faq-a">Registrarte es completamente <strong>gratis</strong>. Existen planes de posicionamiento destacado (Oro, Plata, Bronce) con mayor visibilidad, pero la publicación básica no tiene costo. Una vez enviado tu formulario, nuestro equipo revisará tu información y te contactará para explicarte las opciones disponibles.</div>
     </div>
     <div class="faq-item" onclick="toggleFaq(this)">
       <div class="faq-q">¿Cuánto tiempo tarda en aparecer mi negocio? <span>+</span></div>
@@ -918,7 +972,7 @@
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 /* ═══════════════════════════════════════
    STATE
 ═══════════════════════════════════════ */
@@ -1447,8 +1501,8 @@ let logoUrl  = '';
 async function handleImageUpload(type, input) {
   const file = input.files[0];
   if (!file) return;
-  if (file.size > 40 * 1024 * 1024) {
-    showToast('La imagen supera los 40MB.', 'error'); return;
+  if (file.size > 50 * 1024 * 1024) {
+    showToast('La imagen supera los 50MB.', 'error'); return;
   }
 
   // Show local preview immediately
@@ -1523,16 +1577,12 @@ function removeImage(type) {
     document.getElementById('cover-url-input').value = '';
   } else {
     logoUrl = '';
-    document.getElementById('logo-url').value = '';
+    document.getElementById('logo-url-input')?.value && (document.getElementById('logo-url-input').value = '');
   }
   document.getElementById(`${type}-preview-wrap`).style.display = 'none';
   document.getElementById(`${type}-preview-img`).src = '';
-  document.getElementById(`${type}-upload-status`).textContent = '';
 }
 
-function submitForm() {
-  openConfirmPopup();
-}
 </script>
 </body>
 </html>
