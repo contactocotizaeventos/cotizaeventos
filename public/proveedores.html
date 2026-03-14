@@ -519,38 +519,52 @@
     .expand-btn:hover{border-color:var(--coral);color:var(--coral);background:var(--coral-lt)}
     /* CAT TILES */
     /* ── CHIPS DE CATEGORÍAS (proveedores) ── */
-    .grp-chip{
-      display:inline-flex;align-items:center;gap:5px;
-      padding:7px 14px;
-      background:var(--white);border:1.5px solid var(--border2);
-      border-radius:99px;cursor:pointer;
-      font-family:'Outfit',sans-serif;font-size:.8rem;font-weight:600;
-      color:var(--ink2);transition:.18s var(--ease);white-space:nowrap;
+/* ── TARJETAS DE CATEGORÍAS ── */
+    .cat-groups-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+      gap:10px;
     }
-    .grp-chip:hover{border-color:var(--coral-md);color:var(--coral);background:var(--coral-lt)}
-    .grp-chip.open{background:var(--coral);border-color:var(--coral);color:#fff}
-    .grp-chip .chip-arrow{font-size:.55rem;transition:transform .22s var(--ease);opacity:.6}
-    .grp-chip.open .chip-arrow{transform:rotate(180deg);opacity:1}
+    @media(max-width:560px){.cat-groups-grid{grid-template-columns:repeat(2,1fr);gap:8px}}
 
-    .grp-panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .28s var(--ease)}
-    .grp-panel.open{grid-template-rows:1fr}
-    .grp-panel-inner{
-      overflow:hidden;background:var(--coral-lt);
-      border:1.5px solid var(--coral-md);border-top:none;
-      border-radius:0 0 10px 10px;
+    .cat-card{
+      background:var(--white);
+      border:1.5px solid var(--border);
+      border-radius:14px;
+      overflow:hidden;
+      cursor:pointer;
+      transition:.22s var(--ease);
     }
-    .tag-chips-row{display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px}
+    .cat-card:hover{border-color:var(--coral-md);box-shadow:0 4px 18px rgba(232,84,42,.09);transform:translateY(-2px)}
+    .cat-card.open{border-color:var(--coral);box-shadow:0 4px 18px rgba(232,84,42,.12)}
+
+    .cat-card-header{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:12px 14px;gap:8px;
+    }
+    .cat-card-label{font-size:.84rem;font-weight:700;color:var(--ink)}
+    .cat-card-meta{font-size:.67rem;color:var(--muted);margin-top:2px}
+    .cat-card-arrow{font-size:.58rem;color:var(--muted);flex-shrink:0;transition:transform .22s var(--ease),color .18s}
+    .cat-card.open .cat-card-arrow{transform:rotate(180deg);color:var(--coral)}
+    .cat-card.open .cat-card-label{color:var(--coral)}
+
+    .cat-card-panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .28s var(--ease)}
+    .cat-card.open .cat-card-panel{grid-template-rows:1fr}
+    .cat-card-panel-inner{overflow:hidden;background:var(--coral-lt);border-top:1.5px solid var(--coral-md)}
+
+    /* Etiquetas */
+    .tag-chips-row{display:flex;flex-wrap:wrap;gap:5px;padding:8px 10px}
     .tag-chip{
-      display:inline-flex;align-items:center;gap:4px;
-      padding:5px 12px;
+      display:inline-flex;align-items:center;gap:3px;
+      padding:4px 10px;
       background:var(--white);border:1.5px solid var(--border);
-      border-radius:99px;font-size:.74rem;font-weight:500;
+      border-radius:99px;font-size:.71rem;font-weight:500;
       color:var(--ink2);cursor:pointer;text-decoration:none;
       transition:.15s var(--ease);white-space:nowrap;
     }
     .tag-chip:hover{border-color:var(--coral);color:var(--coral)}
     .tag-chip.active{border-color:var(--coral);background:var(--coral-lt);color:var(--coral);font-weight:600}
-    .tag-chip-count{font-size:.62rem;color:var(--muted)}
+    .tag-chip-count{font-size:.6rem;color:var(--muted)}
 
     /* GOLD GALLERY */
     .gold-gallery{margin-top:52px;padding-top:28px;border-top:1px solid var(--border)}
@@ -641,8 +655,7 @@
 
 <!-- ── CATEGORÍAS ── -->
 <div id="cat-nav" style="background:var(--white);border-bottom:1px solid var(--border);padding:14px 24px;display:none">
-  <div id="cat-chips-row" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:0"></div>
-  <div id="cat-panels-wrap"></div>
+  <div id="cat-groups-grid" class="cat-groups-grid"></div>
 </div>
 
 <div class="page-body">
@@ -769,47 +782,45 @@ const RANK = {
 let _openGrp = null;
 
 function buildCatBar() {
-  const nav       = document.getElementById('cat-nav');
-  const chipsRow  = document.getElementById('cat-chips-row');
-  const panelWrap = document.getElementById('cat-panels-wrap');
-  if (!nav || !chipsRow || !panelWrap) return;
+  const nav  = document.getElementById('cat-nav');
+  const grid = document.getElementById('cat-groups-grid');
+  if (!nav || !grid) return;
 
-  GRUPOS.forEach(g => {
-    // Chip del grupo
-    const chip = document.createElement('div');
-    chip.className = 'grp-chip';
-    chip.id = 'grp-chip-' + g.id;
-    chip.innerHTML = g.nombre + ' <span class="chip-arrow">▼</span>';
-    chip.addEventListener('click', () => toggleGrp(g.id));
-    chipsRow.appendChild(chip);
-
-    // Panel de etiquetas
-    const panel = document.createElement('div');
-    panel.className = 'grp-panel';
-    panel.id = 'grp-panel-' + g.id;
-    panel.innerHTML = `
-      <div class="grp-panel-inner">
-        <div class="tag-chips-row">
-          ${g.categorias.map(cat => `
-            <span class="tag-chip" id="tag-chip-${cat.id}"
-              onclick="selectTag('${g.id}','${cat.id}')">
-              ${cat.nombre}
-              <span class="tag-chip-count">${cat.proveedores.length}</span>
-            </span>
-          `).join('')}
+  grid.innerHTML = GRUPOS.map(g => {
+    const total = g.categorias.reduce((s, cat) => s + cat.proveedores.length, 0);
+    return `
+    <div class="cat-card" id="grp-chip-${g.id}">
+      <div class="cat-card-header" onclick="toggleGrp('${g.id}')">
+        <div>
+          <div class="cat-card-label">${g.nombre}</div>
+          <div class="cat-card-meta">${g.categorias.length} tipo${g.categorias.length!==1?'s':''} · ${total} prov.</div>
         </div>
-      </div>`;
-    panelWrap.appendChild(panel);
-  });
+        <span class="cat-card-arrow">▼</span>
+      </div>
+      <div class="cat-card-panel" id="grp-panel-${g.id}">
+        <div class="cat-card-panel-inner">
+          <div class="tag-chips-row">
+            ${g.categorias.map(cat => `
+              <span class="tag-chip" id="tag-chip-${cat.id}"
+                onclick="selectTag('${g.id}','${cat.id}')">
+                ${cat.nombre}
+                <span class="tag-chip-count">${cat.proveedores.length}</span>
+              </span>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
 
   nav.style.display = 'block';
 }
 
 function toggleGrp(groupId) {
-  const chip  = document.getElementById('grp-chip-'  + groupId);
+  const card  = document.getElementById('grp-chip-'  + groupId);
   const panel = document.getElementById('grp-panel-' + groupId);
-  if (!chip || !panel) return;
-  const isOpen = chip.classList.contains('open');
+  if (!card || !panel) return;
+  const isOpen = card.classList.contains('open');
 
   // Cierra el anterior
   if (_openGrp && _openGrp !== groupId) {
@@ -817,7 +828,7 @@ function toggleGrp(groupId) {
     document.getElementById('grp-panel-' + _openGrp)?.classList.remove('open');
   }
 
-  chip.classList.toggle('open', !isOpen);
+  card.classList.toggle('open', !isOpen);
   panel.classList.toggle('open', !isOpen);
   _openGrp = isOpen ? null : groupId;
 

@@ -240,55 +240,66 @@
     .section-header h2 { font-size: clamp(1.6rem, 3vw, 2.4rem); margin-bottom: 10px; color: var(--ink); }
     .section-header p { font-size: .9rem; color: var(--muted); }
 
-    /* Category groups */
-    /* ── CHIPS DE CATEGORÍAS ── */
-    /* Fila de chips de grupos (categorías padre) */
-    .cat-chips-row {
-      display: flex; flex-wrap: wrap; gap: 8px;
+    /* ── CATEGORÍAS: grid de tarjetas ── */
+    .cat-groups-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
       margin-bottom: 0;
     }
-    .cat-chip-btn {
-      display: inline-flex; align-items: center; gap: 5px;
-      padding: 7px 14px;
-      background: var(--white); border: 1.5px solid var(--border2);
-      border-radius: 99px; cursor: pointer;
-      font-family: 'Outfit', sans-serif; font-size: .8rem; font-weight: 600;
-      color: var(--ink2); transition: .18s var(--ease);
-      white-space: nowrap;
-    }
-    .cat-chip-btn:hover { border-color: var(--coral-md); color: var(--coral); background: var(--coral-lt); }
-    .cat-chip-btn.open {
-      background: var(--coral); border-color: var(--coral);
-      color: #fff;
-    }
-    .cat-chip-btn .chip-arrow {
-      font-size: .55rem; transition: transform .22s var(--ease); opacity: .6;
-    }
-    .cat-chip-btn.open .chip-arrow { transform: rotate(180deg); opacity: 1; }
+    @media(max-width:600px){ .cat-groups-grid{ grid-template-columns: repeat(2, 1fr); gap:8px; } }
 
-    /* Panel de etiquetas desplegable */
-    .cat-chip-panel {
+    .cat-card {
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: .22s var(--ease);
+    }
+    .cat-card:hover { border-color: var(--coral-md); box-shadow: 0 6px 24px rgba(232,84,42,.10); transform: translateY(-2px); }
+    .cat-card.open { border-color: var(--coral); box-shadow: 0 6px 24px rgba(232,84,42,.13); }
+
+    .cat-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px; gap: 10px;
+    }
+    .cat-card-label {
+      font-size: .88rem; font-weight: 700; color: var(--ink);
+    }
+    .cat-card-meta {
+      font-size: .7rem; color: var(--muted); margin-top: 2px;
+    }
+    .cat-card-arrow {
+      font-size: .6rem; color: var(--muted);
+      transition: transform .22s var(--ease), color .18s;
+      flex-shrink: 0;
+    }
+    .cat-card.open .cat-card-arrow { transform: rotate(180deg); color: var(--coral); }
+    .cat-card.open .cat-card-label { color: var(--coral); }
+
+    /* Panel etiquetas */
+    .cat-card-panel {
       display: grid; grid-template-rows: 0fr;
       transition: grid-template-rows .28s var(--ease);
     }
-    .cat-chip-panel.open { grid-template-rows: 1fr; }
-    .cat-chip-panel-inner {
+    .cat-card.open .cat-card-panel { grid-template-rows: 1fr; }
+    .cat-card-panel-inner {
       overflow: hidden;
-      border: 1.5px solid var(--coral-md);
-      border-top: none; border-radius: 0 0 12px 12px;
       background: var(--coral-lt);
+      border-top: 1.5px solid var(--coral-md);
     }
-    /* Etiquetas: chips chicos en fila flexible */
-    .cat-tag-row { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 12px; }
+    .cat-tag-row { display: flex; flex-wrap: wrap; gap: 5px; padding: 10px 12px; }
     .cat-tag-chip {
-      display: inline-flex; align-items: center;
-      padding: 5px 12px;
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 4px 11px;
       background: var(--white); border: 1.5px solid var(--border);
-      border-radius: 99px; font-size: .74rem; font-weight: 500;
-      color: var(--ink2); text-decoration: none; cursor: pointer;
+      border-radius: 99px; font-size: .72rem; font-weight: 500;
+      color: var(--ink2); text-decoration: none;
       transition: .15s var(--ease); white-space: nowrap;
     }
     .cat-tag-chip:hover { border-color: var(--coral); color: var(--coral); background: #fff; }
+    .cat-tag-chip .tag-count { font-size: .6rem; color: var(--muted); margin-left: 3px; }
 
     /* view all */
     .view-all-wrap {
@@ -733,15 +744,16 @@
     <div class="section-header reveal">
       <div class="tag">Nuestros proveedores</div>
       <h2>Explora por categoría</h2>
-      <p>Haz clic en cualquier categoría para ver proveedores, precios y contacto directo.</p>
+      <p>Selecciona una categoría para ver los tipos de servicio disponibles.</p>
     </div>
 
     <!-- CATEGORÍAS — generado dinámicamente desde Supabase -->
     <div id="cat-groups-container">
-      <div style="display:flex;flex-wrap:wrap;gap:8px;opacity:.4;pointer-events:none" id="cat-skeleton">
-        <span style="height:34px;width:90px;background:var(--bg2);border-radius:99px;display:inline-block"></span>
-        <span style="height:34px;width:110px;background:var(--bg2);border-radius:99px;display:inline-block"></span>
-        <span style="height:34px;width:80px;background:var(--bg2);border-radius:99px;display:inline-block"></span>
+      <div class="cat-groups-grid" id="cat-skeleton" style="opacity:.35;pointer-events:none">
+        <div style="height:64px;background:var(--bg2);border-radius:16px;border:1.5px solid var(--border)"></div>
+        <div style="height:64px;background:var(--bg2);border-radius:16px;border:1.5px solid var(--border)"></div>
+        <div style="height:64px;background:var(--bg2);border-radius:16px;border:1.5px solid var(--border)"></div>
+        <div style="height:64px;background:var(--bg2);border-radius:16px;border:1.5px solid var(--border)"></div>
       </div>
     </div>
 
@@ -914,41 +926,39 @@ async function loadCategories() {
       completos:'🌭', torta:'🎂', barra:'🍹',
     };
 
-    // Chips de grupos en fila + panel de etiquetas
-    const chipsRow  = document.createElement('div');
-    chipsRow.className = 'cat-chips-row';
-    const panelWrap = document.createElement('div');
-    panelWrap.style.cssText = 'margin-top:-1px'; // pega al chip abierto
+    // Grid de tarjetas por grupo, con panel de etiquetas desplegable
+    const grid = document.createElement('div');
+    grid.className = 'cat-groups-grid';
 
-    grupos.forEach((g, gi) => {
-      // Panel de etiquetas (oculto por defecto)
-      const panel = document.createElement('div');
-      panel.className = 'cat-chip-panel';
-      panel.id = 'cgp-' + g.id;
-      panel.innerHTML = `
-        <div class="cat-chip-panel-inner">
-          <div class="cat-tag-row">
-            ${g.categorias.map(cat => `
-              <a class="cat-tag-chip" href="proveedores.html?cat=${cat.id}&scroll=1">
-                ${cat.nombre}
-                <span style="margin-left:4px;font-size:.62rem;color:var(--muted)">${cat.proveedores.length}</span>
-              </a>
-            `).join('')}
+    grupos.forEach(g => {
+      const total = g.categorias.reduce((s, cat) => s + cat.proveedores.length, 0);
+      const card = document.createElement('div');
+      card.className = 'cat-card';
+      card.id = 'cgb-' + g.id;
+      card.innerHTML = `
+        <div class="cat-card-header" onclick="toggleCatGroup('${g.id}')">
+          <div>
+            <div class="cat-card-label">${g.nombre}</div>
+            <div class="cat-card-meta">${g.categorias.length} tipo${g.categorias.length!==1?'s':''} · ${total} proveedor${total!==1?'es':''}</div>
+          </div>
+          <span class="cat-card-arrow">▼</span>
+        </div>
+        <div class="cat-card-panel" id="cgp-${g.id}">
+          <div class="cat-card-panel-inner">
+            <div class="cat-tag-row">
+              ${g.categorias.map(cat => `
+                <a class="cat-tag-chip" href="proveedores.html?cat=${cat.id}&scroll=1">
+                  ${cat.nombre}
+                  <span class="tag-count">${cat.proveedores.length}</span>
+                </a>
+              `).join('')}
+            </div>
           </div>
         </div>`;
-      panelWrap.appendChild(panel);
-
-      // Chip del grupo
-      const chip = document.createElement('div');
-      chip.className = 'cat-chip-btn';
-      chip.id = 'cgb-' + g.id;
-      chip.innerHTML = `${g.nombre} <span class="chip-arrow">▼</span>`;
-      chip.addEventListener('click', () => toggleCatGroup(g.id));
-      chipsRow.appendChild(chip);
+      grid.appendChild(card);
     });
 
-    container.appendChild(chipsRow);
-    container.appendChild(panelWrap);
+    container.appendChild(grid);
 
     // Actualizar SERVICIOS para el formulario de cotización
     SERVICIOS.length = 0;
