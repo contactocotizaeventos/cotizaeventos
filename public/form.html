@@ -420,8 +420,8 @@
       <div class="form-card-header">
         <div class="fch-icon">🍽️</div>
         <div>
-          <h3>¿En qué categorías ofreces tus servicios?</h3>
-          <p>Puedes seleccionar una o más categorías</p>
+          <h3>¿En qué categoría ofreces tus servicios?</h3>
+          <p>Selecciona solo una categoría principal</p>
         </div>
       </div>
       <div class="form-card-body">
@@ -945,7 +945,7 @@ function renderFormCategories(grupos) {
       <div class="check-grid">
         ${g.categorias.map(cat => `
           <label class="check-pill" onclick="togglePill(this)">
-            <input type="checkbox" value="${cat.nombre}" />
+            <input type="radio" name="categoria" value="${cat.nombre}" />
             <div class="pill-box">✓</div>
             <span class="pill-label">${cat.nombre}</span>
           </label>
@@ -1007,8 +1007,19 @@ function updateStepper(active) {
 ═══════════════════════════════════════ */
 function togglePill(label) {
   const inp = label.querySelector('input');
-  inp.checked = !inp.checked;
-  label.classList.toggle('checked', inp.checked);
+  const wasChecked = inp.checked;
+
+  // Desmarcar todas primero (comportamiento radio)
+  document.querySelectorAll('.check-pill').forEach(p => {
+    p.classList.remove('checked');
+    p.querySelector('input').checked = false;
+  });
+
+  // Si no estaba marcada, marcarla
+  if (!wasChecked) {
+    inp.checked = true;
+    label.classList.add('checked');
+  }
 }
 
 /* ═══════════════════════════════════════
@@ -1065,11 +1076,11 @@ function validate(step) {
     }
   }
 
-  // Step 2: at least one category
+  // Step 2: exactamente una categoría
   if (step === 2 && ok) {
     const checked = document.querySelectorAll('.check-pill input:checked');
     if (checked.length === 0) {
-      showToast('Selecciona al menos una categoría.', 'error');
+      showToast('Selecciona una categoría para tu negocio.', 'error');
       ok = false;
     }
     if (ok && !document.getElementById('comunas').value.trim()) {
