@@ -810,97 +810,6 @@
   </div>
 </section>
 
-<!-- ══ PROVEEDORES RECOMENDADOS (grid 8) ══ -->
-<section id="destacados" style="padding:52px 0;background:var(--ink);border-top:1px solid rgba(255,255,255,.08)">
-  <div class="container">
-    <div class="section-header reveal" style="color:#fff">
-      <div class="tag" style="background:rgba(255,255,255,.1);color:rgba(255,255,255,.85);border-color:rgba(255,255,255,.15)">✦ Recomendados</div>
-      <h2 style="color:#fff">Proveedores que destacan</h2>
-      <p style="color:rgba(255,255,255,.45)">Selección aleatoria — cambia con cada visita</p>
-    </div>
-    <div id="dest-grid"></div>
-    <!-- Paginación -->
-    <div id="dest-pagination" style="display:flex;justify-content:center;gap:8px;margin-bottom:32px"></div>
-    <div style="text-align:center" class="reveal">
-      <a href="proveedores.html" class="btn btn-primary btn-big">Ver todos los proveedores →</a>
-    </div>
-  </div>
-</section>
-<style>
-  /* ── GRID DESTACADOS (index) ── */
-  #dest-grid{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:14px;
-    margin-bottom:24px;
-    /* stretch: todas las cards en la misma fila tienen la misma altura */
-    align-items:stretch;
-  }
-  .dest-card{
-    background:var(--white);border-radius:14px;overflow:hidden;
-    cursor:pointer;transition:.25s;
-    display:flex;flex-direction:column;
-    text-decoration:none;color:inherit;
-    /* altura mínima fija para que cards sin tagline no colapsen */
-    min-height:220px;
-    height:100%;
-  }
-  .dest-card:hover{transform:translateY(-4px);box-shadow:0 14px 36px rgba(0,0,0,.22)}
-  /* Cover: altura fija siempre */
-  .dest-cover-wrap{
-    width:100%;height:110px;flex-shrink:0;overflow:hidden;
-    background:#111;
-  }
-  .dest-cover-wrap img{width:100%;height:110px;object-fit:cover;display:block}
-  .dest-cover-ph{
-    width:100%;height:110px;
-    background:#111;
-    display:flex;align-items:center;justify-content:center;
-    color:rgba(255,255,255,.12);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;
-  }
-  /* Body: flex:1 para empujar footer al fondo */
-  .dest-body{padding:10px 12px 6px;flex:1;display:flex;flex-direction:column}
-  .dest-badge{
-    font-size:.58rem;font-weight:700;color:var(--coral);
-    background:var(--coral-lt);border:1px solid var(--coral-md);
-    padding:2px 6px;border-radius:99px;display:inline-block;
-    margin-bottom:6px;
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;
-  }
-  .dest-name{
-    font-size:.82rem;font-weight:700;color:var(--ink);line-height:1.25;
-    display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;
-  }
-  .dest-tagline{
-    font-size:.68rem;color:var(--muted);line-height:1.4;margin-top:3px;
-    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
-  }
-  /* Footer: siempre pegado al fondo */
-  .dest-foot{
-    margin-top:auto;padding:7px 12px;
-    border-top:1px solid var(--border);
-    display:flex;align-items:center;justify-content:space-between;
-    flex-shrink:0;
-  }
-  .dest-price{font-size:.72rem;font-weight:600;color:var(--coral)}
-  .dest-wa{
-    width:26px;height:26px;border-radius:8px;
-    background:#25D366;color:#fff;
-    display:flex;align-items:center;justify-content:center;
-    font-size:.62rem;font-weight:700;text-decoration:none;flex-shrink:0;
-  }
-  .dest-wa:hover{background:#1db954}
-  .dest-pg-btn{
-    width:32px;height:32px;border-radius:8px;
-    background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);
-    color:rgba(255,255,255,.6);cursor:pointer;font-size:.8rem;font-weight:600;transition:.18s;
-  }
-  .dest-pg-btn:hover,.dest-pg-btn.active{background:var(--coral);border-color:var(--coral);color:#fff}
-  @media(max-width:860px){#dest-grid{grid-template-columns:repeat(2,1fr)}}
-  @media(max-width:480px){#dest-grid{grid-template-columns:repeat(2,1fr);gap:10px}.dest-cover-wrap,.dest-cover-wrap img,.dest-cover-ph{height:90px}}
-</style>
- 
-
 <!-- ══ CÓMO FUNCIONA ══ -->
 <section id="como">
   <div class="container">
@@ -1140,63 +1049,7 @@ async function loadCategories() {
         desc: cat.desc || '',
       });
     }));
-    if (document.getElementById('checklist-grid')) renderChecklist(); // re-render el checklist con datos actualizados
-
-    // ── Grid de destacados: 8 por página ──
-    const destProviders = [];
-    grupos.forEach(g => g.categorias.forEach(cat => {
-      cat.proveedores.forEach(p => {
-        if (p.pos === 5 || p.posicion === 5) destProviders.push({ ...p, catNombre: cat.nombre, _catId: cat.id });
-      });
-    }));
-
-    // Shuffle
-    for (let i = destProviders.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [destProviders[i], destProviders[j]] = [destProviders[j], destProviders[i]];
-    }
-
-    const destGrid = document.getElementById('dest-grid');
-    const destPag  = document.getElementById('dest-pagination');
-    const PER_PAGE = 8;
-    let destPage   = 0;
-
-    function renderDestPage(page) {
-      destPage = page;
-      const slice = destProviders.slice(page * PER_PAGE, page * PER_PAGE + PER_PAGE);
-      destGrid.innerHTML = slice.map(p => {
-        const waMsg = encodeURIComponent('Hola ' + p.nombre + '! Los vi en CotizaEventos.cl y me interesa cotizar sus servicios.');
-        const coverInner = p.cover_url
-          ? `<img src="${p.cover_url}" alt="${p.nombre}" loading="lazy">`
-          : `<div class="dest-cover-ph"></div>`;
-        return `<div class="dest-card" onclick="window.location='proveedores.html?cat=${p._catId||''}'">
-          <div class="dest-cover-wrap">${coverInner}</div>
-          <div class="dest-body">
-            <div class="dest-badge">✦ ${p.catNombre}</div>
-            <div class="dest-name">${p.nombre}</div>
-            <div class="dest-tagline">${p.tagline || p.diff || ''}</div>
-          </div>
-          <div class="dest-foot">
-            <span class="dest-price">Desde ${p.minimo || '—'}</span>
-            <a class="dest-wa" href="https://wa.me/${p.wa}?text=${waMsg}" target="_blank" onclick="event.stopPropagation()" title="WhatsApp">WA</a>
-          </div>
-        </div>`;
-      }).join('');
-
-      // Paginación
-      const totalPages = Math.ceil(destProviders.length / PER_PAGE);
-      destPag.innerHTML = totalPages > 1 ? Array.from({length: totalPages}, (_, i) =>
-        `<button class="dest-pg-btn${i===page?' active':''}" onclick="renderDestPage(${i})">${i+1}</button>`
-      ).join('') : '';
-    }
-
-    if (destGrid) {
-      if (destProviders.length === 0) {
-        document.getElementById('destacados').style.display = 'none';
-      } else {
-        renderDestPage(0);
-      }
-    }
+    if (document.getElementById('checklist-grid')) renderChecklist();
 
   } catch (e) {
     // Falla silenciosamente — las tiles de skeleton quedan visibles
@@ -1429,6 +1282,7 @@ function toggleCatGroup(id) {
   panel.classList.toggle('open', !isOpen);
   _openGrp = isOpen ? null : id;
 }
+
 
 window.addEventListener('DOMContentLoaded', () => {
   loadCategories();
