@@ -393,6 +393,7 @@
 
     /* COVER PHOTO — mismo para todos, sin distinción pos-1 */
     .pos-cover{position:relative;width:100%;height:130px;flex-shrink:0;overflow:hidden;border-radius:18px 18px 0 0}
+    .pos-cover-overlay{position:absolute;inset:0;pointer-events:none}
     .pos-cover-img{width:100%;height:130px;object-fit:cover;display:block;transition:transform .4s var(--ease)}
     .pos-card:hover .pos-cover-img{transform:scale(1.04)}
     .pos-cover-placeholder{width:100%;height:130px;background:#111 !important;color:rgba(255,255,255,.18);font-size:2.4rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
@@ -1087,6 +1088,16 @@ function shuffle(arr) {
   return arr;
 }
 
+function esc(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 /* ═══════════════════════════════════════════
    SCROLL → ACTIVE PILL
 ═══════════════════════════════════════════ */
@@ -1144,9 +1155,9 @@ function paidCardHTML(p) {
 
   // Datos extra para llenar espacio
   const extras = [
-    p.experiencia ? `<span class="pos-extra-chip">${p.experiencia} de experiencia</span>` : '',
-    p.capacidad   ? `<span class="pos-extra-chip">${p.capacidad}</span>` : '',
-    p.incluye     ? `<span class="pos-extra-chip">Incluye: ${p.incluye}</span>` : '',
+    p.experiencia ? `<span class="pos-extra-chip">${esc(p.experiencia)} de experiencia</span>` : '',
+    p.capacidad   ? `<span class="pos-extra-chip">${esc(p.capacidad)}</span>` : '',
+    p.incluye     ? `<span class="pos-extra-chip">Incluye: ${esc(p.incluye)}</span>` : '',
   ].filter(Boolean).slice(0, 2).join('');
 
   return `<div class="pos-card ${r.cls}" onclick="openModal('${p.id}')">
@@ -1155,32 +1166,32 @@ function paidCardHTML(p) {
       <div class="pos-cover-overlay"></div>
       <div class="pos-ribbon">${r.stars} ${r.label}</div>
       <div class="pos-logo-wrap">
-        <div class="pos-logo-circle">${p.logo_url ? `<img src="${p.logo_url}" style="width:100%;height:100%;object-fit:cover;border-radius:12px" />` : (p.logo || '🏢')}</div>
+        <div class="pos-logo-circle">${p.logo_url ? `<img src="${esc(p.logo_url)}" style="width:100%;height:100%;object-fit:cover;border-radius:12px" />` : esc(p.logo || '🏢')}</div>
       </div>
     </div>
     <div class="pos-body">
       <div class="pos-header-row">
         <div style="flex:1;min-width:0">
-          <div class="pos-name">${p.nombre}</div>
-          <div class="pos-tagline">${p.tagline || ''}</div>
+          <div class="pos-name">${esc(p.nombre)}</div>
+          <div class="pos-tagline">${esc(p.tagline)}</div>
         </div>
         <div class="pos-price-badge">
           <div class="pb-label">Desde</div>
-          <div class="pb-min">${p.minimo || '—'}</div>
-          <div class="pb-max">hasta ${p.maximo || '—'}</div>
+          <div class="pb-min">${esc(p.minimo) || '—'}</div>
+          <div class="pb-max">hasta ${esc(p.maximo) || '—'}</div>
         </div>
       </div>
-      ${p.diff ? `<div class="pos-diff">✦ ${p.diff}</div>` : ''}
-      <div class="pos-desc">${p.desc || ''}</div>
+      ${p.diff ? `<div class="pos-diff">✦ ${esc(p.diff)}</div>` : ''}
+      <div class="pos-desc">${esc(p.desc)}</div>
       ${extras ? `<div class="pos-extras">${extras}</div>` : ''}
     </div>
     <div class="pos-footer">
       <div class="pos-meta">
-        ${p.comunas ? `<div class="pos-meta-item">📍 ${p.comunas.split(',')[0].trim()}</div>` : ''}
-        ${p.instagram ? `<div class="pos-meta-item">@${p.instagram.replace('@','')}</div>` : ''}
+        ${p.comunas ? `<div class="pos-meta-item">📍 ${esc(p.comunas.split(',')[0].trim())}</div>` : ''}
+        ${p.instagram ? `<div class="pos-meta-item">@${esc(p.instagram.replace('@',''))}</div>` : ''}
       </div>
       <div class="pos-cta-group">
-        <a class="btn btn-wa" href="https://wa.me/${p.wa}?text=${waMsg}" target="_blank" onclick="event.stopPropagation()">WhatsApp</a>
+        <a class="btn btn-wa" href="https://wa.me/${esc(p.wa)}?text=${waMsg}" target="_blank" onclick="event.stopPropagation()">WhatsApp</a>
         <button class="btn btn-detail" onclick="event.stopPropagation();openModal('${p.id}')">Ver detalle</button>
       </div>
     </div>
@@ -1195,13 +1206,13 @@ function basicHTML(p) {
   return `<div class="basic-item" onclick="openModalBasic('${p.id}')">
     <div class="basic-ico">${logoHtml}</div>
     <div class="basic-info">
-      <div class="basic-name">${p.nombre}</div>
-      <div class="basic-tagline">${p.tagline || ''}</div>
-      <div class="basic-diff">${p.diff ? '✦ ' + p.diff : ''}</div>
+      <div class="basic-name">${esc(p.nombre)}</div>
+      <div class="basic-tagline">${esc(p.tagline)}</div>
+      <div class="basic-diff">${p.diff ? '✦ ' + esc(p.diff) : ''}</div>
     </div>
-    <div class="basic-price">${p.minimo || '—'} – ${p.maximo || '—'}<span>Precio estimado</span></div>
+    <div class="basic-price">${esc(p.minimo) || '—'} – ${esc(p.maximo) || '—'}<span>Precio estimado</span></div>
     <div class="basic-actions">
-      <a class="basic-wa" href="https://wa.me/${p.wa}?text=${waMsg}" target="_blank" onclick="event.stopPropagation()" title="WhatsApp">WA</a>
+      <a class="basic-wa" href="https://wa.me/${esc(p.wa)}?text=${waMsg}" target="_blank" onclick="event.stopPropagation()" title="WhatsApp">WA</a>
       <button class="basic-detail" onclick="event.stopPropagation();openModalBasic('${p.id}')">Ver</button>
     </div>
   </div>`;
