@@ -10,8 +10,7 @@
     :root{
       --coral:#E8542A;--coral-lt:#FFF0EB;--coral-md:#FFCFC2;
       --green:#16A34A;--green-lt:#F0FDF4;--red:#DC2626;--red-lt:#FEF2F2;
-      --gold:#B8860B;--gold-lt:#FFF8E6;
-      --bg:#F7F6F3;--bg2:#EFECE8;--white:#FFFFFF;
+            --bg:#F7F6F3;--bg2:#EFECE8;--white:#FFFFFF;
       --ink:#1A1714;--ink2:#3D3733;--muted:#8A8278;
       --border:#E4DED8;--border2:#D0CAC3;
       --shadow:0 2px 12px rgba(0,0,0,.07);
@@ -158,7 +157,6 @@
     }
     .pos-btn:hover{border-color:var(--coral)}
     .pos-btn.selected{background:var(--coral-lt);border-color:var(--coral);color:var(--coral)}
-    .pos-btn[data-pos="5"].selected{background:var(--coral-lt);border-color:var(--coral-md);color:var(--coral)}
 
     /* ── PROVEEDORES TABLE ── */
     .prov-table-wrap{overflow-x:auto;border-radius:14px;border:1px solid var(--border);box-shadow:var(--shadow)}
@@ -406,8 +404,8 @@
         <div class="em-field">
           <label>Posición</label>
           <select id="em-posicion" class="em-input">
-            <option value="5">✦ Destacado</option>
-            <option value="4">📋 Básico</option>
+            <option value="1">✦ Destacado</option>
+            <option value="0">📋 Básico</option>
           </select>
         </div>
         <div class="em-field"><label>Precio mínimo</label><input id="em-precio-min" type="text" placeholder="$250.000"/></div>
@@ -448,6 +446,12 @@ let TOKEN = '';
 /* ══════════════════════════════════════════
    AUTH
 ══════════════════════════════════════════ */
+/**
+ * Envía las credenciales al endpoint /api/admin-login.
+ * Si la respuesta incluye un token, lo guarda en cookie (SameSite:Strict, 8h)
+ * y carga el panel de administración.
+ * Muestra mensaje de error si las credenciales son incorrectas.
+ */
 async function doLogin() {
   const btn = document.getElementById('login-btn');
   const errEl = document.getElementById('login-error');
@@ -495,6 +499,7 @@ function showLoginError(msg) {
   el.classList.add('show');
 }
 
+/** Cierra la sesión: borra el token en memoria y la cookie, muestra el login. */
 function logout() {
   TOKEN = '';
   document.cookie = 'ctf_admin=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/';
@@ -503,11 +508,19 @@ function logout() {
   document.getElementById('login-pass').value = '';
 }
 
+/**
+ * Lee el token de sesión almacenado en la cookie `ctf_admin`.
+ * @returns {string} — Token o cadena vacía si no existe
+ */
 function getStoredToken() {
   const match = document.cookie.split(';').find(c => c.trim().startsWith('ctf_admin='));
   return match ? match.trim().slice('ctf_admin='.length) : '';
 }
 
+/**
+ * Muestra el panel de administración y carga las tres secciones principales:
+ * solicitudes, proveedores y categorías (esta última para pre-poblar selects).
+ */
 async function showApp() {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app').style.display = 'block';
@@ -539,6 +552,13 @@ function showSection(id, el) {
 /* ══════════════════════════════════════════
    API HELPERS
 ══════════════════════════════════════════ */
+/**
+ * Wrapper para fetch que agrega automáticamente el header Authorization con el token.
+ * Si la respuesta es 401 (token expirado o inválido), cierra la sesión.
+ * @param {string} path  — Ruta relativa dentro de /api/ (ej: 'admin-manage?action=solicitudes')
+ * @param {RequestInit} opts — Opciones de fetch (method, body, etc.)
+ * @returns {Promise<any>} — JSON de la respuesta
+ */
 async function apiFetch(path, opts = {}) {
   const res = await fetch(`${API}/${path}`, {
     ...opts,
@@ -558,6 +578,11 @@ async function apiFetch(path, opts = {}) {
 let solicitudesData = [];
 let selectedPos = {};  // { [solId]: posicion }
 
+/**
+ * Carga todas las solicitudes desde la API y las renderiza.
+ * Actualiza los badges de notificación con el número de pendientes.
+ * Los estados posibles son: 'pendiente' | 'aprobada'.
+ */
 async function loadSolicitudes() {
   const container = document.getElementById('sol-container');
   container.innerHTML = '<div class="spinner"></div>';
@@ -591,17 +616,24 @@ async function loadSolicitudes() {
   }
 }
 
+/**
+ * Genera el HTML de una tarjeta de solicitud.
+ * Las solicitudes pendientes muestran selector de tipo (Destacado/Básico)
+ * y botones de Aprobar/Rechazar. Las aprobadas solo muestran opción de eliminar.
+ * @param {object} s — Fila de la tabla `solicitudes`
+ * @returns {string} — HTML de la tarjeta
+ */
 function solCard(s) {
   const isPending = s.estado === 'pendiente';
   const cats = Array.isArray(s.categorias) ? s.categorias : [s.categorias];
   const posOpts = [
-    { val:5, label:'✦ Destacado' },
-    { val:4, label:'📋 Básico' },
+    { val:1, label:'✦ Destacado' },
+    { val:0, label:'📋 Básico' },
   ];
 
   // Pre-seleccionar según lo que pidió el usuario en el formulario
   if (selectedPos[s.id] === undefined) {
-    selectedPos[s.id] = (s.posicion_deseada === 'Destacado') ? 5 : 4;
+    selectedPos[s.id] = (s.posicion_deseada === 'Destacado') ? 1 : 0;
   }
   const curPos = selectedPos[s.id];
 
@@ -641,6 +673,13 @@ function solCard(s) {
   </div>`;
 }
 
+/**
+ * Actualiza la posición seleccionada para una solicitud en el estado local
+ * y marca visualmente el botón elegido.
+ * @param {string}      solId — UUID de la solicitud
+ * @param {number}      pos   — Posición elegida (5=Destacado, 4=Básico)
+ * @param {HTMLElement} el    — Botón clickeado (para marcar como seleccionado)
+ */
 function selectSolPos(solId, pos, el) {
   selectedPos[solId] = pos;
   const card = document.getElementById(`sol-${solId}`);
@@ -648,6 +687,11 @@ function selectSolPos(solId, pos, el) {
   el.classList.add('selected');
 }
 
+/**
+ * Aprueba una solicitud: la convierte en proveedor activo con la posición
+ * seleccionada (Destacado=5 o Básico=4) y recarga ambas secciones.
+ * @param {string} id — UUID de la solicitud a aprobar
+ */
 async function aprobar(id) {
   const sol = solicitudesData.find(s => s.id === id);
   if (!sol) return;
@@ -659,7 +703,7 @@ async function aprobar(id) {
       body: JSON.stringify({ action: 'aprobar', id, posicion }),
     });
     if (!data.ok) throw new Error(data.error);
-    const posLabel = posicion === 5 ? 'Destacado' : 'Básico';
+    const posLabel = posicion === 1 ? 'Destacado' : 'Básico';
     showToast(`✅ ${sol.nombre} aprobado como ${posLabel}`, 'success');
     await loadSolicitudes();
     await loadProveedores();
@@ -668,6 +712,11 @@ async function aprobar(id) {
   }
 }
 
+/**
+ * Elimina una solicitud (rechazar o borrar una ya aprobada).
+ * Solicita confirmación antes de proceder. La acción es irreversible.
+ * @param {string} id — UUID de la solicitud a eliminar
+ */
 async function rechazar(id) {
   const sol = solicitudesData.find(s => s.id === id);
   const name = sol?.nombre || 'esta solicitud';
@@ -691,6 +740,11 @@ async function rechazar(id) {
 ══════════════════════════════════════════ */
 let proveedoresData = [];
 
+/**
+ * Carga todos los proveedores y los muestra en una tabla editable.
+ * Permite cambiar activo/inactivo con un toggle inline, y abrir el
+ * panel de edición completa con el botón de lápiz.
+ */
 async function loadProveedores() {
   const container = document.getElementById('prov-container');
   container.innerHTML = '<div class="spinner"></div>';
@@ -720,10 +774,10 @@ async function loadProveedores() {
           </thead>
           <tbody>
             ${proveedoresData.map(p => {
-              const rdCls = p.posicion === 5 ? 'rd-dest' : 'rd-basic';
+              const rdCls = p.posicion === 1 ? 'rd-dest' : 'rd-basic';
               return `
               <tr>
-                <td><span class="rank-dot ${rdCls}">${p.posicion === 5 ? '✦' : '—'}</span></td>
+                <td><span class="rank-dot ${rdCls}">${p.posicion === 1 ? '✦' : '—'}</span></td>
                 <td>
                   <div class="td-name">${p.logo_emoji || '🍽️'} ${p.nombre}</div>
                   <div style="font-size:.74rem;color:var(--muted)">${p.tagline || ''}</div>
@@ -754,6 +808,13 @@ async function loadProveedores() {
   }
 }
 
+/**
+ * Activa o desactiva un proveedor inline (sin recargar toda la tabla).
+ * Actualiza el estilo del botón toggle inmediatamente tras la respuesta.
+ * @param {string}      id     — UUID del proveedor
+ * @param {boolean}     newVal — Nuevo valor para el campo `activo`
+ * @param {HTMLElement} btn    — Botón toggle (para actualizar su clase)
+ */
 async function toggleActivo(id, newVal, btn) {
   try {
     const data = await apiFetch('admin-manage', {
@@ -772,6 +833,12 @@ async function toggleActivo(id, newVal, btn) {
 /* ══════════════════════════════════════════
    EDIT MODAL
 ══════════════════════════════════════════ */
+/**
+ * Abre el modal de edición completo para un proveedor, prellenando
+ * todos los campos del formulario con los datos actuales del proveedor.
+ * Si hay categorías dinámicas cargadas, las inyecta en el select.
+ * @param {string} id — UUID del proveedor a editar
+ */
 function openEdit(id) {
   const p = proveedoresData.find(x => x.id === id);
   if (!p) return;
@@ -792,7 +859,7 @@ function openEdit(id) {
   }, 50);
   void 0; // placeholder for removed direct assignment
   const emPos = document.getElementById('em-posicion');
-  if (emPos) emPos.value = (p.posicion === 5) ? '5' : '4';
+  if (emPos) emPos.value = (p.posicion === 1) ? '1' : '0';
   document.getElementById('em-precio-min').value  = p.precio_minimo || '';
   document.getElementById('em-precio-max').value  = p.precio_maximo || '';
   document.getElementById('em-comunas').value     = p.comunas || '';
@@ -819,6 +886,11 @@ function closeEdit() {
 }
 function closeEditIfBg(e) { if (e.target === document.getElementById('edit-overlay')) closeEdit(); }
 
+/**
+ * Lee los valores del modal de edición y los envía como PUT a la API.
+ * Solo envía los campos permitidos por la lista blanca del backend (ALLOWED).
+ * Recarga la tabla de proveedores tras guardar exitosamente.
+ */
 async function saveEdit() {
   const id = document.getElementById('em-id').value;
   if (!id) return;
@@ -829,7 +901,7 @@ async function saveEdit() {
     descripcion:   document.getElementById('em-descripcion').value.trim(),
     diferenciador: document.getElementById('em-diferenciador').value.trim(),
     categoria:     document.getElementById('em-categoria').value,
-    posicion:      parseInt(document.getElementById('em-posicion').value) || 4,
+    posicion:      parseInt(document.getElementById('em-posicion').value) || 0,
     precio_minimo: document.getElementById('em-precio-min').value.trim(),
     precio_maximo: document.getElementById('em-precio-max').value.trim(),
     comunas:       document.getElementById('em-comunas').value.trim(),
@@ -863,6 +935,10 @@ async function saveEdit() {
   }
 }
 
+/**
+ * Elimina permanentemente un proveedor desde el modal de edición.
+ * Pide confirmación, llama al endpoint DELETE y cierra el modal.
+ */
 async function confirmDelete() {
   const id = document.getElementById('em-id').value;
   const nombre = document.getElementById('em-nombre').value;
@@ -886,6 +962,11 @@ async function confirmDelete() {
    TOAST
 ══════════════════════════════════════════ */
 let toastTimer;
+/**
+ * Muestra una notificación toast en pantalla por 3.5 segundos.
+ * @param {string} msg  — Mensaje a mostrar
+ * @param {'info'|'success'|'error'} type — Tipo visual del toast
+ */
 function showToast(msg, type = 'info') {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -901,10 +982,18 @@ document.addEventListener('keydown', e => {
 
 /* ══════════════════════════════════════
    CATEGORÍAS Y ETIQUETAS
+   Gestión CRUD del árbol de categorías (grupos) y etiquetas (subcategorías).
+   allCategorias — cache local con la estructura completa (cats + etiquetas + conteos)
+   selectedCatId — categoría actualmente seleccionada en el panel de etiquetas
 ══════════════════════════════════════ */
 let allCategorias = [];
 let selectedCatId = null;
 
+/**
+ * Carga la jerarquía completa de categorías desde la API,
+ * renderiza la lista de grupos y actualiza el select del modal de edición.
+ * Si hay una categoría seleccionada, re-renderiza también su panel de etiquetas.
+ */
 async function loadCategorias() {
   try {
     const res = await fetch('/api/admin-manage?action=categorias', {
@@ -921,7 +1010,11 @@ async function loadCategorias() {
   }
 }
 
-// Populate the categoria select in the edit-provider modal with real tags from DB
+/**
+ * Rellena el `<select>` de categorías en el modal de edición de proveedor
+ * con los grupos y etiquetas reales de la base de datos (agrupados con `<optgroup>`).
+ * Preserva la selección previa si el valor sigue siendo válido.
+ */
 function populateCatSelect() {
   const sel = document.getElementById('em-categoria');
   if (!sel || !allCategorias.length) return;
@@ -954,6 +1047,11 @@ function populateCatSelect() {
   if (prev && sel.querySelector(`option[value="${prev}"]`)) sel.value = prev;
 }
 
+/**
+ * Renderiza la lista lateral de grupos (categorías de primer nivel).
+ * La fila seleccionada (selectedCatId) se resalta en coral.
+ * Cada fila tiene botones de editar y eliminar el grupo.
+ */
 function renderCatList() {
   const el = document.getElementById('cat-list');
   if (!allCategorias.length) {
@@ -1010,7 +1108,10 @@ function renderTagPanel(catId) {
     </div>`;
 }
 
-/* Modals */
+/* ── Modales de creación/edición de categorías y etiquetas ─────────────────── */
+/**
+ * Abre el modal para crear una nueva categoría (grupo).
+ */
 function openNewCatModal() {
   showCatModal({ id:'', nombre:'', ico:'🍽️', desc:'' }, false);
 }
@@ -1050,6 +1151,11 @@ function showTagModal(tag, catId, isEdit) {
   modal.style.display = 'flex';
 }
 
+/**
+ * Guarda (crea o actualiza) una categoría según el valor del campo oculto `mc-edit`.
+ * En creación: genera un slug automático si no se ingresa uno manual.
+ * Recarga la lista de categorías tras guardar.
+ */
 async function saveCat() {
   const token = TOKEN;
   const isEdit = document.getElementById('mc-edit').value === '1';
@@ -1091,6 +1197,11 @@ async function deleteCat(catId, nombre) {
   } catch(e){ showToast('Error: '+e.message,'error'); }
 }
 
+/**
+ * Guarda (crea o actualiza) una etiqueta (subcategoría) dentro de un grupo.
+ * El campo `cat_id` indica el grupo al que pertenece.
+ * Recarga las categorías tras guardar.
+ */
 async function saveTag() {
   const token = TOKEN;
   const isEdit = document.getElementById('mt-edit').value === '1';
@@ -1117,6 +1228,13 @@ async function saveTag() {
   } catch(e){ showToast('Error: '+e.message,'error'); }
 }
 
+/**
+ * Elimina una etiqueta tras confirmación del usuario.
+ * Nota: los proveedores que tenían esa etiqueta_id quedarán sin etiqueta asignada.
+ * @param {string} catId  — id del grupo padre
+ * @param {string} tagId  — id de la etiqueta a eliminar
+ * @param {string} nombre — Nombre para el mensaje de confirmación
+ */
 async function deleteTag(catId, tagId, nombre) {
   if (!confirm(`¿Eliminar la etiqueta "${nombre}"?`)) return;
   const token = TOKEN;

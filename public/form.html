@@ -624,8 +624,8 @@
         <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:18px">
 
           <!-- Opción Básico (pre-seleccionado) -->
-          <label id="pos-basico" class="pos-check selected" onclick="selectPosCheck('Listado Básico')">
-            <input type="radio" name="posicion" value="Listado Básico" checked />
+          <label id="pos-basico" class="pos-check selected" onclick="selectPosCheck('0')">
+            <input type="radio" name="posicion" value="0" checked />
             <div class="pos-check-radio checked"></div>
             <div style="flex:1">
               <div style="font-size:.9rem;font-weight:700;color:var(--ink);margin-bottom:3px">Listado Básico</div>
@@ -637,8 +637,8 @@
           </label>
 
           <!-- Opción Destacado -->
-          <label id="pos-destacado" class="pos-check" onclick="selectPosCheck('Destacado')">
-            <input type="radio" name="posicion" value="Destacado" />
+          <label id="pos-destacado" class="pos-check" onclick="selectPosCheck('1')">
+            <input type="radio" name="posicion" value="1" />
             <div class="pos-check-radio"></div>
             <div style="flex:1">
               <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
@@ -1022,8 +1022,8 @@ function togglePill(label, event) {
 ═══════════════════════════════════════ */
 function selectPosCheck(val) {
   // Actualizar clases visuales
-  document.getElementById('pos-basico').classList.toggle('selected', val === 'Listado Básico');
-  document.getElementById('pos-destacado').classList.toggle('selected', val === 'Destacado');
+  document.getElementById('pos-basico').classList.toggle('selected', val === '0');
+  document.getElementById('pos-destacado').classList.toggle('selected', val === '1');
 
   // Marcar el input correcto
   document.querySelectorAll('input[name="posicion"]').forEach(inp => {
@@ -1124,7 +1124,7 @@ function getData() {
     'TikTok':               v('tiktok') || '—',
     'YouTube':               v('youtube') || '—',
     'Dirección':             v('direccion') || '—',
-    'Posición Deseada':      pos ? pos.value : 'Sin seleccionar',
+    'Posición Deseada':      pos ? (pos.value === '1' ? 'Destacado' : 'Básico') : 'Sin seleccionar',
     'URL Logo':              v('logo-url') || '—',
     'Comentarios':           v('comentarios') || '—',
     'Fecha de Registro':     new Date().toLocaleDateString('es-CL'),
