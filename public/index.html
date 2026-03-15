@@ -828,15 +828,25 @@
 </section>
 <style>
   /* ── GRID DESTACADOS (index) ── */
-  #dest-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;align-items:start}
+  #dest-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+    margin-bottom:24px;
+    /* stretch: todas las cards en la misma fila tienen la misma altura */
+    align-items:stretch;
+  }
   .dest-card{
     background:var(--white);border-radius:14px;overflow:hidden;
     cursor:pointer;transition:.25s;
     display:flex;flex-direction:column;
     text-decoration:none;color:inherit;
+    /* altura mínima fija para que cards sin tagline no colapsen */
+    min-height:220px;
+    height:100%;
   }
   .dest-card:hover{transform:translateY(-4px);box-shadow:0 14px 36px rgba(0,0,0,.22)}
-  /* Cover: altura fija siempre, independiente del contenido */
+  /* Cover: altura fija siempre */
   .dest-cover-wrap{
     width:100%;height:110px;flex-shrink:0;overflow:hidden;
     background:#111;
@@ -870,6 +880,7 @@
     margin-top:auto;padding:7px 12px;
     border-top:1px solid var(--border);
     display:flex;align-items:center;justify-content:space-between;
+    flex-shrink:0;
   }
   .dest-price{font-size:.72rem;font-weight:600;color:var(--coral)}
   .dest-wa{
@@ -888,6 +899,7 @@
   @media(max-width:860px){#dest-grid{grid-template-columns:repeat(2,1fr)}}
   @media(max-width:480px){#dest-grid{grid-template-columns:repeat(2,1fr);gap:10px}.dest-cover-wrap,.dest-cover-wrap img,.dest-cover-ph{height:90px}}
 </style>
+ 
 
 <!-- ══ CÓMO FUNCIONA ══ -->
 <section id="como">
