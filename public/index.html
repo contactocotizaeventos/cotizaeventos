@@ -818,7 +818,7 @@
       <h2 style="color:#fff">Proveedores que destacan</h2>
       <p style="color:rgba(255,255,255,.45)">Selección aleatoria — cambia con cada visita</p>
     </div>
-    <div id="dest-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;align-items:stretch"></div>
+    <div id="dest-grid"></div>
     <!-- Paginación -->
     <div id="dest-pagination" style="display:flex;justify-content:center;gap:8px;margin-bottom:32px"></div>
     <div style="text-align:center" class="reveal">
@@ -828,7 +828,7 @@
 </section>
 <style>
   /* ── GRID DESTACADOS (index) ── */
-  #dest-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;grid-auto-rows:1fr}
+  #dest-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;align-items:start}
   .dest-card{
     background:var(--white);border-radius:14px;overflow:hidden;
     cursor:pointer;transition:.25s;
