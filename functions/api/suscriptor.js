@@ -237,12 +237,14 @@ export async function onRequest(context) {
       const emailNorm = email.trim().toLowerCase();
 
       // 1. Verify approved provider exists with this email
-      const { data: prov, error: eProv } = await supabase
+      const { data: provRows, error: eProv } = await supabase
         .from("proveedores")
         .select("id")
         .eq("email", emailNorm)
         .eq("activo", true)
-        .single();
+        .limit(1);
+
+      const prov = (provRows && provRows.length > 0) ? provRows[0] : null;
 
       if (eProv || !prov) {
         return err(
@@ -252,13 +254,13 @@ export async function onRequest(context) {
       }
 
       // 2. Verify suscriptor doesn't already exist
-      const { data: existing } = await supabase
+      const { data: existingRows } = await supabase
         .from("suscriptores")
         .select("id")
         .eq("email", emailNorm)
-        .single();
+        .limit(1);
 
-      if (existing) {
+      if (existingRows && existingRows.length > 0) {
         return err("Ya tienes una cuenta. Inicia sesión.", 400);
       }
 
