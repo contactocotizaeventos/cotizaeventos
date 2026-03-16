@@ -467,14 +467,14 @@ function renderCategories(){
   let html='';
   for(const g of GRUPOS){
     if(!g.etiquetas||!g.etiquetas.length){
-      html+=`<a href="proveedores.html?cat=${esc(g.id)}" class="cat-chip"><span class="ico">${esc(g.ico)}</span>${esc(g.nombre)}</a>`;
+      html+=`<a href="proveedores.html?cat=${esc(g.id)}" class="cat-chip">${esc(g.nombre)}</a>`;
       continue;
     }
     html+=`<div class="cat-group">`;
-    html+=`<div class="cat-chip" onclick="toggleDrop(this)"><span class="ico">${esc(g.ico)}</span>${esc(g.nombre)}<span class="arrow">▾</span></div>`;
+    html+=`<div class="cat-chip" onclick="toggleDrop(this)">${esc(g.nombre)}<span class="arrow">▾</span></div>`;
     html+=`<div class="cat-dropdown">`;
     for(const et of g.etiquetas){
-      html+=`<a href="proveedores.html?cat=${esc(et.id)}" class="cat-drop-item"><span class="ico">${esc(et.ico)}</span>${esc(et.nombre)}<span style="margin-left:auto;font-size:12px;color:var(--muted)">${et.total}</span></a>`;
+      html+=`<a href="proveedores.html?cat=${esc(et.id)}" class="cat-drop-item">${esc(et.nombre)}<span style="margin-left:auto;font-size:12px;color:var(--muted)">${et.total}</span></a>`;
     }
     html+=`</div></div>`;
   }
