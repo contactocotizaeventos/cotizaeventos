@@ -44,6 +44,30 @@ function err(message, status = 500) {
   return json({ ok: false, error: message }, status);
 }
 
+async function sendEmail(to, subject, html, env) {
+  try {
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${env.RESEND_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: env.EMAIL_FROM,
+        to: [to],
+        subject,
+        html,
+      }),
+    });
+    if (!res.ok) {
+      const body = await res.text();
+      console.error(`Resend error (${res.status}):`, body);
+    }
+  } catch (e) {
+    console.error("sendEmail failed:", e);
+  }
+}
+
 // ── HMAC Token creation ──────────────────────────────────────────────
 
 async function createToken(payload, secret) {
@@ -239,7 +263,7 @@ export async function onRequest(context) {
       // 1. Verify approved provider exists with this email
       const { data: provRows, error: eProv } = await supabase
         .from("proveedores")
-        .select("id")
+        .select("id, nombre")
         .eq("email", emailNorm)
         .eq("activo", true)
         .limit(1);
@@ -268,19 +292,72 @@ export async function onRequest(context) {
       const passwordHash = await bcrypt.hash(password, 12);
 
       // 4. Insert suscriptor
-      const { error: eInsert } = await supabase.from("suscriptores").insert([{
+      const { data: newSub, error: eInsert } = await supabase.from("suscriptores").insert([{
         email: emailNorm,
         password_hash: passwordHash,
         nombre: nombre.trim(),
         proveedor_id: prov.id,
-      }]);
+      }]).select("id").single();
 
-      if (eInsert) {
+      if (eInsert || !newSub) {
         console.error("Error inserting suscriptor:", eInsert);
         return err("Error al crear la cuenta", 500);
       }
 
-      return json({ ok: true });
+      // 5. Send welcome email with password
+      if (env.RESEND_API_KEY && env.EMAIL_FROM) {
+        const welcomeHtml = `
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="utf-8"></head>
+<body style="font-family:Arial,Helvetica,sans-serif;background:#FAFAF8;padding:32px 16px;color:#1A1714;">
+  <div style="max-width:560px;margin:0 auto;background:#FFFFFF;border-radius:14px;padding:40px 32px;border:1px solid #E8E4DF;">
+    <h1 style="font-size:22px;margin:0 0 8px 0;color:#E8542A;">CotizaEventos.cl</h1>
+    <h2 style="font-size:18px;margin:0 0 24px 0;color:#1A1714;">¡Tu cuenta fue creada!</h2>
+    <p style="margin:0 0 16px 0;line-height:1.6;color:#3D3733;">
+      Hola <strong>${nombre.trim()}</strong>, tu cuenta para gestionar <strong>${prov.nombre || "tu negocio"}</strong> en CotizaEventos.cl fue creada exitosamente.
+    </p>
+    <p style="margin:0 0 8px 0;line-height:1.6;color:#3D3733;">Guarda tus datos de acceso:</p>
+    <div style="background:#F5F3EF;border-radius:8px;padding:16px;margin:0 0 20px 0;">
+      <p style="margin:0 0 6px 0;font-size:14px;color:#8A8278;">Email</p>
+      <p style="margin:0 0 14px 0;font-size:16px;font-weight:600;color:#1A1714;">${emailNorm}</p>
+      <p style="margin:0 0 6px 0;font-size:14px;color:#8A8278;">Contraseña</p>
+      <p style="margin:0;font-size:16px;font-weight:600;color:#1A1714;">${password}</p>
+    </div>
+    <a href="https://www.cotizaeventos.cl/suscripciones.html" style="display:inline-block;background:#E8542A;color:#fff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;font-size:14px;">
+      Gestionar mi suscripción
+    </a>
+    <hr style="border:none;border-top:1px solid #E8E4DF;margin:32px 0 16px 0;">
+    <p style="margin:0;font-size:12px;color:#8A8278;">
+      Este correo fue enviado automáticamente por CotizaEventos.cl. Te recomendamos no compartir tu contraseña.
+    </p>
+  </div>
+</body>
+</html>`.trim();
+        await sendEmail(emailNorm, "Tu cuenta en CotizaEventos.cl fue creada", welcomeHtml, env);
+      }
+
+      // 6. Auto-login: create token
+      const now = Math.floor(Date.now() / 1000);
+      const expiresIn = 86400;
+      const tokenPayload = {
+        sub: newSub.id,
+        email: emailNorm,
+        exp: now + expiresIn,
+      };
+      const token = await createToken(tokenPayload, env.SUSCRIPTOR_SECRET);
+
+      return json({
+        ok: true,
+        token,
+        expiresIn,
+        suscriptor: {
+          id: newSub.id,
+          nombre: nombre.trim(),
+          email: emailNorm,
+          proveedor_id: prov.id,
+        },
+      });
     }
 
     // ── LOGIN ────────────────────────────────────────────────────────
