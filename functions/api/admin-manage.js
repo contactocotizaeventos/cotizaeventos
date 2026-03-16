@@ -371,42 +371,47 @@ export async function onRequest(context) {
       return json({ ok: true, config });
     }
 
-    // ── GET suscripciones (admin view: all providers + subscription status)
+    // ── GET suscripciones (admin view: ALL providers + subscription status)
     if (action === "suscripciones") {
-      // Get all suscriptores with their latest subscription
-      const { data: suscriptores, error: e1 } = await supabase
+      // Load all three tables
+      const { data: proveedores, error: e1 } = await supabase
+        .from("proveedores")
+        .select("id, nombre, email, posicion, activo")
+        .order("nombre", { ascending: true });
+      if (e1) return err("Error al cargar proveedores", 500);
+
+      const { data: suscriptores, error: e2 } = await supabase
         .from("suscriptores")
         .select("id, email, nombre, proveedor_id");
-      if (e1) return err("Error al cargar suscriptores", 500);
+      if (e2) return err("Error al cargar suscriptores", 500);
 
-      const { data: suscripciones, error: e2 } = await supabase
+      const { data: suscripciones, error: e3 } = await supabase
         .from("suscripciones")
         .select("*")
         .order("fecha_inicio", { ascending: false });
-      if (e2) return err("Error al cargar suscripciones", 500);
+      if (e3) return err("Error al cargar suscripciones", 500);
 
-      const { data: proveedores, error: e3 } = await supabase
-        .from("proveedores")
-        .select("id, nombre, email, posicion, activo");
-      if (e3) return err("Error al cargar proveedores", 500);
+      // Index suscriptores by proveedor_id
+      const subByProv = {};
+      for (const s of suscriptores || []) {
+        if (s.proveedor_id) subByProv[s.proveedor_id] = s;
+      }
 
-      // Build joined view
-      const provMap = {};
-      for (const p of proveedores) provMap[p.id] = p;
-
+      // Index suscripciones by suscriptor_id
       const subsBySuscriptor = {};
       for (const s of suscripciones || []) {
         if (!subsBySuscriptor[s.suscriptor_id]) subsBySuscriptor[s.suscriptor_id] = [];
         subsBySuscriptor[s.suscriptor_id].push(s);
       }
 
-      const result = (suscriptores || []).map((s) => {
-        const prov = s.proveedor_id ? provMap[s.proveedor_id] : null;
-        const subs = subsBySuscriptor[s.id] || [];
+      // Build unified view: one row per provider
+      const result = (proveedores || []).map((p) => {
+        const suscriptor = subByProv[p.id] || null;
+        const subs = suscriptor ? (subsBySuscriptor[suscriptor.id] || []) : [];
         const activeSub = subs.find((x) => x.estado === "activa") || null;
         return {
-          suscriptor: s,
-          proveedor: prov,
+          proveedor: p,
+          suscriptor: suscriptor,
           suscripcion_activa: activeSub,
           historial: subs,
         };
@@ -585,10 +590,10 @@ export async function onRequest(context) {
           .eq("id", existingSub.id);
       }
 
-      // 7. Send Email 2 (non-blocking)
+      // 7. Send Email 2
       if (env.RESEND_API_KEY && env.EMAIL_FROM && sol.email) {
         const emailHtml = buildApprovalEmail(sol.nombre || "Proveedor", finalPos);
-        sendEmail(
+        await sendEmail(
           sol.email,
           "¡Tu negocio ya está en CotizaEventos.cl! 🎉",
           emailHtml,
@@ -669,7 +674,7 @@ export async function onRequest(context) {
           fecha_inicio,
           fecha_vencimiento
         );
-        sendEmail(
+        await sendEmail(
           sub.email,
           "Suscripción Destacado activada en CotizaEventos.cl",
           emailHtml,
