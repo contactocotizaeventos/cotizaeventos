@@ -1,119 +1,149 @@
 /**
- * functions/api/admin-login.js
- * Cloudflare Pages Function — POST /api/admin-login
+ * POST /api/admin-login
  *
- * Autentica al administrador del sitio verificando usuario y contraseña
- * con comparación en tiempo constante (para evitar ataques de tiempo).
- * Si las credenciales son válidas, emite un token firmado con HMAC-SHA256
- * con expiración de 8 horas.
+ * Public endpoint — authenticates the admin user.
+ * Compares credentials in constant time against env vars.
+ * Returns a HMAC-SHA256 signed token valid for 8 hours.
  *
- * Body esperado (JSON):
- *   { usuario: string, password: string }
- *
- * Respuesta exitosa (200):
- *   { ok: true, token: string, expiresIn: 28800 }
- *
- * Variables de entorno requeridas:
- *   ADMIN_USER   — Nombre de usuario del administrador
- *   ADMIN_PASS   — Contraseña del administrador
- *   ADMIN_SECRET — String aleatorio (32+ chars) para firmar los tokens
+ * Environment variables required:
+ *   ADMIN_USER, ADMIN_PASS, ADMIN_SECRET
  */
 
-// ── Cabeceras CORS ────────────────────────────────────────────────────────────
-const CORS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Content-Type': 'application/json',
-};
+// ── Helpers ──────────────────────────────────────────────────────────
 
-// ── Handler POST ──────────────────────────────────────────────────────────────
+function corsHeaders() {
+  return {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Content-Type": "application/json; charset=utf-8",
+  };
+}
+
+function jsonResponse(data, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: corsHeaders(),
+  });
+}
+
+function errorResponse(message, status = 500) {
+  return jsonResponse({ ok: false, error: message }, status);
+}
+
 /**
- * Verifica las credenciales y emite un token de sesión.
- *
- * El token tiene la forma: `<payloadBase64>.<firmaHex>`
- * El payload contiene: { sub: 'admin', iat: <ms>, exp: <ms> }
- *
- * @param {EventContext} ctx — Contexto de Cloudflare Pages
- * @returns {Response}
+ * Constant-time string comparison to prevent timing attacks.
  */
-export async function onRequestPost(ctx) {
-  try {
-    const { usuario, password } = await ctx.request.json();
-
-    const ADMIN_USER   = ctx.env.ADMIN_USER;
-    const ADMIN_PASS   = ctx.env.ADMIN_PASS;
-    const ADMIN_SECRET = ctx.env.ADMIN_SECRET;
-
-    // ── Verificar que las variables de entorno estén configuradas ─────────────
-    if (!ADMIN_USER || !ADMIN_PASS || !ADMIN_SECRET) {
-      return new Response(JSON.stringify({ error: 'Variables de entorno no configuradas' }), { status: 500, headers: CORS });
-    }
-
-    // ── Comparación segura en tiempo constante ────────────────────────────────
-    // Evita ataques de timing que permiten deducir la contraseña midiendo
-    // cuánto tarda en responder el servidor según cuántos caracteres coinciden.
-    const enc = new TextEncoder();
-    const userMatch = await safeCompare(enc.encode(usuario || ''), enc.encode(ADMIN_USER));
-    const passMatch = await safeCompare(enc.encode(password || ''), enc.encode(ADMIN_PASS));
-
-    if (!userMatch || !passMatch) {
-      return new Response(JSON.stringify({ error: 'Credenciales incorrectas' }), { status: 401, headers: CORS });
-    }
-
-    // ── Crear token firmado con HMAC-SHA256 (válido 8 horas) ──────────────────
-    // Estructura: base64(payload) + "." + hmac_hex(base64(payload))
-    const payload = { sub: 'admin', iat: Date.now(), exp: Date.now() + 8 * 60 * 60 * 1000 };
-    const payloadB64 = btoa(JSON.stringify(payload));
-    const sig = await hmacSign(ADMIN_SECRET, payloadB64);
-    const token = `${payloadB64}.${sig}`;
-
-    return new Response(JSON.stringify({ ok: true, token, expiresIn: 8 * 3600 }), { headers: CORS });
-
-  } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: CORS });
+function constantTimeEqual(a, b) {
+  if (a.length !== b.length) {
+    // Compare against self to maintain constant time even on length mismatch
+    const dummy = new TextEncoder().encode(a);
+    const dummyB = new TextEncoder().encode(a);
+    crypto.subtle.timingSafeEqual?.(dummy, dummyB);
+    return false;
   }
+  const encoder = new TextEncoder();
+  const bufA = encoder.encode(a);
+  const bufB = encoder.encode(b);
+  if (typeof crypto.subtle.timingSafeEqual === "function") {
+    return crypto.subtle.timingSafeEqual(bufA, bufB);
+  }
+  // Fallback: manual constant-time comparison
+  let result = 0;
+  for (let i = 0; i < bufA.length; i++) {
+    result |= bufA[i] ^ bufB[i];
+  }
+  return result === 0;
 }
-
-// ── Handler OPTIONS (preflight CORS) ─────────────────────────────────────────
-export async function onRequestOptions() {
-  return new Response(null, { status: 204, headers: CORS });
-}
-
-// ── Helpers criptográficos (Web Crypto API, disponible en Cloudflare Workers) ──
 
 /**
- * Firma una cadena de texto con HMAC-SHA256 y retorna la firma en hex.
- *
- * @param {string} secret — Clave secreta para la firma
- * @param {string} data   — Datos a firmar
- * @returns {Promise<string>} — Firma en formato hexadecimal lowercase
+ * Create HMAC-SHA256 token: base64url(payload) + "." + base64url(signature)
  */
-async function hmacSign(secret, data) {
+async function createToken(payload, secret) {
+  const encoder = new TextEncoder();
+  const payloadStr = JSON.stringify(payload);
+  const payloadB64 = btoa(payloadStr)
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
+
   const key = await crypto.subtle.importKey(
-    'raw', new TextEncoder().encode(secret),
-    { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+    "raw",
+    encoder.encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
   );
-  const sig = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(data));
-  // Convertir ArrayBuffer a string hexadecimal
-  return Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, '0')).join('');
+
+  const signature = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    encoder.encode(payloadB64)
+  );
+
+  const sigB64 = btoa(String.fromCharCode(...new Uint8Array(signature)))
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
+
+  return `${payloadB64}.${sigB64}`;
 }
 
-/**
- * Compara dos Uint8Array en tiempo constante para evitar ataques de timing.
- * Rellena ambos al mismo largo máximo y aplica XOR bit a bit.
- *
- * @param {Uint8Array} a — Primer valor (ej: input del usuario)
- * @param {Uint8Array} b — Segundo valor (ej: valor secreto almacenado)
- * @returns {Promise<boolean>} — true solo si ambos son idénticos
- */
-async function safeCompare(a, b) {
-  const len = Math.max(a.length, b.length);
-  // Rellenar con ceros para igualar largo (oculta diferencia de longitud)
-  const pa = new Uint8Array(len); pa.set(a);
-  const pb = new Uint8Array(len); pb.set(b);
-  // XOR acumulativo: si algún bit difiere, diff != 0
-  let diff = a.length ^ b.length;
-  for (let i = 0; i < len; i++) diff |= pa[i] ^ pb[i];
-  return diff === 0;
+// ── Main handler ─────────────────────────────────────────────────────
+
+export async function onRequest(context) {
+  const { request, env } = context;
+
+  // Handle CORS preflight
+  if (request.method === "OPTIONS") {
+    return new Response(null, { status: 204, headers: corsHeaders() });
+  }
+
+  if (request.method !== "POST") {
+    return errorResponse("Método no permitido", 405);
+  }
+
+  if (!env.ADMIN_USER || !env.ADMIN_PASS || !env.ADMIN_SECRET) {
+    console.error("Missing ADMIN_USER, ADMIN_PASS, or ADMIN_SECRET");
+    return errorResponse("Error de configuración del servidor", 500);
+  }
+
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return errorResponse("JSON inválido", 400);
+  }
+
+  const { user, password } = body;
+
+  if (!user || !password) {
+    return errorResponse("Usuario y contraseña son obligatorios", 400);
+  }
+
+  // ── Constant-time credential comparison ────────────────────────────
+  const userOk = constantTimeEqual(user, env.ADMIN_USER);
+  const passOk = constantTimeEqual(password, env.ADMIN_PASS);
+
+  if (!userOk || !passOk) {
+    return errorResponse("Credenciales inválidas", 401);
+  }
+
+  // ── Generate token ─────────────────────────────────────────────────
+  const now = Math.floor(Date.now() / 1000);
+  const expiresIn = 28800; // 8 hours in seconds
+
+  const payload = {
+    sub: "admin",
+    iat: now,
+    exp: now + expiresIn,
+  };
+
+  try {
+    const token = await createToken(payload, env.ADMIN_SECRET);
+    return jsonResponse({ ok: true, token, expiresIn });
+  } catch (err) {
+    console.error("Error creating token:", err);
+    return errorResponse("Error al generar token", 500);
+  }
 }
