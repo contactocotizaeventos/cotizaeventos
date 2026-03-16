@@ -191,11 +191,10 @@ export async function onRequest(context) {
       return errorResponse("Error al guardar la solicitud", 500);
     }
 
-    // ── Send Email 1 (non-blocking) ────────────────────────────────────
+    // ── Send Email 1 ──────────────────────────────────────────────────
     if (env.RESEND_API_KEY && env.EMAIL_FROM) {
       const emailHtml = buildConfirmationEmail(solicitud.nombre);
-      // Fire and forget — do NOT await blocking
-      sendEmail(solicitud.email, "Tu solicitud en CotizaEventos.cl fue recibida", emailHtml, env);
+      await sendEmail(solicitud.email, "Tu solicitud en CotizaEventos.cl fue recibida", emailHtml, env);
     }
 
     return jsonResponse({ ok: true, id: data.id });
