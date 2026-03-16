@@ -204,7 +204,7 @@ export async function onRequest(context) {
       if (sub.proveedor_id) {
         const { data: prov } = await supabase
           .from("proveedores")
-          .select("id, nombre, posicion, activo, categoria, etiqueta_id, cover_url, logo_url, logo_emoji")
+          .select("id, nombre, posicion, activo, categoria, etiqueta_id, cover_url, logo_url, logo_emoji, descripcion, diferenciador, tagline, experiencia, capacidad, comunas, precio_minimo, precio_maximo, incluye, no_incluye, whatsapp, telefono, email, web, instagram, facebook, tiktok, youtube, responsable")
           .eq("id", sub.proveedor_id)
           .single();
         proveedor = prov || null;
@@ -457,6 +457,53 @@ export async function onRequest(context) {
       if (error) {
         console.error("Error cancelling subscription:", error);
         return err("Error al cancelar suscripción", 500);
+      }
+
+      return json({ ok: true });
+    }
+
+    // ── UPDATE PROFILE ───────────────────────────────────────────────
+    if (action === "update_profile") {
+      const token = extractToken(request) || body.token;
+      const payload = await verifyToken(token, env.SUSCRIPTOR_SECRET);
+      if (!payload) return err("Token inválido o expirado", 401);
+
+      // Get suscriptor to find proveedor_id
+      const { data: sub } = await supabase
+        .from("suscriptores")
+        .select("proveedor_id")
+        .eq("id", payload.sub)
+        .single();
+      if (!sub || !sub.proveedor_id) return err("No se encontró proveedor vinculado", 400);
+
+      // Whitelist of editable fields (nombre and etiqueta_id NOT allowed)
+      const allowed = [
+        "responsable","descripcion","diferenciador","tagline",
+        "experiencia","capacidad","comunas",
+        "precio_minimo","precio_maximo","incluye","no_incluye",
+        "whatsapp","telefono","email","web",
+        "instagram","facebook","tiktok","youtube",
+        "logo_url","cover_url","logo_emoji"
+      ];
+
+      const fields = body.fields || {};
+      const safeFields = {};
+      for (const key of Object.keys(fields)) {
+        if (allowed.includes(key)) safeFields[key] = fields[key];
+      }
+
+      if (Object.keys(safeFields).length === 0) {
+        return err("No se proporcionaron campos válidos", 400);
+      }
+
+      const { error } = await supabase
+        .from("proveedores")
+        .update(safeFields)
+        .eq("id", sub.proveedor_id);
+
+      if (error) {
+        console.error("Error updating profile:", error);
+        return err("Error al actualizar perfil", 500);
       }
 
       return json({ ok: true });
