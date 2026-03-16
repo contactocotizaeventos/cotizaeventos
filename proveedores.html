@@ -388,7 +388,6 @@ async function loadProviders(){
 /* ══════════════════════════════════════════════════════════════════ */
 function buildCatBar(){
   const bar=document.getElementById('stickyBar');
-  // Keep search + "Todos" button, remove old chips
   const existing=bar.querySelectorAll('.bar-chip:not(.bar-chip-all),.bar-group');
   existing.forEach(el=>el.remove());
 
@@ -396,7 +395,8 @@ function buildCatBar(){
     if(!g.etiquetas||!g.etiquetas.length){
       const chip=document.createElement('button');
       chip.className='bar-chip';
-      chip.innerHTML=`<span>${esc(g.ico)}</span>${esc(g.nombre)}`;
+      chip.dataset.cat=g.id;
+      chip.textContent=g.nombre;
       chip.onclick=()=>setView(g.id);
       bar.appendChild(chip);
       continue;
@@ -406,24 +406,23 @@ function buildCatBar(){
     wrap.style.cssText='position:relative;flex-shrink:0;display:inline-flex';
 
     let dropHtml='';
-    // Option: view all in group
-    dropHtml+=`<a href="#" data-cat="${esc(g.id)}" class="view-group">${esc(g.ico)} Todo ${esc(g.nombre)}</a>`;
+    dropHtml+=`<a href="#" data-cat="${esc(g.id)}" class="view-group">Todo ${esc(g.nombre)}</a>`;
     for(const et of g.etiquetas){
-      dropHtml+=`<a href="#" data-cat="${esc(et.id)}">${esc(et.ico)} ${esc(et.nombre)} <span style="margin-left:auto;font-size:11px;color:var(--muted)">${et.total}</span></a>`;
+      dropHtml+=`<a href="#" data-cat="${esc(et.id)}">${esc(et.nombre)} <span style="margin-left:auto;font-size:11px;color:var(--muted)">${et.total}</span></a>`;
     }
 
     wrap.innerHTML=`
-      <button class="bar-chip" onclick="toggleBarDrop(this)"><span>${esc(g.ico)}</span>${esc(g.nombre)}<span class="arrow">▾</span></button>
+      <button class="bar-chip" data-cat="${esc(g.id)}" onclick="toggleBarDrop(this)">${esc(g.nombre)}<span class="arrow">▾</span></button>
       <div class="bar-drop">${dropHtml}</div>`;
     bar.appendChild(wrap);
 
-    // Bind drop item clicks
     wrap.querySelectorAll('.bar-drop a').forEach(a=>{
       a.onclick=(e)=>{
         e.preventDefault();
+        // Close all dropdowns
+        document.querySelectorAll('.bar-drop.open').forEach(d=>d.classList.remove('open'));
+        document.querySelectorAll('.sticky-bar .bar-chip.active:not(.bar-chip-all)').forEach(c=>c.classList.remove('active'));
         setView(a.dataset.cat);
-        wrap.querySelector('.bar-chip').classList.remove('active');
-        wrap.querySelector('.bar-drop').classList.remove('open');
       };
     });
   }
@@ -451,11 +450,27 @@ document.addEventListener('click',function(e){
 /* ══════════════════════════════════════════════════════════════════ */
 function setView(catId){
   currentFilter=catId;
-  // Update "Todos" button state
+  // Update "Todos" button
   const allBtn=document.querySelector('.bar-chip-all');
-  if(!catId)allBtn.classList.add('active');
-  else allBtn.classList.remove('active');
+  if(!catId){
+    allBtn.classList.add('active');
+  }else{
+    allBtn.classList.remove('active');
+  }
+  // Highlight the parent chip if filtering by group or etiqueta
+  document.querySelectorAll('.sticky-bar .bar-chip:not(.bar-chip-all)').forEach(c=>{
+    const chipCat=c.dataset.cat;
+    let isActive=false;
+    if(chipCat===catId)isActive=true;
+    // Check if catId is an etiqueta inside this group
+    if(!isActive&&chipCat){
+      const grupo=GRUPOS.find(g=>g.id===chipCat);
+      if(grupo&&grupo.etiquetas.some(e=>e.id===catId))isActive=true;
+    }
+    c.classList.toggle('active',isActive);
+  });
   render();
+  window.scrollTo({top:document.getElementById('content').offsetTop-120,behavior:'smooth'});
 }
 
 function handleSearch(){
@@ -504,7 +519,7 @@ function render(){
     totalShown+=groupProviders.length;
 
     // Group header
-    html+=`<div class="cat-header"><span class="ico">${esc(g.ico)}</span><h2>${esc(g.nombre)}</h2><span class="count">${groupProviders.length} proveedor${groupProviders.length!==1?'es':''}</span></div>`;
+    html+=`<div class="cat-header"><h2>${esc(g.nombre)}</h2><span class="count">${groupProviders.length} proveedor${groupProviders.length!==1?'es':''}</span></div>`;
 
     // Separate by etiqueta if showing full group
     const showByEtiq=g.etiquetas.length>1;
@@ -514,7 +529,7 @@ function render(){
       if(!etProvs.length)continue;
 
       if(showByEtiq){
-        html+=`<div class="etiq-label"><span class="ico">${esc(et.ico)}</span>${esc(et.nombre)}</div>`;
+        html+=`<div class="etiq-label">${esc(et.nombre)}</div>`;
       }
 
       const destacados=shuffle(etProvs.filter(p=>p.pos===1));
