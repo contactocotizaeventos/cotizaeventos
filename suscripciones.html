@@ -158,6 +158,34 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .btn-danger{background:#e53e3e;color:#fff;padding:12px 24px;border-radius:var(--r);font-weight:600;font-size:14px}
 .btn-danger:hover{background:#c53030}
 
+/* ── Profile Editor ──────────────────────────────────────────────── */
+.profile-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:28px;grid-column:1/-1}
+.profile-card h3{font-family:var(--font-title);font-size:18px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:600px){.profile-grid{grid-template-columns:1fr}}
+.profile-field label{display:block;font-size:13px;font-weight:500;color:var(--muted);margin-bottom:4px}
+.profile-field input,.profile-field textarea{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-family:var(--font-body);font-size:14px;background:var(--bg);transition:border-color .2s}
+.profile-field input:focus,.profile-field textarea:focus{outline:none;border-color:var(--coral);background:#fff}
+.profile-field textarea{resize:vertical;min-height:70px}
+.profile-field.full{grid-column:1/-1}
+.profile-field.disabled input{background:var(--bg2);color:var(--muted);cursor:not-allowed}
+.profile-uploads{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+@media(max-width:600px){.profile-uploads{grid-template-columns:1fr}}
+.profile-upload{border:2px dashed var(--border2);border-radius:var(--r);padding:16px;text-align:center;cursor:pointer;transition:all .2s;background:var(--white);position:relative}
+.profile-upload:hover{border-color:var(--coral);background:var(--coral-lt)}
+.profile-upload.has-img{border-style:solid;border-color:var(--teal)}
+.profile-upload img{max-height:80px;border-radius:6px;margin:8px auto 0;display:block}
+.profile-upload input[type=file]{display:none}
+.profile-upload p{font-size:13px;color:var(--ink2);margin:0}
+.profile-upload .up-label{font-size:12px;color:var(--muted);margin-top:4px}
+.profile-actions{display:flex;gap:10px;margin-top:20px;justify-content:flex-end}
+.btn-save{background:var(--teal);color:#fff;padding:10px 24px;border-radius:var(--r);font-weight:600;font-size:14px;transition:all .2s}
+.btn-save:hover{filter:brightness(1.1)}
+.btn-save:disabled{opacity:.5;cursor:not-allowed}
+.profile-msg{font-size:13px;padding:8px 14px;border-radius:8px;margin-top:12px;display:none}
+.profile-msg.success{display:block;background:#D1FAE5;color:#059669;border:1px solid #A7F3D0}
+.profile-msg.error{display:block;background:#FEE2E2;color:#DC2626;border:1px solid #FECACA}
+
 /* ── Footer ─────────────────────────────────────────────────────── */
 .footer{background:var(--bg2);border-top:1px solid var(--border);padding:48px 0 32px}
 .footer-inner{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:32px;max-width:1140px;margin:0 auto;padding:0 20px}
@@ -280,6 +308,13 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
         </div>
 
       </div>
+
+      <!-- Profile Editor -->
+      <div class="profile-card" id="profileCard" style="margin-top:24px;display:none">
+        <h3>✏️ Editar mi perfil</h3>
+        <div id="profileEditor"></div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -497,6 +532,9 @@ function renderDashboard(data){
   }else{
     renderNoSub(subEl,name);
   }
+
+  // Profile editor
+  renderProfileEditor(proveedor);
 }
 
 /* ── Active subscription view ─────────────────────────────────── */
@@ -548,6 +586,142 @@ function renderNoSub(container,bizName){
     </div>
     <p class="plan-note">El pago se coordina directamente con nuestro equipo por WhatsApp. Una vez confirmado, activamos tu plan Destacado en menos de 24 horas.</p>
   `;
+}
+
+/* ══════════════════════════════════════════════════════════════════ */
+/* PROFILE EDITOR                                                    */
+/* ══════════════════════════════════════════════════════════════════ */
+let currentProv=null;
+
+function renderProfileEditor(proveedor){
+  if(!proveedor){document.getElementById('profileCard').style.display='none';return}
+  currentProv=proveedor;
+  document.getElementById('profileCard').style.display='';
+  const ed=document.getElementById('profileEditor');
+
+  const f=(id,label,val,opts)=>{
+    const disabled=opts&&opts.disabled?' disabled':'';
+    const cls=opts&&opts.disabled?' disabled':'';
+    const full=opts&&opts.full?' full':'';
+    const type=opts&&opts.type||'text';
+    const maxlen=opts&&opts.maxlength?` maxlength="${opts.maxlength}"`:'';
+    const oninput=opts&&opts.onlyNumbers?` oninput="this.value=this.value.replace(/[^0-9]/g,'')"` :'';
+    if(type==='textarea'){
+      return `<div class="profile-field${full}${cls}"><label>${label}</label><textarea id="pf_${id}"${disabled}>${esc(val||'')}</textarea></div>`;
+    }
+    return `<div class="profile-field${full}${cls}"><label>${label}</label><input type="${type}" id="pf_${id}" value="${esc(val||'')}"${disabled}${maxlen}${oninput}></div>`;
+  };
+
+  ed.innerHTML=`
+    <div class="profile-grid">
+      ${f('nombre','Nombre del negocio (no editable)',proveedor.nombre,{disabled:true})}
+      ${f('responsable','Responsable',proveedor.responsable)}
+      ${f('descripcion','Descripción del servicio',proveedor.descripcion,{type:'textarea',full:true})}
+      ${f('diferenciador','¿Qué nos diferencia?',proveedor.diferenciador,{type:'textarea',full:true})}
+      ${f('tagline','Frase corta (tagline)',proveedor.tagline)}
+      ${f('experiencia','Experiencia',proveedor.experiencia)}
+      ${f('capacidad','Capacidad',proveedor.capacidad)}
+      ${f('comunas','Comunas',proveedor.comunas,{full:true})}
+      ${f('precio_minimo','Precio mínimo ($)',proveedor.precio_minimo,{onlyNumbers:true,maxlength:10})}
+      ${f('precio_maximo','Precio máximo ($)',proveedor.precio_maximo,{onlyNumbers:true,maxlength:10})}
+      ${f('incluye','¿Qué incluye?',proveedor.incluye,{type:'textarea',full:true})}
+      ${f('no_incluye','¿Qué no incluye?',proveedor.no_incluye,{type:'textarea',full:true})}
+      ${f('whatsapp','WhatsApp',proveedor.whatsapp,{maxlength:15,onlyNumbers:true})}
+      ${f('telefono','Teléfono',proveedor.telefono,{maxlength:15,onlyNumbers:true})}
+      ${f('email','Email de contacto',proveedor.email,{type:'email'})}
+      ${f('web','Sitio web',proveedor.web)}
+      ${f('instagram','Instagram',proveedor.instagram)}
+      ${f('facebook','Facebook',proveedor.facebook)}
+      ${f('tiktok','TikTok',proveedor.tiktok)}
+      ${f('youtube','YouTube',proveedor.youtube)}
+    </div>
+    <div class="profile-uploads">
+      <div class="profile-upload${proveedor.logo_url?' has-img':''}" onclick="document.getElementById('pfLogoFile').click()">
+        <p>📷 Logo</p>
+        ${proveedor.logo_url?'<img src="'+esc(proveedor.logo_url)+'" alt="Logo">':'<p class="up-label">Clic para subir</p>'}
+        <input type="file" id="pfLogoFile" accept="image/jpeg,image/png,image/webp" onchange="uploadProfileImg('logo',this)">
+      </div>
+      <div class="profile-upload${proveedor.cover_url?' has-img':''}" onclick="document.getElementById('pfCoverFile').click()">
+        <p>🖼️ Foto de portada</p>
+        ${proveedor.cover_url?'<img src="'+esc(proveedor.cover_url)+'" alt="Portada">':'<p class="up-label">Clic para subir</p>'}
+        <input type="file" id="pfCoverFile" accept="image/jpeg,image/png,image/webp" onchange="uploadProfileImg('cover',this)">
+      </div>
+    </div>
+    <div class="profile-actions">
+      <button class="btn-save" id="profileSaveBtn" onclick="saveProfile()">Guardar cambios</button>
+    </div>
+    <div class="profile-msg" id="profileMsg"></div>
+  `;
+}
+
+let pfLogoUrl='';
+let pfCoverUrl='';
+
+async function uploadProfileImg(type,input){
+  const file=input.files[0];
+  if(!file)return;
+  const wrap=input.closest('.profile-upload');
+  wrap.querySelector('p').textContent='Subiendo...';
+  try{
+    const fd=new FormData();
+    fd.append('file',file);
+    const res=await fetch('/api/upload-image',{method:'POST',body:fd});
+    const data=await res.json();
+    if(!data.ok)throw new Error(data.error||'Error');
+    if(type==='logo'){pfLogoUrl=data.url}else{pfCoverUrl=data.url}
+    wrap.classList.add('has-img');
+    wrap.innerHTML=`<p>${type==='logo'?'📷 Logo':'🖼️ Portada'}</p><img src="${esc(data.url)}" alt=""><p class="up-label">✓ Subida</p><input type="file" id="${type==='logo'?'pfLogoFile':'pfCoverFile'}" accept="image/jpeg,image/png,image/webp" onchange="uploadProfileImg('${type}',this)" style="display:none">`;
+  }catch(e){
+    wrap.querySelector('p').textContent='Error: '+e.message;
+  }
+}
+
+async function saveProfile(){
+  const btn=document.getElementById('profileSaveBtn');
+  btn.disabled=true;btn.textContent='Guardando...';
+  const msgEl=document.getElementById('profileMsg');
+  msgEl.className='profile-msg';
+
+  const gv=(id)=>(document.getElementById('pf_'+id)||{}).value||'';
+  const fields={
+    responsable:gv('responsable'),
+    descripcion:gv('descripcion'),
+    diferenciador:gv('diferenciador'),
+    tagline:gv('tagline'),
+    experiencia:gv('experiencia'),
+    capacidad:gv('capacidad'),
+    comunas:gv('comunas'),
+    precio_minimo:gv('precio_minimo'),
+    precio_maximo:gv('precio_maximo'),
+    incluye:gv('incluye'),
+    no_incluye:gv('no_incluye'),
+    whatsapp:gv('whatsapp'),
+    telefono:gv('telefono'),
+    email:gv('email'),
+    web:gv('web'),
+    instagram:gv('instagram'),
+    facebook:gv('facebook'),
+    tiktok:gv('tiktok'),
+    youtube:gv('youtube'),
+  };
+  if(pfLogoUrl)fields.logo_url=pfLogoUrl;
+  if(pfCoverUrl)fields.cover_url=pfCoverUrl;
+
+  try{
+    const data=await apiPost({action:'update_profile',token:getToken(),fields});
+    if(!data.ok)throw new Error(data.error||'Error');
+    msgEl.textContent='✓ Perfil actualizado correctamente';
+    msgEl.className='profile-msg success';
+    // Reset upload flags
+    pfLogoUrl='';pfCoverUrl='';
+    // Reload dashboard to reflect changes
+    setTimeout(()=>loadDashboard(),1500);
+  }catch(e){
+    msgEl.textContent='Error: '+e.message;
+    msgEl.className='profile-msg error';
+  }finally{
+    btn.disabled=false;btn.textContent='Guardar cambios';
+  }
 }
 
 /* ══════════════════════════════════════════════════════════════════ */
