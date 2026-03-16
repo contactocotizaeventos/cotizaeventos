@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Páginas privadas — sin indexación
+Disallow: /admin.html
+Disallow: /suscripciones.html
+
+Sitemap: https://www.cotizaeventos.cl/sitemap.xml
