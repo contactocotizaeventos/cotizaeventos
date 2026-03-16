@@ -424,8 +424,15 @@ async function doRegister(){
   try{
     const data=await apiPost({action:'register',nombre,email,password:pass});
     if(!data.ok)throw new Error(data.error||'Error');
-    showMsg('registerMsg','Cuenta creada. Ahora inicia sesión.','success');
-    setTimeout(()=>switchTab('login'),1500);
+    // Auto-login: server returns token on register
+    if(data.token){
+      setToken(data.token);
+      showDash();
+      loadDashboard();
+    }else{
+      showMsg('registerMsg','Cuenta creada. Ahora inicia sesión.','success');
+      setTimeout(()=>switchTab('login'),1500);
+    }
   }catch(e){
     showMsg('registerMsg',e.message,'error');
   }finally{
