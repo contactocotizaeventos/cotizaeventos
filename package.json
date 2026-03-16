@@ -1,8 +1,9 @@
 {
-  "name": "cotizatufiesta",
+  "name": "cotizaeventos",
   "version": "1.0.0",
-  "description": "CotizaTuFiesta.cl — Cloudflare Pages + Supabase",
+  "description": "CotizaEventos.cl — Cloudflare Pages + Supabase",
   "dependencies": {
-    "@supabase/supabase-js": "^2.39.0"
+    "@supabase/supabase-js": "^2.39.0",
+    "bcryptjs": "^2.4.3"
   }
 }
