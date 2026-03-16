@@ -85,15 +85,17 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 }
 
 /* Category chips in sticky bar */
-.bar-chip{display:inline-flex;align-items:center;gap:5px;padding:8px 16px;border:1px solid var(--border);border-radius:100px;font-size:13px;font-weight:500;color:var(--ink2);background:var(--white);cursor:pointer;transition:all .2s var(--ease);white-space:nowrap;flex-shrink:0;position:relative}
-.bar-chip:hover,.bar-chip.active{border-color:var(--coral);color:var(--coral);background:var(--coral-lt)}
+.bar-chip{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border:1px solid var(--border2);border-radius:100px;font-size:13px;font-weight:500;color:var(--ink2);background:var(--white);cursor:pointer;transition:all .2s var(--ease);white-space:nowrap;flex-shrink:0}
+.bar-chip:hover{border-color:var(--coral);color:var(--coral);background:var(--coral-lt)}
+.bar-chip.active{border-color:var(--coral);color:var(--coral);background:var(--coral-lt)}
 .bar-chip .arrow{font-size:9px;margin-left:2px;transition:transform .2s var(--ease)}
-.bar-chip.active .arrow{transform:rotate(180deg)}
-.bar-drop{display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:6px 0;min-width:200px;box-shadow:var(--shadow-md);z-index:20}
+.bar-chip.open .arrow{transform:rotate(180deg)}
+.bar-group{position:relative;flex-shrink:0;display:inline-flex}
+.bar-drop{display:none;position:absolute;top:calc(100% + 8px);left:0;background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:8px 0;min-width:240px;box-shadow:var(--shadow-md);z-index:20}
 .bar-drop.open{display:block}
-.bar-drop a{display:flex;align-items:center;gap:7px;padding:9px 16px;font-size:13px;color:var(--ink2);transition:background .15s;white-space:nowrap}
+.bar-drop a{display:flex;align-items:center;gap:8px;padding:10px 18px;font-size:14px;color:var(--ink2);transition:all .15s;white-space:nowrap;cursor:pointer}
 .bar-drop a:hover{background:var(--coral-lt);color:var(--coral)}
-.bar-drop a.sel{color:var(--coral);font-weight:600}
+.bar-drop a .drop-count{margin-left:auto;font-size:11px;color:var(--muted)}
 .bar-chip-all{background:var(--ink);color:#fff;border-color:var(--ink)}
 .bar-chip-all:hover,.bar-chip-all.active{background:var(--coral);border-color:var(--coral);color:#fff}
 
@@ -392,56 +394,78 @@ function buildCatBar(){
   existing.forEach(el=>el.remove());
 
   for(const g of GRUPOS){
+    // Groups without etiquetas: simple chip
     if(!g.etiquetas||!g.etiquetas.length){
       const chip=document.createElement('button');
       chip.className='bar-chip';
       chip.dataset.cat=g.id;
       chip.textContent=g.nombre;
-      chip.onclick=()=>setView(g.id);
+      chip.addEventListener('click',function(){closeAllDropdowns();setView(g.id)});
       bar.appendChild(chip);
       continue;
     }
+
+    // Groups with etiquetas: chip + dropdown
     const wrap=document.createElement('div');
     wrap.className='bar-group';
-    wrap.style.cssText='position:relative;flex-shrink:0;display:inline-flex';
 
-    let dropHtml='';
-    dropHtml+=`<a href="#" data-cat="${esc(g.id)}" class="view-group">Todo ${esc(g.nombre)}</a>`;
+    const chip=document.createElement('button');
+    chip.className='bar-chip';
+    chip.dataset.cat=g.id;
+    chip.innerHTML=esc(g.nombre)+'<span class="arrow">▾</span>';
+    chip.addEventListener('click',function(e){
+      e.stopPropagation();
+      const isOpen=wrap.querySelector('.bar-drop').classList.contains('open');
+      closeAllDropdowns();
+      if(!isOpen){
+        wrap.querySelector('.bar-drop').classList.add('open');
+        chip.classList.add('open');
+      }
+    });
+    wrap.appendChild(chip);
+
+    const drop=document.createElement('div');
+    drop.className='bar-drop';
+
+    // "Todo [grupo]" option
+    const allLink=document.createElement('a');
+    allLink.href='#';
+    allLink.textContent='Todo '+g.nombre;
+    allLink.style.fontWeight='600';
+    allLink.addEventListener('click',function(e){
+      e.preventDefault();e.stopPropagation();
+      closeAllDropdowns();
+      setView(g.id);
+    });
+    drop.appendChild(allLink);
+
+    // Individual etiquetas
     for(const et of g.etiquetas){
-      dropHtml+=`<a href="#" data-cat="${esc(et.id)}">${esc(et.nombre)} <span style="margin-left:auto;font-size:11px;color:var(--muted)">${et.total}</span></a>`;
+      const link=document.createElement('a');
+      link.href='#';
+      link.innerHTML=esc(et.nombre)+'<span class="drop-count">'+et.total+'</span>';
+      link.addEventListener('click',function(e){
+        e.preventDefault();e.stopPropagation();
+        closeAllDropdowns();
+        setView(et.id);
+      });
+      drop.appendChild(link);
     }
 
-    wrap.innerHTML=`
-      <button class="bar-chip" data-cat="${esc(g.id)}" onclick="toggleBarDrop(this)">${esc(g.nombre)}<span class="arrow">▾</span></button>
-      <div class="bar-drop">${dropHtml}</div>`;
+    wrap.appendChild(drop);
     bar.appendChild(wrap);
-
-    wrap.querySelectorAll('.bar-drop a').forEach(a=>{
-      a.onclick=(e)=>{
-        e.preventDefault();
-        // Close all dropdowns
-        document.querySelectorAll('.bar-drop.open').forEach(d=>d.classList.remove('open'));
-        document.querySelectorAll('.sticky-bar .bar-chip.active:not(.bar-chip-all)').forEach(c=>c.classList.remove('active'));
-        setView(a.dataset.cat);
-      };
-    });
   }
 }
 
-function toggleBarDrop(chip){
-  const wasActive=chip.classList.contains('active');
-  // Close all
-  document.querySelectorAll('.sticky-bar .bar-chip.active:not(.bar-chip-all)').forEach(c=>c.classList.remove('active'));
+function closeAllDropdowns(){
   document.querySelectorAll('.bar-drop.open').forEach(d=>d.classList.remove('open'));
-  if(!wasActive){
-    chip.classList.add('active');
-    chip.nextElementSibling.classList.add('open');
-  }
+  document.querySelectorAll('.bar-chip.open').forEach(c=>c.classList.remove('open'));
 }
+
+// Close dropdowns on click outside
 document.addEventListener('click',function(e){
-  if(!e.target.closest('.bar-group')&&!e.target.closest('.bar-chip')){
-    document.querySelectorAll('.sticky-bar .bar-chip.active:not(.bar-chip-all)').forEach(c=>c.classList.remove('active'));
-    document.querySelectorAll('.bar-drop.open').forEach(d=>d.classList.remove('open'));
+  if(!e.target.closest('.bar-group')){
+    closeAllDropdowns();
   }
 });
 
