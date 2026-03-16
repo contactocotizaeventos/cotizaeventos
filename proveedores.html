@@ -68,8 +68,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 
 /* ── Sticky Bar ─────────────────────────────────────────────────── */
 .sticky-bar{position:sticky;top:56px;z-index:90;background:rgba(255,255,255,.97);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:12px 0}
-.sticky-inner{max-width:1140px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:12px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-.sticky-inner::-webkit-scrollbar{display:none}
+.sticky-inner{max-width:1140px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 
 /* Search */
 .search-wrap{position:relative;flex-shrink:0}
@@ -85,12 +84,12 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 }
 
 /* Category chips in sticky bar */
-.bar-chip{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border:1px solid var(--border2);border-radius:100px;font-size:13px;font-weight:500;color:var(--ink2);background:var(--white);cursor:pointer;transition:all .2s var(--ease);white-space:nowrap;flex-shrink:0}
+.bar-chip{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border:1px solid var(--border2);border-radius:100px;font-size:13px;font-weight:500;color:var(--ink2);background:var(--white);cursor:pointer;transition:all .2s var(--ease);white-space:nowrap}
 .bar-chip:hover{border-color:var(--coral);color:var(--coral);background:var(--coral-lt)}
 .bar-chip.active{border-color:var(--coral);color:var(--coral);background:var(--coral-lt)}
 .bar-chip .arrow{font-size:9px;margin-left:2px;transition:transform .2s var(--ease)}
 .bar-chip.open .arrow{transform:rotate(180deg)}
-.bar-group{position:relative;flex-shrink:0;display:inline-flex}
+.bar-group{position:relative;display:inline-flex}
 .bar-drop{display:none;position:absolute;top:calc(100% + 8px);left:0;background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:8px 0;min-width:240px;box-shadow:var(--shadow-md);z-index:20}
 .bar-drop.open{display:block}
 .bar-drop a{display:flex;align-items:center;gap:8px;padding:10px 18px;font-size:14px;color:var(--ink2);transition:all .15s;white-space:nowrap;cursor:pointer}
