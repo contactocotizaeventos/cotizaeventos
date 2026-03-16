@@ -67,7 +67,7 @@ function mapProvider(p) {
     logo_emoji: p.logo_emoji,
     logo_url: p.logo_url,
     cover_url: p.cover_url,
-    pos: p.posicion, // 0 = Básico, 1 = Destacado
+    pos: (p.posicion && p.posicion > 0) ? 1 : 0, // 0 = Básico, 1 = Destacado
   };
 }
 
