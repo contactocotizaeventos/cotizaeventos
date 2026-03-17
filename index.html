@@ -242,39 +242,6 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 </head>
 <body>
 
-<!-- ══ NAV ═══════════════════════════════════════════════════════════ -->
-<nav class="nav">
-  <div class="nav-inner">
-    <a href="index.html" class="nav-logo">Cotiza<span>Eventos</span>.cl</a>
-    <div class="nav-links">
-      <a href="index.html">Inicio</a>
-      <a href="proveedores.html">Servicios para ti</a>
-      <a href="#como">¿Cómo funciona?</a>
-      <a href="nosotros.html">Nosotros</a>
-      <a href="#contacto">Contacto</a>
-      <a href="form.html" class="nav-cta">✦ Publica tu negocio</a>
-        <a href="suscripciones.html" class="nav-cta">Mi Cuenta</a>
-    </div>
-    <div class="nav-burger" onclick="toggleMobile()" aria-label="Menú">
-      <span></span><span></span><span></span>
-    </div>
-  </div>
-</nav>
-
-<!-- Mobile menu -->
-<div class="nav-mobile" id="navMobile">
-  <button class="nav-mobile-close" onclick="toggleMobile()">✕</button>
-  <a href="index.html" onclick="toggleMobile()">Inicio</a>
-  <a href="proveedores.html" onclick="toggleMobile()">Proveedores</a>
-  <a href="#como" onclick="toggleMobile()">¿Cómo funciona?</a>
-  <a href="nosotros.html" onclick="toggleMobile()">Nosotros</a>
-  <a href="#contacto" onclick="toggleMobile()">Contacto</a>
-  <a href="form.html" onclick="toggleMobile()">✦ Publica tu negocio</a>
-   <a href="suscripciones.html" class="nav-cta">Mi Cuenta</a>
-</div>
-
-
-
 
 
 <div class="launch-banner" role="status" aria-label="Aviso importante">
@@ -311,6 +278,40 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
     <a href="#form.html" class="launch-btn">Inscribir proveedor</a>
   </div>
 </div>
+<!-- ══ NAV ═══════════════════════════════════════════════════════════ -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">Cotiza<span>Eventos</span>.cl</a>
+    <div class="nav-links">
+      <a href="index.html">Inicio</a>
+      <a href="proveedores.html">Servicios para ti</a>
+      <a href="#como">¿Cómo funciona?</a>
+      <a href="nosotros.html">Nosotros</a>
+      <a href="#contacto">Contacto</a>
+      <a href="form.html" class="nav-cta">✦ Publica tu negocio</a>
+        <a href="suscripciones.html" class="nav-cta">Mi Cuenta</a>
+    </div>
+    <div class="nav-burger" onclick="toggleMobile()" aria-label="Menú">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile menu -->
+<div class="nav-mobile" id="navMobile">
+  <button class="nav-mobile-close" onclick="toggleMobile()">✕</button>
+  <a href="index.html" onclick="toggleMobile()">Inicio</a>
+  <a href="proveedores.html" onclick="toggleMobile()">Proveedores</a>
+  <a href="#como" onclick="toggleMobile()">¿Cómo funciona?</a>
+  <a href="nosotros.html" onclick="toggleMobile()">Nosotros</a>
+  <a href="#contacto" onclick="toggleMobile()">Contacto</a>
+  <a href="form.html" onclick="toggleMobile()">✦ Publica tu negocio</a>
+   <a href="suscripciones.html" class="nav-cta">Mi Cuenta</a>
+</div>
+
+
+
+
 <style>
   /* ── Banner lanzamiento + cuenta regresiva ─────────────────────── */
 .launch-banner{
@@ -868,7 +869,7 @@ loadData();
   (function () {
     // Fecha objetivo: 10 de agosto de 2027 a las 00:00:00
     // Puedes cambiar la hora si quieres, por ejemplo "2027-08-10T09:00:00"
-    const launchDate = new Date("2027-08-10T00:00:00").getTime();
+    const launchDate = new Date("2026-08-10T00:00:00").getTime();
 
     const daysEl = document.getElementById("days");
     const hoursEl = document.getElementById("hours");
