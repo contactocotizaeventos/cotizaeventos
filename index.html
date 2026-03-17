@@ -108,7 +108,13 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
      .5px  .5px 0 #000;
   font-family:var(--font-title);font-weight:700;font-size:clamp(36px,5.5vw,64px);line-height:1.08;margin-bottom:20px;max-width:700px}
 .hero-title em{font-style:normal;color:var(--coral2)}
-.hero-sub{font-size:clamp(16px,2vw,19px);color:rgba(255,255,255,.72);max-width:520px;line-height:1.7;margin-bottom:36px}
+.hero-sub{
+      text-shadow:
+    -.5px -.5px 0 #000,
+     .5px -.5px 0 #000,
+    -.5px  .5px 0 #000,
+     .5px  .5px 0 #000;
+  font-size:clamp(16px,2vw,19px);color:rgba(255,255,255,.72);max-width:520px;line-height:1.7;margin-bottom:36px}
 .hero-btns{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:48px}
 .hero-pills{display:flex;flex-wrap:wrap;gap:10px}
 .hero-pill{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:100px;padding:8px 18px;font-size:13px;color:rgba(255,255,255,.65);font-weight:400}
