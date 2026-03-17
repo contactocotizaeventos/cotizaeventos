@@ -49,8 +49,8 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .nav{
   position: sticky;
   left: 0;
-  width: 100%;
   top:0;
+  width: 100%;
   z-index: 999;
   height: 56px;
   background: rgba(255,255,255,.97);
@@ -83,6 +83,10 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .nav-mobile a:hover{color:var(--coral)}
 .nav-mobile-close{position:absolute;top:16px;right:20px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--ink)}
 
+@media(max-width:860px){
+  .nav-links{display:none}
+  .nav-burger{display:flex}
+}
 /* ── Page Header ────────────────────────────────────────────────── */
 .page-header{background:#1A1410;color:#fff;padding:56px 0 48px;text-align:center}
 .page-header h1{font-family:var(--font-title);font-weight:700;font-size:clamp(28px,4vw,40px);margin-bottom:10px}
@@ -331,7 +335,6 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
   <a href="form.html" onclick="toggleMobile()">✦ Publica tu negocio</a>
    <a href="suscripciones.html" class="nav-cta">Mi Cuenta</a>
 </div>
-
 
 
 <style>
