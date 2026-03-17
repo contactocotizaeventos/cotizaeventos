@@ -272,6 +272,257 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
   <a href="form.html" onclick="toggleMobile()">✦ Publica tu negocio</a>
 </div>
 
+
+
+
+
+<div class="launch-banner" role="status" aria-label="Aviso importante">
+  <div class="launch-banner-inner">
+    <div class="launch-main">
+      <span class="launch-badge">Convocatoria abierta</span>
+
+      <p class="launch-text">
+        <strong>Estamos buscando proveedores para CotizaEventos.cl.</strong>
+        Postula desde ahora para ser parte de nuestra selección inicial.
+        <span class="launch-date-text">Lanzamiento oficial: 10 de agosto de 2026.</span>
+      </p>
+    </div>
+
+    <div class="launch-countdown" id="launchCountdown" aria-label="Cuenta regresiva al lanzamiento">
+      <div class="count-item">
+        <span id="days">000</span>
+        <small>Días</small>
+      </div>
+      <div class="count-item">
+        <span id="hours">00</span>
+        <small>Horas</small>
+      </div>
+      <div class="count-item">
+        <span id="minutes">00</span>
+        <small>Min</small>
+      </div>
+      <div class="count-item">
+        <span id="seconds">00</span>
+        <small>Seg</small>
+      </div>
+    </div>
+
+    <a href="#form.html" class="launch-btn">Inscribir proveedor</a>
+  </div>
+</div>
+<style>
+  /* ── Banner lanzamiento + cuenta regresiva ─────────────────────── */
+.launch-banner{
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+  width: 100%;
+  background: linear-gradient(90deg, #1A1410 0%, #2A1D16 100%);
+  color: #fff;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  box-shadow: 0 6px 18px rgba(0,0,0,.18);
+}
+
+.launch-banner-inner{
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.launch-main{
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1 1 420px;
+  min-width: 280px;
+}
+
+.launch-badge{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #E8542A;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .3px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.launch-text{
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.45;
+}
+
+.launch-text strong{
+  color: #fff;
+}
+
+.launch-date-text{
+  display: inline-block;
+  margin-left: 6px;
+  font-weight: 700;
+  color: #FFD7C9;
+}
+
+.launch-countdown{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 0 1 auto;
+}
+
+.count-item{
+  min-width: 68px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.10);
+  text-align: center;
+  backdrop-filter: blur(4px);
+}
+
+.count-item span{
+  display: block;
+  font-size: 22px;
+  line-height: 1;
+  font-weight: 800;
+  color: #fff;
+}
+
+.count-item small{
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  letter-spacing: .3px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.75);
+}
+
+.launch-btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 10px;
+  background: #E8542A;
+  color: #fff;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 700;
+  transition: transform .18s ease, opacity .18s ease;
+  white-space: nowrap;
+}
+
+.launch-btn:hover{
+  transform: translateY(-1px);
+  opacity: .95;
+}
+
+.launch-btn:focus-visible{
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+/* ── Tablet ─────────────────────────────────────────────────────── */
+@media (max-width: 900px){
+  .launch-banner-inner{
+    justify-content: center;
+    text-align: center;
+  }
+
+  .launch-main{
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    flex: 1 1 100%;
+  }
+
+  .launch-countdown{
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .launch-btn{
+    width: 100%;
+    max-width: 260px;
+  }
+}
+
+/* ── Mobile ─────────────────────────────────────────────────────── */
+@media (max-width: 560px){
+  .launch-banner-inner{
+    padding: 12px 14px;
+    gap: 12px;
+  }
+
+  .launch-text{
+    font-size: 13.5px;
+  }
+
+  .launch-date-text{
+    display: block;
+    margin: 6px 0 0;
+  }
+
+  .launch-countdown{
+    display: grid;
+    grid-template-columns: repeat(2, minmax(70px, 1fr));
+    gap: 8px;
+    width: 100%;
+    max-width: 260px;
+  }
+
+  .count-item{
+    min-width: 0;
+    padding: 8px 6px;
+  }
+
+  .count-item span{
+    font-size: 20px;
+  }
+
+  .count-item small{
+    font-size: 10px;
+  }
+
+  .launch-btn{
+    max-width: 260px;
+    min-height: 42px;
+    font-size: 13.5px;
+  }
+}
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
 <!-- ══ HERO ══════════════════════════════════════════════════════════ -->
 <section class="hero">
   <div class="hero-inner">
@@ -595,6 +846,73 @@ function renderHighlighted(){
 
 /* ── Init ──────────────────────────────────────────────────────────── */
 loadData();
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <script>
+    /*         Esto es para el anuncio volante con cuenta regresiva */
+  (function () {
+    // Fecha objetivo: 10 de agosto de 2027 a las 00:00:00
+    // Puedes cambiar la hora si quieres, por ejemplo "2027-08-10T09:00:00"
+    const launchDate = new Date("2027-08-10T00:00:00").getTime();
+
+    const daysEl = document.getElementById("days");
+    const hoursEl = document.getElementById("hours");
+    const minutesEl = document.getElementById("minutes");
+    const secondsEl = document.getElementById("seconds");
+
+    function formatNumber(num) {
+      return String(num).padStart(2, "0");
+    }
+
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const distance = launchDate - now;
+
+      if (distance <= 0) {
+        daysEl.textContent = "000";
+        hoursEl.textContent = "00";
+        minutesEl.textContent = "00";
+        secondsEl.textContent = "00";
+
+        const bannerText = document.querySelector(".launch-text");
+        if (bannerText) {
+          bannerText.innerHTML = "<strong>CotizaEventos.cl ya fue lanzado oficialmente.</strong> Ya puedes ser parte de la plataforma.";
+        }
+
+        const badge = document.querySelector(".launch-badge");
+        if (badge) badge.textContent = "Ya disponible";
+
+        return;
+      }
+
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((distance / (1000 * 60)) % 60);
+      const seconds = Math.floor((distance / 1000) % 60);
+
+      daysEl.textContent = String(days).padStart(3, "0");
+      hoursEl.textContent = formatNumber(hours);
+      minutesEl.textContent = formatNumber(minutes);
+      secondsEl.textContent = formatNumber(seconds);
+    }
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+  })();
 </script>
 </body>
 </html>
