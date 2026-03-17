@@ -326,9 +326,8 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
   </div>
 </div>
 
-
 <style>
-  /* ── Banner lanzamiento + cuenta regresiva ─────────────────────── */
+/* ── Banner flotante responsive ─────────────────────────────────── */
 .launch-banner{
   position: sticky;
   top: 0;
@@ -343,30 +342,31 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .launch-banner-inner{
   max-width: 1180px;
   margin: 0 auto;
-  padding: 14px 20px;
+  padding: 10px 16px;
   display: flex;
   align-items: center;
-  gap: 18px;
+  justify-content: space-between;
+  gap: 14px;
   flex-wrap: wrap;
 }
 
 .launch-main{
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   flex: 1 1 420px;
-  min-width: 280px;
+  min-width: 260px;
 }
 
 .launch-badge{
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 6px 12px;
+  padding: 6px 10px;
   border-radius: 999px;
   background: #E8542A;
   color: #fff;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: .3px;
   white-space: nowrap;
@@ -375,8 +375,8 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 
 .launch-text{
   margin: 0;
-  font-size: 14.5px;
-  line-height: 1.45;
+  font-size: 13.5px;
+  line-height: 1.4;
 }
 
 .launch-text strong{
@@ -384,8 +384,8 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 }
 
 .launch-date-text{
-  display: inline-block;
-  margin-left: 6px;
+  display: inline;
+  margin-left: 4px;
   font-weight: 700;
   color: #FFD7C9;
 }
@@ -393,14 +393,15 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .launch-countdown{
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   flex: 0 1 auto;
+  flex-wrap: wrap;
 }
 
 .count-item{
-  min-width: 68px;
-  padding: 8px 10px;
-  border-radius: 12px;
+  min-width: 58px;
+  padding: 6px 8px;
+  border-radius: 10px;
   background: rgba(255,255,255,.08);
   border: 1px solid rgba(255,255,255,.10);
   text-align: center;
@@ -409,7 +410,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 
 .count-item span{
   display: block;
-  font-size: 22px;
+  font-size: 18px;
   line-height: 1;
   font-weight: 800;
   color: #fff;
@@ -417,8 +418,8 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 
 .count-item small{
   display: block;
-  margin-top: 4px;
-  font-size: 11px;
+  margin-top: 3px;
+  font-size: 9px;
   letter-spacing: .3px;
   text-transform: uppercase;
   color: rgba(255,255,255,.75);
@@ -428,13 +429,13 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 44px;
-  padding: 0 18px;
+  min-height: 40px;
+  padding: 0 14px;
   border-radius: 10px;
   background: #E8542A;
   color: #fff;
   text-decoration: none;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   transition: transform .18s ease, opacity .18s ease;
   white-space: nowrap;
@@ -455,68 +456,79 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
   .launch-banner-inner{
     justify-content: center;
     text-align: center;
+    padding: 10px 14px;
   }
 
   .launch-main{
     flex-direction: column;
     align-items: center;
-    gap: 10px;
-    flex: 1 1 100%;
+    gap: 8px;
+    min-width: 100%;
+  }
+
+  .launch-text{
+    font-size: 13px;
+  }
+
+  .launch-date-text{
+    display: block;
+    margin: 4px 0 0;
   }
 
   .launch-countdown{
     justify-content: center;
-    flex-wrap: wrap;
     width: 100%;
   }
 
   .launch-btn{
     width: 100%;
-    max-width: 260px;
+    max-width: 240px;
   }
 }
 
 /* ── Mobile ─────────────────────────────────────────────────────── */
 @media (max-width: 560px){
   .launch-banner-inner{
-    padding: 12px 14px;
-    gap: 12px;
+    padding: 8px 10px;
+    gap: 10px;
+  }
+
+  .launch-badge{
+    font-size: 11px;
+    padding: 5px 9px;
   }
 
   .launch-text{
-    font-size: 13.5px;
-  }
-
-  .launch-date-text{
-    display: block;
-    margin: 6px 0 0;
+    font-size: 12.5px;
+    line-height: 1.35;
   }
 
   .launch-countdown{
     display: grid;
-    grid-template-columns: repeat(2, minmax(70px, 1fr));
-    gap: 8px;
+    grid-template-columns: repeat(2, minmax(54px, 1fr));
+    gap: 6px;
     width: 100%;
-    max-width: 260px;
+    max-width: 180px;
   }
 
   .count-item{
     min-width: 0;
-    padding: 8px 6px;
+    padding: 6px 4px;
   }
 
   .count-item span{
-    font-size: 20px;
+    font-size: 16px;
   }
 
   .count-item small{
-    font-size: 10px;
+    font-size: 8px;
   }
 
   .launch-btn{
-    max-width: 260px;
-    min-height: 42px;
-    font-size: 13.5px;
+    max-width: 220px;
+    min-height: 38px;
+    font-size: 12.5px;
+    padding: 0 12px;
   }
 }
 </style>
