@@ -516,21 +516,19 @@ function renderSuscripciones(){
   const filterOpts=[['todos','Todos'],['activas','Activas'],['vencidas','Vencidas'],['sin','Sin suscripción']];
   filtersEl.innerHTML=filterOpts.map(([k,l])=>`<button class="filter-btn${subFilter===k?' active':''}" onclick="setSubFilter('${k}')">${l}</button>`).join('');
 
-  // Merge providers without suscriptores too
   const container=document.getElementById('subTable');
-  const provMap={};
-  for(const p of allProveedores)provMap[p.id]=p;
 
-  // Build rows from subData
+  // Build rows from subData (now one row per provider)
   let rows=allSubData.map(item=>{
-    const prov=item.proveedor;
-    const sub=item.suscripcion_activa;
+    const prov=item.proveedor||null;
+    const sub=item.suscripcion_activa||null;
+    const susc=item.suscriptor||null;
     let status='sin';
     if(sub&&sub.estado==='activa'){
       const venc=new Date(sub.fecha_vencimiento);
       status=venc>new Date()?'activas':'vencidas';
     }
-    return{...item,_status:status,_provName:prov?prov.nombre:item.suscriptor.nombre};
+    return{...item,proveedor:prov,suscriptor:susc,suscripcion_activa:sub,_status:status,_provName:prov?prov.nombre:(susc?susc.nombre:'—')};
   });
 
   // Filter
@@ -539,23 +537,31 @@ function renderSuscripciones(){
   if(!rows.length){container.innerHTML='<p class="empty">No hay resultados.</p>';return}
 
   let html=`<table><thead><tr>
-    <th>Negocio</th><th>Email</th><th>Plan</th><th>Estado</th><th>Vencimiento</th><th>Auto-pago</th><th></th>
+    <th>Negocio</th><th>Email</th><th>Cuenta</th><th>Plan</th><th>Estado</th><th>Vencimiento</th><th></th>
   </tr></thead><tbody>`;
 
   for(const r of rows){
     const sub=r.suscripcion_activa;
     const prov=r.proveedor;
-    const isInconsistent=prov&&prov.posicion===1&&r._status!=='activas';
+    const susc=r.suscriptor;
+    const posVal=prov?prov.posicion:0;
+    const isInconsistent=posVal>=1&&r._status!=='activas';
+    const email=prov&&prov.email?prov.email:(susc&&susc.email?susc.email:'—');
+    const hasCuenta=susc?'<span class="tag tag-act">Sí</span>':'<span class="tag tag-sin">No</span>';
+    const payId=susc?susc.id:null;
+    const provId=prov?prov.id:null;
+
     html+=`<tr${isInconsistent?' class="inconsistent"':''}>
       <td><strong>${esc(r._provName)}</strong></td>
-      <td>${esc(r.suscriptor.email)}</td>
+      <td>${esc(email)}</td>
+      <td>${hasCuenta}</td>
       <td>${sub?esc(sub.plan):'—'}</td>
       <td>${r._status==='activas'?'<span class="tag tag-act">Activa</span>':r._status==='vencidas'?'<span class="tag tag-venc">Vencida</span>':'<span class="tag tag-sin">Sin suscripción</span>'}</td>
       <td>${sub?fmtDate(sub.fecha_vencimiento):'—'}</td>
-      <td>${sub?(sub.pago_automatico?'Sí':'No'):'—'}</td>
       <td style="white-space:nowrap">
-        <button class="btn btn-green btn-sm" onclick="marcarPagado('${r.suscriptor.id}')">Marcar pagado</button>
-        ${prov&&prov.posicion===1?`<button class="btn btn-red btn-sm" onclick="quitarDestacado('${prov.id}')">Quitar ✦</button>`:''}
+        ${payId?`<button class="btn btn-green btn-sm" onclick="marcarPagado('${payId}')">Marcar pagado</button>`
+               :(provId?`<button class="btn btn-outline btn-sm" onclick="crearCuentaYPagar('${provId}')">Activar plan</button>`:'')}
+        ${posVal>=1?`<button class="btn btn-red btn-sm" onclick="quitarDestacado('${provId}')">Quitar ✦</button>`:''}
       </td>
     </tr>`;
   }
@@ -565,6 +571,7 @@ function renderSuscripciones(){
 
 function setSubFilter(f){subFilter=f;renderSuscripciones()}
 
+// For providers WITH suscriptor account
 function marcarPagado(suscriptorId){
   let html=`<h3>Registrar pago</h3>
     <div class="field"><label>Plan</label><select id="mpPlan"><option value="mensual">Mensual</option><option value="anual">Anual</option></select></div>
@@ -576,8 +583,25 @@ function marcarPagado(suscriptorId){
       <button class="btn btn-green" onclick="confirmarPago('${suscriptorId}')">Confirmar pago</button>
     </div>`;
   openModal(html);
+  setupAutoVenc();
+}
 
-  // Auto-set vencimiento when plan changes
+// For providers WITHOUT suscriptor account — admin manually sets posicion
+function crearCuentaYPagar(provId){
+  let html=`<h3>Activar plan Destacado</h3>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Este proveedor no tiene cuenta de suscriptor. Se actualizará su posición directamente a Destacado.</p>
+    <div class="field"><label>Plan</label><select id="mpPlan"><option value="mensual">Mensual</option><option value="anual">Anual</option></select></div>
+    <div class="field"><label>Fecha inicio</label><input type="date" id="mpInicio" value="${new Date().toISOString().split('T')[0]}"></div>
+    <div class="field"><label>Fecha vencimiento</label><input type="date" id="mpVenc"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-green" onclick="activarDirecto('${provId}')">Activar Destacado</button>
+    </div>`;
+  openModal(html);
+  setupAutoVenc();
+}
+
+function setupAutoVenc(){
   const planEl=document.getElementById('mpPlan');
   const inicioEl=document.getElementById('mpInicio');
   const vencEl=document.getElementById('mpVenc');
@@ -585,13 +609,25 @@ function marcarPagado(suscriptorId){
   function autoVenc(){
     const d=new Date(inicioEl.value);
     if(isNaN(d))return;
-    if(planEl.value==='mensual'){d.setMonth(d.getMonth()+1);montoEl.value='9990'}
-    else{d.setFullYear(d.getFullYear()+1);montoEl.value='99900'}
+    if(planEl.value==='mensual'){d.setMonth(d.getMonth()+1);if(montoEl)montoEl.value='9990'}
+    else{d.setFullYear(d.getFullYear()+1);if(montoEl)montoEl.value='99900'}
     vencEl.value=d.toISOString().split('T')[0];
   }
   planEl.onchange=autoVenc;
   inicioEl.onchange=autoVenc;
   autoVenc();
+}
+
+async function activarDirecto(provId){
+  try{
+    await api('PUT',{id:provId,fields:{posicion:1}});
+    closeModal();
+    const[subRes,provRes]=await Promise.all([apiGet({action:'suscripciones'}),apiGet({action:'proveedores'})]);
+    allSubData=subRes.suscripciones||[];
+    allProveedores=provRes.proveedores||[];
+    renderSuscripciones();
+    renderProveedores();
+  }catch(e){alert('Error: '+e.message)}
 }
 
 async function confirmarPago(suscriptorId){
