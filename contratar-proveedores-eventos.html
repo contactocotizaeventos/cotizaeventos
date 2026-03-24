@@ -1,560 +1,351 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Encuentra proveedores para tu evento en Santiago | CotizaEventos.cl</title>
-  <meta name="description" content="Cotiza catering, DJs, fotógrafos, barra de tragos y más para tu evento en Santiago. Compara opciones y contacta directo a proveedores en CotizaEventos.cl." />
-  <meta name="robots" content="index,follow" />
-  <link rel="canonical" href="https://www.cotizaeventos.cl/landing-clientes" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Publica tu negocio de eventos en Santiago | CotizaEventos.cl</title>
+<meta name="description" content="Registra tu negocio de catering, DJ, fotografía o cualquier servicio para eventos en CotizaEventos.cl. Consigue clientes sin comisiones. Perfil gratuito o destacado.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://www.cotizaeventos.cl/contratar-proveedores-eventos.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="CotizaEventos.cl">
+<meta property="og:locale" content="es_CL">
+<meta property="og:title" content="Publica tu negocio de eventos en Santiago">
+<meta property="og:description" content="Consigue clientes para tu negocio de eventos sin comisiones ni intermediarios.">
+<meta property="og:url" content="https://www.cotizaeventos.cl/contratar-proveedores-eventos.html">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","name":"Publicar negocio de eventos en CotizaEventos.cl","url":"https://www.cotizaeventos.cl/contratar-proveedores-eventos.html","description":"Página para registrar negocios de eventos en el directorio CotizaEventos.cl","inLanguage":"es-CL"}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --coral:#E8542A;--coral2:#FF7A54;--coral-lt:#FFF0EB;--coral-md:#FFCFC2;
+  --teal:#06C7A5;--bg:#FAFAF8;--bg2:#F5F3EF;--white:#FFFFFF;
+  --ink:#1A1714;--ink2:#3D3733;--muted:#8A8278;
+  --border:#E8E4DF;--border2:#D4CFC9;
+  --r:14px;--ease:cubic-bezier(.4,0,.2,1);
+  --shadow:0 2px 12px rgba(0,0,0,.07);--shadow-md:0 8px 32px rgba(0,0,0,.1);
+  --font-title:'Fraunces',serif;--font-body:'Outfit',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);color:var(--ink);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+::selection{background:var(--coral);color:#fff}
 
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="CotizaEventos.cl" />
-  <meta property="og:locale" content="es_CL" />
-  <meta property="og:title" content="Encuentra proveedores para tu evento en Santiago" />
-  <meta property="og:description" content="Compara catering, DJs, fotógrafos y más. Contacta directo a proveedores para tu evento con CotizaEventos.cl." />
-  <meta property="og:url" content="https://www.cotizaeventos.cl/landing-clientes" />
+/* Nav */
+.nav{position:sticky;top:0;z-index:100;height:56px;background:rgba(255,255,255,.97);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:56px;max-width:1140px;margin:0 auto;padding:0 20px}
+.nav-logo{font-family:var(--font-title);font-weight:700;font-size:20px;color:var(--ink)}
+.nav-logo span{color:var(--coral)}
+.nav-links{display:flex;align-items:center;gap:24px}
+.nav-links a{font-size:14px;font-weight:500;color:var(--ink2);transition:color .2s}
+.nav-links a:hover{color:var(--coral)}
+.nav-cta{padding:8px 18px;background:var(--coral);color:#fff!important;border-radius:var(--r);font-weight:600;font-size:13px}
+@media(max-width:860px){.nav-links{display:none}}
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+/* Container */
+.container{max-width:1140px;margin:0 auto;padding:0 20px}
+.section{padding:80px 0}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:16px 32px;border-radius:var(--r);font-weight:600;font-size:16px;transition:all .3s var(--ease)}
+.btn-coral{background:var(--coral);color:#fff}
+.btn-coral:hover{background:var(--coral2);transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.btn-outline{border:2px solid var(--border2);color:var(--ink);background:var(--white)}
+.btn-outline:hover{border-color:var(--coral);color:var(--coral)}
+.btn-lg{padding:18px 40px;font-size:17px}
 
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebPage",
-    "name": "Landing para contratar proveedores de eventos en Santiago",
-    "url": "https://www.cotizaeventos.cl/landing-clientes",
-    "description": "Página para encontrar y contactar proveedores de eventos en Santiago con CotizaEventos.cl",
-    "inLanguage": "es-CL",
-    "about": {
-      "@type": "Service",
-      "name": "Directorio de proveedores para eventos",
-      "areaServed": "Santiago, Chile"
-    }
-  }
-  </script>
+/* Hero */
+.hero{background:#1A1410;color:#fff;padding:100px 0 80px;text-align:center;position:relative;overflow:hidden}
+.hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:120px;background:linear-gradient(transparent,var(--bg))}
+.hero h1{font-family:var(--font-title);font-weight:700;font-size:clamp(32px,5vw,54px);line-height:1.1;margin-bottom:18px;max-width:700px;margin-left:auto;margin-right:auto}
+.hero h1 em{font-style:normal;color:var(--coral2)}
+.hero p{font-size:clamp(16px,2vw,19px);color:rgba(255,255,255,.65);max-width:560px;margin:0 auto 36px;line-height:1.7}
+.hero-stats{display:flex;gap:40px;justify-content:center;margin-top:48px;flex-wrap:wrap}
+.hero-stat{text-align:center}
+.hero-stat .num{font-family:var(--font-title);font-size:32px;font-weight:700;color:var(--coral2)}
+.hero-stat .label{font-size:14px;color:rgba(255,255,255,.5);margin-top:4px}
 
-  <style>
-    :root{
-      --bg:#fbfaf8;
-      --surface:#ffffff;
-      --surface-soft:#f5f1eb;
-      --text:#1d1713;
-      --muted:#675f58;
-      --line:#e8e0d8;
-      --primary:#e45a30;
-      --primary-dark:#c64620;
-      --accent:#0f172a;
-      --ok:#1f9d55;
-      --radius:18px;
-      --shadow:0 12px 40px rgba(20,16,12,.08);
-      --container:1120px;
-    }
+/* What is */
+.what{background:var(--white)}
+.what-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.what-text h2{font-family:var(--font-title);font-size:clamp(26px,4vw,36px);font-weight:700;margin-bottom:16px;line-height:1.2}
+.what-text p{font-size:16px;color:var(--ink2);line-height:1.8;margin-bottom:16px}
+.what-visual{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.what-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:24px;text-align:center}
+.what-card .ico{font-size:28px;margin-bottom:10px}
+.what-card h4{font-size:15px;font-weight:600;margin-bottom:4px}
+.what-card p{font-size:13px;color:var(--muted);line-height:1.5}
+@media(max-width:768px){.what-grid{grid-template-columns:1fr;gap:32px}}
 
-    *{box-sizing:border-box}
-    html{scroll-behavior:smooth}
-    body{
-      margin:0;
-      font-family:'Outfit',sans-serif;
-      background:var(--bg);
-      color:var(--text);
-      line-height:1.6;
-      -webkit-font-smoothing:antialiased;
-    }
-    img{max-width:100%;display:block}
-    a{text-decoration:none;color:inherit}
-    .container{width:min(calc(100% - 32px),var(--container));margin:0 auto}
+/* Process */
+.process-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:40px}
+.process-step{text-align:center;padding:28px 16px;background:var(--white);border:1px solid var(--border);border-radius:var(--r);position:relative}
+.process-num{width:44px;height:44px;border-radius:50%;background:var(--coral-lt);color:var(--coral);font-family:var(--font-title);font-weight:700;font-size:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.process-step h4{font-size:16px;font-weight:600;margin-bottom:6px}
+.process-step p{font-size:14px;color:var(--ink2);line-height:1.6}
+.process-arrow{position:absolute;right:-16px;top:50%;color:var(--border2);font-size:20px}
+.process-step:last-child .process-arrow{display:none}
+@media(max-width:860px){.process-grid{grid-template-columns:repeat(2,1fr)}.process-arrow{display:none!important}}
+@media(max-width:480px){.process-grid{grid-template-columns:1fr}}
 
-    .topbar{
-      position:sticky;
-      top:0;
-      z-index:20;
-      backdrop-filter:blur(14px);
-      background:rgba(251,250,248,.9);
-      border-bottom:1px solid rgba(232,224,216,.8);
-    }
-    .topbar-inner{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      min-height:72px;
-      gap:20px;
-    }
-    .brand{
-      font-family:'Fraunces',serif;
-      font-size:1.3rem;
-      font-weight:700;
-    }
-    .brand span{color:var(--primary)}
-    .nav{
-      display:flex;
-      align-items:center;
-      gap:18px;
-      font-size:.97rem;
-      color:var(--muted);
-    }
+/* Plans */
+.plans{background:var(--bg2)}
+.plans-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:40px;max-width:800px;margin-left:auto;margin-right:auto}
+.plan-card{background:var(--white);border:2px solid var(--border);border-radius:var(--r);padding:36px 28px;text-align:center;transition:all .3s var(--ease)}
+.plan-card.featured{border-color:var(--coral);box-shadow:0 8px 32px rgba(232,84,42,.12)}
+.plan-card h3{font-family:var(--font-title);font-size:24px;font-weight:600;margin-bottom:8px}
+.plan-card .price{font-size:36px;font-weight:700;color:var(--coral);margin-bottom:4px}
+.plan-card .price-sub{font-size:14px;color:var(--muted);margin-bottom:20px}
+.plan-card ul{text-align:left;list-style:none;margin-bottom:24px}
+.plan-card li{padding:8px 0;font-size:14px;color:var(--ink2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.plan-card li:last-child{border-bottom:none}
+.plan-card li .check{color:var(--teal);font-weight:700;font-size:16px}
+.plan-card li .cross{color:var(--muted);font-size:16px}
+@media(max-width:600px){.plans-grid{grid-template-columns:1fr}}
 
-    .btn{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      min-height:52px;
-      padding:0 22px;
-      border-radius:999px;
-      border:1px solid transparent;
-      font-weight:600;
-      transition:.22s ease;
-    }
-    .btn-primary{background:var(--primary);color:#fff}
-    .btn-primary:hover{background:var(--primary-dark);transform:translateY(-1px)}
-    .btn-secondary{background:var(--surface);border-color:var(--line)}
-    .btn-secondary:hover{border-color:var(--primary);color:var(--primary)}
-    .btn-dark{background:var(--accent);color:#fff}
-    .btn-dark:hover{transform:translateY(-1px);opacity:.94}
+/* Benefits */
+.benefits-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:40px}
+.benefit{text-align:center;padding:32px 20px}
+.benefit .ico{width:56px;height:56px;border-radius:16px;background:var(--coral-lt);color:var(--coral);display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 16px}
+.benefit h4{font-size:16px;font-weight:600;margin-bottom:6px}
+.benefit p{font-size:14px;color:var(--ink2);line-height:1.6}
+@media(max-width:680px){.benefits-grid{grid-template-columns:1fr;gap:16px}}
 
-    .hero{
-      position:relative;
-      overflow:hidden;
-      padding:72px 0 40px;
-    }
-    .hero:before{
-      content:"";
-      position:absolute;
-      inset:-80px auto auto -100px;
-      width:320px;height:320px;
-      background:radial-gradient(circle, rgba(228,90,48,.18) 0%, rgba(228,90,48,0) 72%);
-      pointer-events:none;
-    }
-    .hero-grid{
-      display:grid;
-      grid-template-columns:1.1fr .9fr;
-      gap:36px;
-      align-items:center;
-    }
-    .eyebrow{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 14px;
-      border-radius:999px;
-      background:#fff2ec;
-      color:var(--primary-dark);
-      font-size:.92rem;
-      font-weight:600;
-      margin-bottom:18px;
-    }
-    h1,h2,h3{
-      font-family:'Fraunces',serif;
-      line-height:1.1;
-      margin:0;
-    }
-    h1{font-size:clamp(2.4rem,5vw,4.4rem);margin-bottom:18px}
-    .hero p{
-      font-size:1.12rem;
-      color:var(--muted);
-      max-width:690px;
-      margin:0 0 28px;
-    }
-    .hero-actions{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:24px}
-    .trust-row{
-      display:flex;flex-wrap:wrap;gap:10px;
-    }
-    .pill{
-      background:var(--surface);
-      border:1px solid var(--line);
-      padding:10px 14px;
-      border-radius:999px;
-      font-size:.94rem;
-      color:var(--muted);
-    }
-    .hero-card{
-      background:linear-gradient(180deg,#fff 0%,#fcf6f2 100%);
-      border:1px solid var(--line);
-      border-radius:28px;
-      box-shadow:var(--shadow);
-      padding:26px;
-    }
-    .hero-card h3{font-size:1.45rem;margin-bottom:10px}
-    .hero-card p{font-size:1rem;margin-bottom:20px}
-    .mini-list{display:grid;gap:12px;margin-bottom:22px}
-    .mini-item{
-      display:flex;gap:12px;align-items:flex-start;
-      background:rgba(255,255,255,.72);
-      border:1px solid var(--line);
-      border-radius:16px;
-      padding:14px;
-    }
-    .mini-icon{
-      width:40px;height:40px;border-radius:12px;
-      display:grid;place-items:center;
-      background:#fff0ea;
-      font-size:1.1rem;
-      flex:0 0 40px;
-    }
-    .mini-item strong{display:block;font-size:1rem}
-    .mini-item span{display:block;color:var(--muted);font-size:.94rem}
+/* FAQ */
+.faq{background:var(--bg2)}
+.faq-list{max-width:700px;margin:40px auto 0}
+.faq-item{background:var(--white);border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;overflow:hidden}
+.faq-q{padding:18px 24px;font-weight:600;font-size:15px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:background .2s}
+.faq-q:hover{background:var(--coral-lt)}
+.faq-q .arrow{transition:transform .2s;font-size:12px;color:var(--muted)}
+.faq-item.open .faq-q .arrow{transform:rotate(180deg)}
+.faq-a{display:none;padding:0 24px 18px;font-size:14px;color:var(--ink2);line-height:1.7}
+.faq-item.open .faq-a{display:block}
 
-    .section{padding:82px 0}
-    .section-head{max-width:760px;margin-bottom:28px}
-    .kicker{
-      color:var(--primary);
-      font-size:.92rem;
-      font-weight:700;
-      letter-spacing:.08em;
-      text-transform:uppercase;
-      margin-bottom:10px;
-      display:block;
-    }
-    .section-head h2{font-size:clamp(2rem,4vw,3rem);margin-bottom:12px}
-    .section-head p{margin:0;color:var(--muted);font-size:1.05rem}
+/* CTA */
+.cta{background:#1A1410;color:#fff;padding:80px 0;text-align:center}
+.cta h2{font-family:var(--font-title);font-size:clamp(28px,4vw,40px);font-weight:700;margin-bottom:14px}
+.cta p{color:rgba(255,255,255,.6);font-size:17px;margin-bottom:32px;max-width:500px;margin-left:auto;margin-right:auto}
 
-    .problem-box,
-    .seo-box,
-    .cta-box{
-      background:var(--surface);
-      border:1px solid var(--line);
-      border-radius:28px;
-      box-shadow:var(--shadow);
-      padding:30px;
-    }
+/* Footer */
+.footer{background:var(--bg2);border-top:1px solid var(--border);padding:40px 0 28px}
+.footer-inner{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:24px;max-width:1140px;margin:0 auto;padding:0 20px}
+.footer-logo{font-family:var(--font-title);font-weight:700;font-size:18px;margin-bottom:6px}
+.footer-logo span{color:var(--coral)}
+.footer-copy{font-size:13px;color:var(--muted)}
+.footer-links{display:flex;gap:20px;flex-wrap:wrap}
+.footer-links a{font-size:14px;color:var(--ink2);transition:color .2s}
+.footer-links a:hover{color:var(--coral)}
 
-    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-    .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
-    .card{
-      background:var(--surface);
-      border:1px solid var(--line);
-      border-radius:24px;
-      padding:24px;
-      box-shadow:var(--shadow);
-    }
-    .card-icon{
-      width:54px;height:54px;border-radius:16px;
-      display:grid;place-items:center;
-      background:#fff1eb;
-      font-size:1.4rem;
-      margin-bottom:16px;
-    }
-    .card h3{font-size:1.35rem;margin-bottom:8px}
-    .card p{margin:0;color:var(--muted)}
-
-    .steps{counter-reset:step}
-    .step{
-      position:relative;
-      padding-top:64px;
-    }
-    .step:before{
-      counter-increment:step;
-      content:counter(step);
-      position:absolute;
-      top:0;left:0;
-      width:48px;height:48px;
-      border-radius:50%;
-      display:grid;place-items:center;
-      background:var(--primary);
-      color:#fff;
-      font-family:'Fraunces',serif;
-      font-size:1.15rem;
-      font-weight:700;
-    }
-
-    .benefits{
-      display:grid;
-      grid-template-columns:repeat(2,1fr);
-      gap:16px;
-    }
-    .benefit{
-      display:flex;gap:12px;align-items:flex-start;
-      background:var(--surface);
-      border:1px solid var(--line);
-      border-radius:20px;
-      padding:18px;
-    }
-    .check{
-      width:28px;height:28px;border-radius:50%;background:#eaf8ef;
-      color:var(--ok);display:grid;place-items:center;font-weight:700;flex:0 0 28px;
-      margin-top:2px;
-    }
-    .benefit strong{display:block;margin-bottom:4px}
-    .benefit p{margin:0;color:var(--muted)}
-
-    .testimonial{
-      background:linear-gradient(135deg,#171717 0%,#2a221d 100%);
-      color:#fff;
-      border-radius:28px;
-      padding:32px;
-      box-shadow:var(--shadow);
-    }
-    .testimonial p{font-size:1.12rem;margin:0 0 16px;color:rgba(255,255,255,.84)}
-    .testimonial strong{font-size:.98rem;color:#fff}
-
-    .cta-box{
-      display:grid;
-      grid-template-columns:1.1fr .9fr;
-      gap:24px;
-      align-items:center;
-    }
-    .cta-box h2{font-size:clamp(2rem,4vw,3rem);margin-bottom:12px}
-    .cta-box p{color:var(--muted);font-size:1.05rem;margin:0 0 22px}
-    .cta-stack{display:flex;flex-wrap:wrap;gap:12px}
-    .note{
-      background:#fff6e8;
-      border:1px solid #f1dfb6;
-      color:#7c5b00;
-      border-radius:18px;
-      padding:18px;
-      font-size:.96rem;
-    }
-
-    footer{
-      padding:34px 0 48px;
-      color:var(--muted);
-      font-size:.95rem;
-    }
-    .footer-inner{
-      display:flex;
-      justify-content:space-between;
-      gap:18px;
-      flex-wrap:wrap;
-      border-top:1px solid var(--line);
-      padding-top:24px;
-    }
-
-    @media (max-width: 980px){
-      .hero-grid,
-      .cta-box,
-      .grid-4,
-      .grid-3{
-        grid-template-columns:1fr 1fr;
-      }
-      .benefits{grid-template-columns:1fr 1fr}
-    }
-
-    @media (max-width: 720px){
-      .nav{display:none}
-      .hero-grid,
-      .cta-box,
-      .grid-4,
-      .grid-3,
-      .benefits{
-        grid-template-columns:1fr;
-      }
-      .hero{padding-top:44px}
-      .section{padding:64px 0}
-      .hero-card,
-      .problem-box,
-      .seo-box,
-      .cta-box,
-      .card,
-      .testimonial{padding:22px}
-    }
-  </style>
+.text-center{text-align:center}
+.section-label{font-family:var(--font-body);font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:2px;color:var(--coral);margin-bottom:12px}
+.section-title{font-family:var(--font-title);font-weight:700;font-size:clamp(28px,4vw,42px);color:var(--ink);line-height:1.15;margin-bottom:16px}
+.section-desc{font-size:17px;color:var(--ink2);max-width:600px;line-height:1.7}
+</style>
 </head>
 <body>
-  <header class="topbar">
-    <div class="container topbar-inner">
-      <a href="https://www.cotizaeventos.cl/" class="brand">Cotiza<span>Eventos</span>.cl</a>
-      <nav class="nav" aria-label="Principal">
-        <a href="#categorias">Servicios</a>
-        <a href="#como-funciona">Cómo funciona</a>
-        <a href="#beneficios">Ventajas</a>
-        <a href="https://www.cotizaeventos.cl/proveedores.html" class="btn btn-primary">Ver proveedores</a>
-      </nav>
+
+<!-- Nav -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">Cotiza<span>Eventos</span>.cl</a>
+    <div class="nav-links">
+      <a href="index.html">Inicio</a>
+      <a href="proveedores.html">Proveedores</a>
+      <a href="nosotros.html">Nosotros</a>
+      <a href="form.html" class="nav-cta">Publica tu negocio</a>
     </div>
-  </header>
+  </div>
+</nav>
 
-  <main>
-    <section class="hero">
-      <div class="container hero-grid">
-        <div>
-          <div class="eyebrow">🎉 Organiza mejor tu evento en Santiago</div>
-          <h1>Encuentra proveedores confiables para tu evento, sin perder horas buscando</h1>
-          <p>En CotizaEventos.cl puedes descubrir catering, DJs, fotógrafos, barra de tragos, food trucks y más. Compara opciones y contacta directo al proveedor, sin intermediarios ni comisiones raras.</p>
-          <div class="hero-actions">
-            <a class="btn btn-primary" href="https://www.cotizaeventos.cl/proveedores.html">Ver proveedores ahora</a>
-            <a class="btn btn-secondary" href="https://www.cotizaeventos.cl/form.html">Publicar mi evento o negocio</a>
-          </div>
-          <div class="trust-row">
-            <span class="pill">Contacto directo</span>
-            <span class="pill">Proveedores para Santiago</span>
-            <span class="pill">Ideal para matrimonios, cumpleaños y empresas</span>
-          </div>
-        </div>
-
-        <aside class="hero-card" aria-label="Resumen de beneficios">
-          <h3>Menos caos. Más evento.</h3>
-          <p>La propuesta pública de CotizaEventos se centra en conectar necesidades entre clientes y proveedores de eventos en Santiago, con foco en contacto directo y descubrimiento de servicios. ([instagram.com](https://www.instagram.com/cotizaeventos/?utm_source=chatgpt.com))</p>
-          <div class="mini-list">
-            <div class="mini-item">
-              <div class="mini-icon">🍽️</div>
-              <div><strong>Catering y banquetería</strong><span>Opciones para celebraciones sociales y corporativas.</span></div>
-            </div>
-            <div class="mini-item">
-              <div class="mini-icon">🎧</div>
-              <div><strong>DJ, música y ambientación</strong><span>Servicios para darle ritmo al evento, sin playlist de tío improvisado.</span></div>
-            </div>
-            <div class="mini-item">
-              <div class="mini-icon">📸</div>
-              <div><strong>Foto, video y extras</strong><span>Profesionales para capturar lo importante y lo entretenido.</span></div>
-            </div>
-          </div>
-          <a class="btn btn-dark" href="https://www.cotizaeventos.cl/proveedores.html">Quiero ver opciones</a>
-        </aside>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="container">
-        <div class="problem-box">
-          <span class="kicker">El problema</span>
-          <h2>Buscar proveedores uno por uno es una pérdida de tiempo</h2>
-          <p>Cuando alguien organiza un evento, normalmente termina saltando entre Instagram, WhatsApp, recomendaciones dispersas y perfiles incompletos. El resultado es el de siempre: más tiempo perdido, menos claridad y varias decisiones tomadas a ciegas. Esta landing está diseñada para cortar ese desorden y llevar al usuario directo a una acción útil: revisar proveedores y contactarlos.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="categorias">
-      <div class="container">
-        <div class="section-head">
-          <span class="kicker">Qué puedes encontrar</span>
-          <h2>Servicios para resolver tu evento en un solo lugar</h2>
-          <p>La idea es simple: en vez de salir a perseguir proveedores por todos lados, centralizas la búsqueda y comparas opciones más rápido.</p>
-        </div>
-        <div class="grid-4">
-          <article class="card">
-            <div class="card-icon">🍽️</div>
-            <h3>Catering y banquetería</h3>
-            <p>Opciones para matrimonios, cumpleaños, eventos corporativos y celebraciones privadas.</p>
-          </article>
-          <article class="card">
-            <div class="card-icon">🎧</div>
-            <h3>DJ y música</h3>
-            <p>Servicios para fiestas, matrimonios y eventos de empresa que necesitan ambiente, no silencio incómodo.</p>
-          </article>
-          <article class="card">
-            <div class="card-icon">📸</div>
-            <h3>Fotografía y video</h3>
-            <p>Profesionales para registrar los momentos importantes del evento con mejor cara que la cámara frontal del celular.</p>
-          </article>
-          <article class="card">
-            <div class="card-icon">🍸</div>
-            <h3>Barra de tragos</h3>
-            <p>Barras móviles, bartenders y servicios para elevar la experiencia del evento.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="como-funciona">
-      <div class="container">
-        <div class="section-head">
-          <span class="kicker">Cómo funciona</span>
-          <h2>Resolver tu evento puede ser bastante más simple de lo que parece</h2>
-          <p>Tres pasos. Sin vueltas. Sin una odisea de veinte mensajes para entender quién ofrece qué.</p>
-        </div>
-        <div class="grid-3 steps">
-          <article class="card step">
-            <h3>Explora proveedores</h3>
-            <p>Ingresa a la plataforma y revisa las categorías que más se ajusten a tu tipo de evento.</p>
-          </article>
-          <article class="card step">
-            <h3>Compara opciones</h3>
-            <p>Observa propuestas, estilo de servicio y distintas alternativas antes de decidir.</p>
-          </article>
-          <article class="card step">
-            <h3>Contacta directo</h3>
-            <p>Habla con el proveedor por WhatsApp o por el canal disponible, sin intermediarios.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="beneficios">
-      <div class="container">
-        <div class="section-head">
-          <span class="kicker">Por qué usarla</span>
-          <h2>Ventajas reales para quien necesita cerrar un evento rápido y bien</h2>
-          <p>Una landing que convierte no solo tiene que verse bien; tiene que dejar claro por qué el usuario debería actuar ahora.</p>
-        </div>
-        <div class="benefits">
-          <div class="benefit">
-            <div class="check">✓</div>
-            <div>
-              <strong>Contacto directo</strong>
-              <p>Menos fricción, menos triangulación y conversaciones más rápidas con cada proveedor.</p>
-            </div>
-          </div>
-          <div class="benefit">
-            <div class="check">✓</div>
-            <div>
-              <strong>Más claridad para elegir</strong>
-              <p>Comparar opciones en un solo sitio mejora mucho la decisión final.</p>
-            </div>
-          </div>
-          <div class="benefit">
-            <div class="check">✓</div>
-            <div>
-              <strong>Útil para distintos tipos de eventos</strong>
-              <p>Desde matrimonios hasta celebraciones de empresa o cumpleaños privados.</p>
-            </div>
-          </div>
-          <div class="benefit">
-            <div class="check">✓</div>
-            <div>
-              <strong>Enfoque local en Santiago</strong>
-              <p>Más sentido para el usuario final y mucho mejor para SEO local.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="container">
-        <div class="testimonial">
-          <p>“Necesitaba resolver un cumpleaños sin volverme loco buscando datos por todos lados. Tener varias opciones en un solo lugar me ahorró tiempo y me ayudó a decidir más rápido.”</p>
-          <strong>Ejemplo de testimonio para la landing</strong>
-        </div>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="container">
-        <div class="cta-box">
-          <div>
-            <span class="kicker">Llamado a la acción</span>
-            <h2>Empieza ahora y encuentra proveedores para tu evento</h2>
-            <p>Esta landing está pensada para enviar tráfico desde anuncios, redes sociales o campañas directas hacia una sola acción principal: visitar los proveedores de CotizaEventos.cl y comenzar el contacto.</p>
-            <div class="cta-stack">
-              <a class="btn btn-primary" href="https://www.cotizaeventos.cl/proveedores.html">Ver proveedores disponibles</a>
-              <a class="btn btn-secondary" href="https://www.cotizaeventos.cl/form.html">Quiero publicar un negocio</a>
-            </div>
-          </div>
-          <div class="note">
-            <strong>Consejo de conversión:</strong> usa esta landing como página de destino para campañas de Meta Ads o Google Ads con búsquedas como <em>catering para eventos en Santiago</em>, <em>DJ para matrimonio en Santiago</em> o <em>proveedores para eventos</em>. Ahí está la pólvora de verdad.
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="container">
-        <div class="seo-box">
-          <span class="kicker">Bloque SEO</span>
-          <h2>Proveedores para eventos en Santiago</h2>
-          <p>CotizaEventos.cl apunta a conectar clientes con proveedores para eventos en Santiago, incluyendo catering, DJs, fotografía, barras de tragos y otros servicios asociados a celebraciones y eventos corporativos. En sus perfiles públicos, la marca se presenta como una plataforma para cotizar proveedores y conectar necesidades entre clientes y prestadores de servicios. ([instagram.com](https://www.instagram.com/cotizaeventos/?utm_source=chatgpt.com))</p>
-          <p>Este bloque te ayuda a posicionar búsquedas relacionadas con <strong>proveedores para eventos en Santiago</strong>, <strong>catering para eventos</strong>, <strong>DJ para fiestas</strong> y términos similares, sin caer en texto vacío que suena a SEO escrito por un robot con sueño.</p>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <div class="container footer-inner">
-      <div>© 2026 CotizaEventos.cl</div>
-      <div>Landing orientada a conversión de clientes</div>
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <h1>Consigue más clientes para tu negocio de <em>eventos</em></h1>
+    <p>Publica tu servicio en el directorio de proveedores de eventos más completo de Santiago. Sin comisiones, sin intermediarios. Los clientes te contactan directo.</p>
+    <a href="form.html" class="btn btn-coral btn-lg">Publicar mi negocio gratis</a>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="num">50+</div><div class="label">Categorías</div></div>
+      <div class="hero-stat"><div class="num">0%</div><div class="label">Comisión</div></div>
+      <div class="hero-stat"><div class="num">24h</div><div class="label">Revisión</div></div>
     </div>
-  </footer>
+  </div>
+</section>
+
+<!-- What is CotizaEventos -->
+<section class="what section">
+  <div class="container">
+    <div class="what-grid">
+      <div class="what-text">
+        <p class="section-label">Sobre CotizaEventos.cl</p>
+        <h2>Un directorio pensado para que crezcas</h2>
+        <p>CotizaEventos.cl es el directorio de proveedores de eventos de Santiago. Conectamos a personas que organizan eventos con los mejores proveedores de catering, DJ, fotografía, decoración, barra de tragos y mucho más.</p>
+        <p>Tu negocio obtiene una página propia con toda tu información, fotos y contacto directo. Los clientes te encuentran, comparan y te escriben — sin que nosotros cobremos comisión.</p>
+      </div>
+      <div class="what-visual">
+        <div class="what-card"><div class="ico">🍕</div><h4>Catering</h4><p>Pizzas, parrilladas, hamburguesas, sushi y más</p></div>
+        <div class="what-card"><div class="ico">🎵</div><h4>DJ y Música</h4><p>DJs, bandas, sonido e iluminación</p></div>
+        <div class="what-card"><div class="ico">📸</div><h4>Fotografía</h4><p>Fotógrafos, video, drones, cabinas</p></div>
+        <div class="what-card"><div class="ico">🎨</div><h4>Decoración</h4><p>Florería, globos, mobiliario, ambientación</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Process -->
+<section class="section" style="background:var(--bg2)">
+  <div class="container text-center">
+    <p class="section-label">Proceso simple</p>
+    <h2 class="section-title">¿Cómo funciona?</h2>
+    <p class="section-desc" style="margin:0 auto">En 4 pasos tu negocio estará visible para miles de personas que buscan proveedores en Santiago.</p>
+    <div class="process-grid">
+      <div class="process-step">
+        <div class="process-num">1</div>
+        <h4>Completa el formulario</h4>
+        <p>Llena tus datos, sube fotos y describe tu servicio. Verás cómo queda tu página en tiempo real.</p>
+        <span class="process-arrow">→</span>
+      </div>
+      <div class="process-step">
+        <div class="process-num">2</div>
+        <h4>Revisamos tu solicitud</h4>
+        <p>Nuestro equipo revisa cada solicitud para garantizar la calidad del directorio. Máximo 48 horas.</p>
+        <span class="process-arrow">→</span>
+      </div>
+      <div class="process-step">
+        <div class="process-num">3</div>
+        <h4>Tu página se publica</h4>
+        <p>Tu negocio obtiene una página propia con URL única, indexada en Google automáticamente.</p>
+        <span class="process-arrow">→</span>
+      </div>
+      <div class="process-step">
+        <div class="process-num">4</div>
+        <h4>Recibe clientes</h4>
+        <p>Los clientes te contactan directo por WhatsApp o email. Sin intermediarios ni comisiones.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Benefits -->
+<section class="section" style="background:var(--white)">
+  <div class="container text-center">
+    <p class="section-label">Beneficios</p>
+    <h2 class="section-title">¿Por qué CotizaEventos?</h2>
+    <div class="benefits-grid">
+      <div class="benefit"><div class="ico">$0</div><h4>Cero comisiones</h4><p>No cobramos porcentaje por los clientes que consigas. El 100% del ingreso es tuyo.</p></div>
+      <div class="benefit"><div class="ico">🔍</div><h4>SEO automático</h4><p>Tu página se indexa en Google con meta tags, Open Graph y schema.org.</p></div>
+      <div class="benefit"><div class="ico">📱</div><h4>WhatsApp directo</h4><p>Los clientes te escriben directamente. Sin formularios intermedios ni delays.</p></div>
+      <div class="benefit"><div class="ico">✏️</div><h4>Edita tu perfil</h4><p>Actualiza fotos, precios y descripción cuando quieras desde tu panel de suscriptor.</p></div>
+      <div class="benefit"><div class="ico">📊</div><h4>Visibilidad</h4><p>Miles de personas buscan proveedores para eventos cada mes en Santiago.</p></div>
+      <div class="benefit"><div class="ico">⚡</div><h4>Rápido y fácil</h4><p>Completa el formulario visual en minutos. Tu página se crea automáticamente.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- Plans -->
+<section class="plans section">
+  <div class="container text-center">
+    <p class="section-label">Planes</p>
+    <h2 class="section-title">Elige tu nivel de visibilidad</h2>
+    <p class="section-desc" style="margin:0 auto">Empieza gratis o destaca desde el primer día.</p>
+    <div class="plans-grid">
+      <div class="plan-card">
+        <h3>Básico</h3>
+        <div class="price">Gratis</div>
+        <div class="price-sub">para siempre</div>
+        <ul>
+          <li><span class="check">✓</span> Nombre y contacto en el directorio</li>
+          <li><span class="check">✓</span> Precio visible</li>
+          <li><span class="check">✓</span> Contacto por email</li>
+          <li><span class="cross">—</span> <span style="color:var(--muted)">Sin foto de portada</span></li>
+          <li><span class="cross">—</span> <span style="color:var(--muted)">Sin galería de fotos</span></li>
+          <li><span class="cross">—</span> <span style="color:var(--muted)">Sin WhatsApp directo</span></li>
+        </ul>
+        <a href="form.html" class="btn btn-outline" style="width:100%">Empezar gratis</a>
+      </div>
+      <div class="plan-card featured">
+        <h3>Destacado</h3>
+        <div class="price">$15.000</div>
+        <div class="price-sub">por mes (o $95.000/año)</div>
+        <ul>
+          <li><span class="check">✓</span> Todo lo del plan Básico</li>
+          <li><span class="check">✓</span> Foto de portada y logo</li>
+          <li><span class="check">✓</span> Galería de hasta 5 fotos</li>
+          <li><span class="check">✓</span> Descripción completa visible</li>
+          <li><span class="check">✓</span> WhatsApp directo desde tu página</li>
+          <li><span class="check">✓</span> Posición prioritaria en el directorio</li>
+        </ul>
+        <a href="form.html" class="btn btn-coral" style="width:100%">Publicar como Destacado</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq section">
+  <div class="container text-center">
+    <p class="section-label">Preguntas frecuentes</p>
+    <h2 class="section-title">¿Tienes dudas?</h2>
+    <div class="faq-list">
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">¿Cuánto cuesta publicar mi negocio?<span class="arrow">▾</span></div>
+        <div class="faq-a">El plan Básico es completamente gratis y para siempre. El plan Destacado tiene un costo de $15.000 mensuales o $95.000 anuales (equivalente a 2 meses gratis).</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">¿Cobran comisión por los clientes que consiga?<span class="arrow">▾</span></div>
+        <div class="faq-a">No. Jamás cobramos comisión. Los clientes te contactan directamente y toda la negociación es entre tú y el cliente.</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">¿Cuánto demora la aprobación?<span class="arrow">▾</span></div>
+        <div class="faq-a">Revisamos cada solicitud en un máximo de 48 horas hábiles. Una vez aprobado, tu página se publica inmediatamente.</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">¿Puedo editar mi perfil después de publicado?<span class="arrow">▾</span></div>
+        <div class="faq-a">Sí. Desde tu panel en suscripciones.html puedes actualizar fotos, precios, descripción y todos tus datos cuando quieras.</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">¿Mi página sale en Google?<span class="arrow">▾</span></div>
+        <div class="faq-a">Sí. Cada proveedor aprobado obtiene una página con URL única que se indexa automáticamente en Google con meta tags SEO completos.</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">¿Qué tipo de negocios pueden registrarse?<span class="arrow">▾</span></div>
+        <div class="faq-a">Cualquier negocio de servicios para eventos en la Región Metropolitana de Santiago: catering, DJ, fotografía, decoración, barra de tragos, food trucks, personal de servicio, wedding planners y más.</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">¿Cómo me pagan los clientes?<span class="arrow">▾</span></div>
+        <div class="faq-a">Directamente a ti. CotizaEventos.cl es un directorio — no participamos en la transacción entre tú y tus clientes.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Final -->
+<section class="cta">
+  <div class="container">
+    <h2>Tu próximo cliente te está buscando</h2>
+    <p>Publica tu negocio en menos de 5 minutos y empieza a recibir contactos directos.</p>
+    <a href="form.html" class="btn btn-coral btn-lg">Publicar mi negocio gratis</a>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo">Cotiza<span>Eventos</span>.cl</div>
+      <p class="footer-copy">&copy; 2025 CotizaEventos.cl</p>
+    </div>
+    <div class="footer-links">
+      <a href="proveedores.html">Proveedores</a>
+      <a href="nosotros.html">Nosotros</a>
+      <a href="terminos.html">Términos</a>
+      <a href="form.html">Publicar negocio</a>
+    </div>
+  </div>
+</footer>
 </body>
 </html>
