@@ -388,13 +388,14 @@ function renderSolicitudes(){
       </div>
       <div class="sol-actions">
         <select class="sol-pos-select" id="pos_${s.id}">
-          <option value="0" selected>📋 Básico</option>
-          <option value="1">✦ Destacado</option>
+          <option value="0" selected>Básico</option>
+          <option value="1">Destacado</option>
         </select>
-        ${testMode?'<span class="sol-test-warn">⚠️ Modo prueba: se asignará Destacado</span>':''}
+        ${testMode?'<span class="sol-test-warn">Modo prueba: se asignará Destacado</span>':''}
         <button class="btn btn-green btn-sm" onclick="aprobar('${s.id}')">Aprobar</button>
         <button class="btn btn-red btn-sm" onclick="rechazar('${s.id}')">Rechazar</button>
-        <button class="btn btn-ghost" onclick="verSolicitud('${s.id}')">Ver todo</button>
+        <button class="btn btn-outline btn-sm" onclick="previewSolicitud('${s.id}')">Previsualizar</button>
+        <button class="btn btn-ghost" onclick="verSolicitud('${s.id}')">Ver datos</button>
       </div>
     </div>`;
   }
@@ -433,6 +434,65 @@ function verSolicitud(id){
     html+=`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px"><span style="color:var(--muted);flex-shrink:0;margin-right:12px">${esc(k)}</span><span style="text-align:right;word-break:break-word">${esc(val)}</span></div>`;
   }
   html+=`</div>`;
+  openModal(html);
+}
+
+function previewSolicitud(id){
+  const s=allSolicitudes.find(x=>x.id===id);
+  if(!s)return;
+  const coverHtml=s.cover_url?`<div style="height:180px;background:#1A1410;border-radius:14px 14px 0 0;overflow:hidden;position:relative"><img src="${esc(s.cover_url)}" style="width:100%;height:100%;object-fit:cover" alt=""><div style="position:absolute;top:10px;left:10px;background:linear-gradient(135deg,var(--coral),var(--coral2));color:#fff;font-size:11px;font-weight:600;padding:4px 12px;border-radius:100px">Destacado</div></div>`
+    :`<div style="height:80px;background:#1A1410;border-radius:14px 14px 0 0"></div>`;
+  const logoHtml=s.logo_url?`<img src="${esc(s.logo_url)}" style="width:64px;height:64px;border-radius:14px;object-fit:cover;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.1)" alt="">`
+    :`<div style="width:64px;height:64px;border-radius:14px;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:28px;border:3px solid #fff">${esc(s.logo_emoji||'✦')}</div>`;
+
+  // Parse gallery from comentarios
+  let galHtml='';
+  if(s.comentarios){
+    const imgs=s.comentarios.split(',').map(u=>u.trim()).filter(u=>u.startsWith('http'));
+    if(imgs.length){
+      galHtml='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:6px;margin:12px 0">'+imgs.map(u=>'<img src="'+esc(u)+'" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px" alt="">').join('')+'</div>';
+    }
+  }
+
+  const catName=(s.categorias||[]).join(', ');
+  let html=`
+  <div style="max-height:80vh;overflow-y:auto">
+    ${coverHtml}
+    <div style="padding:20px;position:relative">
+      <div style="display:flex;align-items:flex-end;gap:14px;margin-top:${s.cover_url?'-40px':'0'}">
+        ${logoHtml}
+        <div>
+          <h3 style="font-family:var(--font-title);font-size:22px;margin:0">${esc(s.nombre)}</h3>
+          ${catName?'<div style="font-size:12px;color:var(--muted)">'+esc(catName)+'</div>':''}
+        </div>
+      </div>
+      ${s.tagline||s.diferenciador?'<p style="font-size:16px;color:var(--ink2);margin:14px 0 0">'+esc(s.tagline||s.diferenciador)+'</p>':''}
+      ${s.descripcion?'<div style="margin-top:16px"><div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:600;margin-bottom:4px">Descripción</div><p style="font-size:14px;color:var(--ink2);line-height:1.7">'+esc(s.descripcion)+'</p></div>':''}
+      ${s.diferenciador&&s.tagline?'<div style="margin-top:12px"><div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:600;margin-bottom:4px">Diferenciador</div><p style="font-size:14px;color:var(--ink2)">'+esc(s.diferenciador)+'</p></div>':''}
+      <div style="display:flex;gap:16px;margin-top:14px;flex-wrap:wrap">
+        ${s.precio_minimo?'<div style="font-size:14px;color:var(--ink2)">Desde <strong style="color:var(--coral);font-size:18px">$'+esc(s.precio_minimo)+'</strong></div>':''}
+        ${s.precio_maximo?'<div style="font-size:14px;color:var(--ink2)">Hasta <strong style="color:var(--coral);font-size:18px">$'+esc(s.precio_maximo)+'</strong></div>':''}
+      </div>
+      ${galHtml}
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;font-size:13px;color:var(--ink2)">
+        ${s.incluye?'<div><strong style="display:block;font-size:11px;text-transform:uppercase;color:var(--muted);font-weight:600">Incluye</strong>'+esc(s.incluye)+'</div>':''}
+        ${s.no_incluye?'<div><strong style="display:block;font-size:11px;text-transform:uppercase;color:var(--muted);font-weight:600">No incluye</strong>'+esc(s.no_incluye)+'</div>':''}
+        ${s.experiencia?'<div><strong style="display:block;font-size:11px;text-transform:uppercase;color:var(--muted);font-weight:600">Experiencia</strong>'+esc(s.experiencia)+'</div>':''}
+        ${s.capacidad?'<div><strong style="display:block;font-size:11px;text-transform:uppercase;color:var(--muted);font-weight:600">Capacidad</strong>'+esc(s.capacidad)+'</div>':''}
+        ${s.comunas?'<div style="grid-column:1/-1"><strong style="display:block;font-size:11px;text-transform:uppercase;color:var(--muted);font-weight:600">Comunas</strong>'+esc(s.comunas)+'</div>':''}
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">
+        ${s.whatsapp?'<a href="https://wa.me/'+esc(s.whatsapp)+'" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:10px 20px;background:#25D366;color:#fff;border-radius:10px;font-size:13px;font-weight:600;text-decoration:none">WhatsApp</a>':''}
+        ${s.email?'<a href="mailto:'+esc(s.email)+'" style="display:inline-flex;align-items:center;gap:5px;padding:10px 20px;border:1px solid var(--border);border-radius:10px;font-size:13px;color:var(--ink2);text-decoration:none">Email</a>':''}
+        ${s.telefono?'<a href="tel:'+esc(s.telefono)+'" style="display:inline-flex;align-items:center;gap:5px;padding:10px 20px;border:1px solid var(--border);border-radius:10px;font-size:13px;color:var(--ink2);text-decoration:none">Llamar</a>':''}
+      </div>
+      <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end">
+        <button class="btn btn-green btn-sm" onclick="closeModal();aprobar('${s.id}')">Aprobar</button>
+        <button class="btn btn-red btn-sm" onclick="closeModal();rechazar('${s.id}')">Rechazar</button>
+        <button class="btn btn-outline btn-sm" onclick="closeModal()">Cerrar</button>
+      </div>
+    </div>
+  </div>`;
   openModal(html);
 }
 
