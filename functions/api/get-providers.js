@@ -68,6 +68,7 @@ function mapProvider(p) {
     logo_url: p.logo_url,
     cover_url: p.cover_url,
     pos: (p.posicion && p.posicion > 0) ? 1 : 0, // 0 = Básico, 1 = Destacado
+    slug: p.slug || "",
   };
 }
 
@@ -190,7 +191,22 @@ export async function onRequest(context) {
     // 5. Flat list of mapped providers (useful for search / filters)
     const providers = proveedores.map(mapProvider);
 
-    return jsonResponse({ ok: true, providers, grupos });
+    // 6. Check if test/promo mode is active
+    let promo = false;
+    try {
+      const { data: configRow } = await supabase
+        .from("config")
+        .select("valor")
+        .eq("clave", "modo_prueba")
+        .limit(1);
+      if (configRow && configRow.length > 0 && configRow[0].valor === "true") {
+        promo = true;
+      }
+    } catch (e) {
+      // Config table might not exist yet, ignore
+    }
+
+    return jsonResponse({ ok: true, providers, grupos, promo });
   } catch (err) {
     console.error("Unexpected error in get-providers:", err);
     return errorResponse("Error interno del servidor", 500);
