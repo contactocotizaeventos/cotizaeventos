@@ -204,7 +204,7 @@ export async function onRequest(context) {
       if (sub.proveedor_id) {
         const { data: prov } = await supabase
           .from("proveedores")
-          .select("id, nombre, posicion, activo, categoria, etiqueta_id, cover_url, logo_url, logo_emoji, descripcion, diferenciador, tagline, experiencia, capacidad, comunas, precio_minimo, precio_maximo, incluye, no_incluye, whatsapp, telefono, email, web, instagram, facebook, tiktok, youtube, responsable")
+          .select("id, nombre, posicion, activo, categoria, etiqueta_id, cover_url, logo_url, logo_emoji, descripcion, diferenciador, tagline, experiencia, capacidad, comunas, precio_minimo, precio_maximo, incluye, no_incluye, whatsapp, telefono, email, web, instagram, facebook, tiktok, youtube, responsable, slug")
           .eq("id", sub.proveedor_id)
           .single();
         proveedor = prov || null;
