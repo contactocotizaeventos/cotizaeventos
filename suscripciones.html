@@ -514,11 +514,13 @@ function renderDashboard(data){
   // Business info
   const infoEl=document.getElementById('infoRows');
   if(proveedor){
+    const pageLink=proveedor.slug?`<div class="info-row"><span class="label">Mi página</span><span class="value"><a href="/prov/${esc(proveedor.slug)}" target="_blank" rel="noopener" style="color:var(--coral);font-weight:600;text-decoration:underline">Ver mi página pública →</a></span></div>`:'';
     infoEl.innerHTML=`
       <div class="info-row"><span class="label">Email</span><span class="value">${esc(suscriptor.email)}</span></div>
       <div class="info-row"><span class="label">Categoría</span><span class="value">${esc(proveedor.categoria)}</span></div>
-      <div class="info-row"><span class="label">Estado</span><span class="value">${proveedor.activo?'✅ Activo':'❌ Inactivo'}</span></div>
-      <div class="info-row"><span class="label">Plan actual</span><span class="value">${proveedor.posicion===1?'✦ Destacado':'📋 Básico'}</span></div>
+      <div class="info-row"><span class="label">Estado</span><span class="value">${proveedor.activo?'Activo':'Inactivo'}</span></div>
+      <div class="info-row"><span class="label">Plan actual</span><span class="value">${proveedor.posicion===1?'Destacado':'Básico'}</span></div>
+      ${pageLink}
     `;
   }else{
     infoEl.innerHTML='<p style="color:var(--muted);font-size:14px">No se encontró proveedor vinculado.</p>';
@@ -616,6 +618,7 @@ function renderProfileEditor(proveedor){
     <div class="profile-grid">
       ${f('nombre','Nombre del negocio (no editable)',proveedor.nombre,{disabled:true})}
       ${f('responsable','Responsable',proveedor.responsable)}
+      ${f('tagline','Frase corta (tagline)',proveedor.tagline,{full:true})}
       ${f('descripcion','Descripción del servicio',proveedor.descripcion,{type:'textarea',full:true})}
       ${f('diferenciador','¿Qué nos diferencia?',proveedor.diferenciador,{type:'textarea',full:true})}
       ${f('tagline','Frase corta (tagline)',proveedor.tagline)}
