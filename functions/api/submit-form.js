@@ -1,12 +1,14 @@
 /**
- * POST /api/submit-form
+ * GET /api/get-providers
  *
  * Public endpoint — no authentication required.
- * Receives a provider registration request, validates required fields,
- * inserts into the `solicitudes` table, and sends a confirmation email (Email 1).
+ * Returns active providers grouped by category hierarchy:
+ *   { providers: [...], grupos: [...] }
  *
  * Supabase tables used (existing, do NOT modify):
- *   - solicitudes
+ *   - proveedores
+ *   - categorias
+ *   - etiquetas
  */
 
 import { createClient } from "@supabase/supabase-js";
@@ -16,7 +18,7 @@ import { createClient } from "@supabase/supabase-js";
 function corsHeaders() {
   return {
     "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Methods": "GET, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
     "Content-Type": "application/json; charset=utf-8",
   };
@@ -34,71 +36,94 @@ function errorResponse(message, status = 500) {
 }
 
 /**
- * sendEmail — utility to send transactional emails via Resend API.
- * Never blocks the main operation if it fails.
+ * mapProvider — expose only the fields the frontend needs.
+ * Keep payloads small; never leak internal IDs unnecessarily.
  */
-async function sendEmail(to, subject, html, env) {
-  try {
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${env.RESEND_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: env.EMAIL_FROM,
-        to: [to],
-        subject,
-        html,
-      }),
-    });
-
-    if (!res.ok) {
-      const body = await res.text();
-      console.error(`Resend error (${res.status}):`, body);
-    }
-  } catch (err) {
-    console.error("sendEmail failed:", err);
-  }
+function mapProvider(p) {
+  return {
+    id: p.id,
+    nombre: p.nombre,
+    responsable: p.responsable,
+    descripcion: p.descripcion,
+    diferenciador: p.diferenciador,
+    tagline: p.tagline,
+    experiencia: p.experiencia,
+    capacidad: p.capacidad,
+    categoria: p.categoria,
+    etiqueta_id: p.etiqueta_id,
+    comunas: p.comunas,
+    precio_minimo: p.precio_minimo,
+    precio_maximo: p.precio_maximo,
+    incluye: p.incluye,
+    no_incluye: p.no_incluye,
+    whatsapp: p.whatsapp,
+    telefono: p.telefono,
+    email: p.email,
+    web: p.web,
+    instagram: p.instagram,
+    facebook: p.facebook,
+    tiktok: p.tiktok,
+    youtube: p.youtube,
+    logo_emoji: p.logo_emoji,
+    logo_url: p.logo_url,
+    cover_url: p.cover_url,
+    pos: (p.posicion && p.posicion > 0) ? 1 : 0, // 0 = Básico, 1 = Destacado
+    slug: p.slug || "",
+  };
 }
 
 /**
- * buildConfirmationEmail — Email 1: Confirmation that the request was received.
+ * buildGrupos — assemble the category hierarchy:
+ *   grupo (categorias) → etiquetas → proveedores
+ *
+ * Icons come 100 % from the database. No hardcoded emojis.
  */
-function buildConfirmationEmail(nombre) {
-  return `
-<!DOCTYPE html>
-<html lang="es">
-<head><meta charset="utf-8"></head>
-<body style="font-family:Arial,Helvetica,sans-serif;background:#FAFAF8;padding:32px 16px;color:#1A1714;">
-  <div style="max-width:560px;margin:0 auto;background:#FFFFFF;border-radius:14px;padding:40px 32px;border:1px solid #E8E4DF;">
-    <h1 style="font-size:22px;margin:0 0 8px 0;color:#E8542A;">CotizaEventos.cl</h1>
-    <h2 style="font-size:18px;margin:0 0 24px 0;color:#1A1714;">¡Recibimos tu solicitud!</h2>
-    <p style="margin:0 0 16px 0;line-height:1.6;color:#3D3733;">
-      Hola${nombre ? ` <strong>${nombre}</strong>` : ""},
-    </p>
-    <p style="margin:0 0 16px 0;line-height:1.6;color:#3D3733;">
-      Tu solicitud de registro en <strong>CotizaEventos.cl</strong> fue recibida exitosamente.
-    </p>
-    <p style="margin:0 0 16px 0;line-height:1.6;color:#3D3733;">
-      En un plazo máximo de <strong>48 horas hábiles</strong> revisaremos tu información. La admisión no es automática — evaluamos cada solicitud para garantizar la calidad del directorio y la mejor experiencia para los clientes.
-    </p>
-    <p style="margin:0 0 16px 0;line-height:1.6;color:#3D3733;">
-      Te notificaremos por correo electrónico cuando tu solicitud sea revisada.
-    </p>
-    <p style="margin:0 0 24px 0;line-height:1.6;color:#3D3733;">
-      Si tienes dudas, escríbenos por WhatsApp:
-    </p>
-    <a href="https://wa.me/56991999301" style="display:inline-block;background:#25D366;color:#fff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;font-size:14px;">
-      💬 Contactar por WhatsApp
-    </a>
-    <hr style="border:none;border-top:1px solid #E8E4DF;margin:32px 0 16px 0;">
-    <p style="margin:0;font-size:12px;color:#8A8278;">
-      Este correo fue enviado automáticamente por CotizaEventos.cl
-    </p>
-  </div>
-</body>
-</html>`.trim();
+function buildGrupos(categorias, etiquetas, proveedores) {
+  // Index providers by etiqueta_id for fast lookup
+  const provsByEtiqueta = {};
+  for (const p of proveedores) {
+    const key = p.etiqueta_id || p.categoria;
+    if (!provsByEtiqueta[key]) provsByEtiqueta[key] = [];
+    provsByEtiqueta[key].push(mapProvider(p));
+  }
+
+  // Index etiquetas by categoria_id
+  const etiqsByCategoria = {};
+  for (const e of etiquetas) {
+    if (!etiqsByCategoria[e.categoria_id]) etiqsByCategoria[e.categoria_id] = [];
+    etiqsByCategoria[e.categoria_id].push(e);
+  }
+
+  // Build hierarchy
+  const grupos = categorias.map((cat) => {
+    const etiquetasDelGrupo = (etiqsByCategoria[cat.id] || []).map((et) => {
+      const provs = provsByEtiqueta[et.id] || [];
+      return {
+        id: et.id,
+        nombre: et.nombre,
+        ico: et.ico,
+        descripcion: et.descripcion,
+        orden: et.orden,
+        proveedores: provs,
+        total: provs.length,
+      };
+    });
+
+    // Total providers in this group (sum of all etiquetas)
+    const total = etiquetasDelGrupo.reduce((sum, et) => sum + et.total, 0);
+
+    return {
+      id: cat.id,
+      nombre: cat.nombre,
+      ico: cat.ico,
+      descripcion: cat.descripcion,
+      orden: cat.orden,
+      etiquetas: etiquetasDelGrupo,
+      total,
+    };
+  });
+
+  return grupos;
 }
 
 // ── Main handler ─────────────────────────────────────────────────────
@@ -111,7 +136,7 @@ export async function onRequest(context) {
     return new Response(null, { status: 204, headers: corsHeaders() });
   }
 
-  if (request.method !== "POST") {
+  if (request.method !== "GET") {
     return errorResponse("Método no permitido", 405);
   }
 
@@ -121,85 +146,69 @@ export async function onRequest(context) {
     return errorResponse("Error de configuración del servidor", 500);
   }
 
-  let body;
-  try {
-    body = await request.json();
-  } catch {
-    return errorResponse("JSON inválido", 400);
-  }
-
-  // ── Validate required fields ───────────────────────────────────────
-  const { nombre, whatsapp, email } = body;
-
-  if (!nombre || !nombre.trim()) {
-    return errorResponse("El nombre del negocio es obligatorio", 400);
-  }
-  if (!whatsapp || !whatsapp.trim()) {
-    return errorResponse("El WhatsApp es obligatorio", 400);
-  }
-  if (!email || !email.trim()) {
-    return errorResponse("El email es obligatorio", 400);
-  }
-
   const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_KEY);
 
   try {
-    // ── Build solicitud record ─────────────────────────────────────────
-    const solicitud = {
-      nombre: (body.nombre || "").trim(),
-      responsable: (body.responsable || "").trim(),
-      rut: (body.rut || "").trim(),
-      descripcion: (body.descripcion || "").trim(),
-      diferenciador: (body.diferenciador || "").trim(),
-      experiencia: (body.experiencia || "").trim(),
-      capacidad: (body.capacidad || "").trim(),
-      categorias: body.categorias || [],
-      comunas: (body.comunas || "").trim(),
-      precio_minimo: (body.precio_minimo || "").trim(),
-      precio_maximo: (body.precio_maximo || "").trim(),
-      incluye: (body.incluye || "").trim(),
-      no_incluye: (body.no_incluye || "").trim(),
-      anticipacion: (body.anticipacion || "").trim(),
-      anticipo: (body.anticipo || "").trim(),
-      whatsapp: (body.whatsapp || "").trim(),
-      telefono: (body.telefono || "").trim(),
-      email: (body.email || "").trim().toLowerCase(),
-      web: (body.web || "").trim(),
-      instagram: (body.instagram || "").trim(),
-      facebook: (body.facebook || "").trim(),
-      tiktok: (body.tiktok || "").trim(),
-      youtube: (body.youtube || "").trim(),
-      direccion: (body.direccion || "").trim(),
-      posicion_deseada: body.posicion_deseada || "0",
-      logo_url: (body.logo_url || "").trim(),
-      cover_url: (body.cover_url || "").trim(),
-      logo_emoji: (body.logo_emoji || "").trim(),
-      comentarios: (body.comentarios || "").trim(),
-      estado: "pendiente",
-      fecha_registro: new Date().toISOString(),
-    };
+    // 1. Load active providers ordered by categoria ASC, posicion ASC
+    const { data: proveedores, error: errProv } = await supabase
+      .from("proveedores")
+      .select("*")
+      .eq("activo", true)
+      .order("categoria", { ascending: true })
+      .order("posicion", { ascending: true });
 
-    // ── Insert into solicitudes ────────────────────────────────────────
-    const { data, error } = await supabase
-      .from("solicitudes")
-      .insert([solicitud])
-      .select("id")
-      .single();
-
-    if (error) {
-      console.error("Error inserting solicitud:", error);
-      return errorResponse("Error al guardar la solicitud", 500);
+    if (errProv) {
+      console.error("Error loading proveedores:", errProv);
+      return errorResponse("Error al cargar proveedores", 500);
     }
 
-    // ── Send Email 1 ──────────────────────────────────────────────────
-    if (env.RESEND_API_KEY && env.EMAIL_FROM) {
-      const emailHtml = buildConfirmationEmail(solicitud.nombre);
-      await sendEmail(solicitud.email, "Tu solicitud en CotizaEventos.cl fue recibida", emailHtml, env);
+    // 2. Load categorias ordered by orden ASC
+    const { data: categorias, error: errCat } = await supabase
+      .from("categorias")
+      .select("*")
+      .order("orden", { ascending: true });
+
+    if (errCat) {
+      console.error("Error loading categorias:", errCat);
+      return errorResponse("Error al cargar categorías", 500);
     }
 
-    return jsonResponse({ ok: true, id: data.id });
+    // 3. Load etiquetas ordered by categoria_id, orden ASC
+    const { data: etiquetas, error: errEtiq } = await supabase
+      .from("etiquetas")
+      .select("*")
+      .order("categoria_id", { ascending: true })
+      .order("orden", { ascending: true });
+
+    if (errEtiq) {
+      console.error("Error loading etiquetas:", errEtiq);
+      return errorResponse("Error al cargar etiquetas", 500);
+    }
+
+    // 4. Build hierarchical structure
+    const grupos = buildGrupos(categorias, etiquetas, proveedores);
+
+    // 5. Flat list of mapped providers (useful for search / filters)
+    const providers = proveedores.map(mapProvider);
+
+    // 6. Check if test/promo mode is active
+    let promo = false;
+    try {
+      const { data: configRow } = await supabase
+        .from("config")
+        .select("valor")
+        .eq("clave", "modo_prueba")
+        .limit(1);
+      if (configRow && configRow.length > 0 && configRow[0].valor === "true") {
+        promo = true;
+      }
+    } catch (e) {
+      // Config table might not exist yet, ignore
+    }
+
+    return jsonResponse({ ok: true, providers, grupos, promo });
   } catch (err) {
-    console.error("Unexpected error in submit-form:", err);
+    console.error("Unexpected error in get-providers:", err);
     return errorResponse("Error interno del servidor", 500);
   }
 }
