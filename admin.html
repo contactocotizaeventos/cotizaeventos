@@ -324,7 +324,7 @@ async function loadAll(){
       apiGet({action:'config'})
     ]);
     allSolicitudes=solRes.solicitudes||[];
-    allProveedores=provRes.proveedores||[];
+    allProveedores=provRes.proveedores||provRes.providers||[];
     allSubData=subRes.suscripciones||[];
     allGrupos=catRes.grupos||[];
 
@@ -409,7 +409,7 @@ async function aprobar(id){
     allSolicitudes=allSolicitudes.map(s=>s.id===id?{...s,estado:'aprobada'}:s);
     renderSolicitudes();
     const provRes=await apiGet({action:'proveedores'});
-    allProveedores=provRes.proveedores||[];
+    allProveedores=provRes.proveedores||provRes.providers||[];
     renderProveedores();
   }catch(e){alert('Error: '+e.message)}
 }
@@ -552,7 +552,7 @@ async function saveProv(id){
     await api('PUT',{id,fields});
     closeModal();
     const res=await apiGet({action:'proveedores'});
-    allProveedores=res.proveedores||[];
+    allProveedores=res.proveedores||res.providers||[];
     renderProveedores();
   }catch(e){alert('Error: '+e.message)}
 }
@@ -684,7 +684,7 @@ async function activarDirecto(provId){
     closeModal();
     const[subRes,provRes]=await Promise.all([apiGet({action:'suscripciones'}),apiGet({action:'proveedores'})]);
     allSubData=subRes.suscripciones||[];
-    allProveedores=provRes.proveedores||[];
+    allProveedores=provRes.proveedores||provRes.providers||[];
     renderSuscripciones();
     renderProveedores();
   }catch(e){alert('Error: '+e.message)}
@@ -702,7 +702,7 @@ async function confirmarPago(suscriptorId){
     // Reload subs + proveedores
     const[subRes,provRes]=await Promise.all([apiGet({action:'suscripciones'}),apiGet({action:'proveedores'})]);
     allSubData=subRes.suscripciones||[];
-    allProveedores=provRes.proveedores||[];
+    allProveedores=provRes.proveedores||provRes.providers||[];
     renderSuscripciones();
     renderProveedores();
   }catch(e){alert('Error: '+e.message)}
@@ -714,7 +714,7 @@ async function quitarDestacado(provId){
     await api('POST',{action:'quitar_destacado',proveedor_id:provId});
     const[subRes,provRes]=await Promise.all([apiGet({action:'suscripciones'}),apiGet({action:'proveedores'})]);
     allSubData=subRes.suscripciones||[];
-    allProveedores=provRes.proveedores||[];
+    allProveedores=provRes.proveedores||provRes.providers||[];
     renderSuscripciones();
     renderProveedores();
   }catch(e){alert('Error: '+e.message)}
