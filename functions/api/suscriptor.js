@@ -547,6 +547,47 @@ export async function onRequest(context) {
       return json({ ok: true });
     }
 
+    // ── RESET PASSWORD (no auth required) ────────────────────────────
+    if (action === "reset_password") {
+      const { email } = body;
+      if (!email || !email.trim()) return err("El email es obligatorio", 400);
+
+      const emailNorm = email.trim().toLowerCase();
+
+      // Find suscriptor
+      const { data: subRows } = await supabase
+        .from("suscriptores")
+        .select("id, nombre")
+        .eq("email", emailNorm)
+        .limit(1);
+
+      const sub = (subRows && subRows.length > 0) ? subRows[0] : null;
+      if (!sub) {
+        // Don't reveal if email exists — return ok anyway
+        return json({ ok: true });
+      }
+
+      // Generate new temp password
+      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
+      let tempPw = "";
+      for (let i = 0; i < 8; i++) tempPw += chars.charAt(Math.floor(Math.random() * chars.length));
+
+      const newHash = await bcrypt.hash(tempPw, 12);
+
+      await supabase
+        .from("suscriptores")
+        .update({ password_hash: newHash })
+        .eq("id", sub.id);
+
+      // Send email with new password
+      if (env.RESEND_API_KEY && env.EMAIL_FROM) {
+        const resetHtml = `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"></head><body style="font-family:Arial,sans-serif;background:#FAFAF8;padding:32px 16px;color:#1A1714;"><div style="max-width:560px;margin:0 auto;background:#fff;border-radius:14px;padding:40px 32px;border:1px solid #E8E4DF;"><h1 style="font-size:22px;margin:0 0 8px;color:#E8542A;">CotizaEventos.cl</h1><h2 style="font-size:18px;margin:0 0 24px;color:#1A1714;">Nueva contraseña</h2><p style="margin:0 0 16px;line-height:1.6;color:#3D3733;">Hola <strong>${sub.nombre || "Proveedor"}</strong>, recibimos tu solicitud para restablecer la contraseña.</p><div style="background:#F5F3EF;border-radius:8px;padding:16px;margin:0 0 20px;"><p style="margin:0 0 4px;font-size:13px;color:#8A8278;">Tu nueva contraseña provisoria</p><p style="margin:0;font-size:20px;font-weight:700;color:#1A1714;letter-spacing:1px;">${tempPw}</p></div><p style="margin:0 0 16px;line-height:1.6;color:#3D3733;">Ingresa con esta contraseña y cámbiala desde la sección "Cambiar contraseña" en tu perfil.</p><a href="https://www.cotizaeventos.cl/suscripciones.html" style="display:inline-block;background:#E8542A;color:#fff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;font-size:14px;">Ingresar a mi cuenta</a><hr style="border:none;border-top:1px solid #E8E4DF;margin:24px 0 16px;"><p style="margin:0;font-size:12px;color:#8A8278;">Si no solicitaste este cambio, puedes ignorar este correo. Enviado automáticamente por CotizaEventos.cl</p></div></body></html>`;
+        await sendEmail(emailNorm, "Nueva contraseña — CotizaEventos.cl", resetHtml, env);
+      }
+
+      return json({ ok: true });
+    }
+
     return err("Acción POST no reconocida", 400);
   }
 
