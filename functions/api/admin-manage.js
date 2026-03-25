@@ -54,6 +54,7 @@
  */
 
 import { createClient } from "@supabase/supabase-js";
+import bcrypt from "bcryptjs";
 
 // ══════════════════════════════════════════════════════════════════════
 // HELPERS
@@ -150,28 +151,30 @@ async function sendEmail(to, subject, html, env) {
 
 // ── Email 2: Solicitud aprobada ──────────────────────────────────────
 
-function buildApprovalEmail(nombre, posicion) {
+function buildApprovalEmailWithAccount(nombre, posicion, email, tempPassword, provUrl, slug) {
   const planNombre = posicion === 1 ? "Destacado" : "Básico";
   const planColor = posicion === 1 ? "#E8542A" : "#8A8278";
-  const upgradeBlock =
-    posicion === 0
-      ? `
+
+  const credentialsBlock = (email && tempPassword) ? `
+    <p style="margin:0 0 8px 0;line-height:1.6;color:#3D3733;font-weight:600;">Tus datos de acceso:</p>
+    <div style="background:#F5F3EF;border-radius:8px;padding:16px;margin:0 0 20px 0;">
+      <p style="margin:0 0 4px 0;font-size:13px;color:#8A8278;">Email</p>
+      <p style="margin:0 0 12px 0;font-size:15px;font-weight:600;color:#1A1714;">${email}</p>
+      <p style="margin:0 0 4px 0;font-size:13px;color:#8A8278;">Contraseña provisoria</p>
+      <p style="margin:0;font-size:15px;font-weight:600;color:#1A1714;">${tempPassword}</p>
+    </div>
+    <a href="https://www.cotizaeventos.cl/suscripciones.html" style="display:inline-block;background:#E8542A;color:#fff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;font-size:14px;margin-bottom:16px;">
+      Ingresar a mi perfil
+    </a>
+    <p style="margin:0 0 16px 0;font-size:13px;color:#8A8278;">Te recomendamos cambiar tu contraseña al ingresar por primera vez.</p>` : '';
+
+  const pageBlock = provUrl ? `
     <p style="margin:0 0 16px 0;line-height:1.6;color:#3D3733;">
-      Tu perfil fue aprobado con el plan <strong>Básico</strong>. Para obtener mayor visibilidad, puedes activar tu suscripción <strong>Destacado</strong>:
+      Tu página de proveedor ya está publicada:
     </p>
-    <ul style="margin:0 0 16px 0;padding-left:20px;line-height:1.8;color:#3D3733;">
-      <li>Foto de portada y logo en tu perfil</li>
-      <li>Descripción completa visible</li>
-      <li>Botón directo a WhatsApp</li>
-      <li>Posición prioritaria en el directorio</li>
-    </ul>
-    <a href="https://www.cotizaeventos.cl/suscripciones.html" style="display:inline-block;background:#E8542A;color:#fff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;font-size:14px;">
-      ✦ Activar Destacado
-    </a>`
-      : `
-    <p style="margin:0 0 16px 0;line-height:1.6;color:#3D3733;">
-      Tu perfil fue aprobado con el plan <strong style="color:#E8542A;">✦ Destacado</strong>. Tu negocio aparecerá con máxima visibilidad en el directorio.
-    </p>`;
+    <a href="${provUrl}" style="display:inline-block;background:#06C7A5;color:#fff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;font-size:14px;margin-bottom:16px;">
+      Ver mi página
+    </a>` : '';
 
   return `
 <!DOCTYPE html>
@@ -180,20 +183,21 @@ function buildApprovalEmail(nombre, posicion) {
 <body style="font-family:Arial,Helvetica,sans-serif;background:#FAFAF8;padding:32px 16px;color:#1A1714;">
   <div style="max-width:560px;margin:0 auto;background:#FFFFFF;border-radius:14px;padding:40px 32px;border:1px solid #E8E4DF;">
     <h1 style="font-size:22px;margin:0 0 8px 0;color:#E8542A;">CotizaEventos.cl</h1>
-    <h2 style="font-size:18px;margin:0 0 24px 0;color:#1A1714;">¡Tu negocio ya está en el directorio! 🎉</h2>
+    <h2 style="font-size:18px;margin:0 0 24px 0;color:#1A1714;">Tu negocio ya está en el directorio</h2>
     <p style="margin:0 0 16px 0;line-height:1.6;color:#3D3733;">
       Hola, <strong>${nombre}</strong>.
     </p>
     <p style="margin:0 0 16px 0;line-height:1.6;color:#3D3733;">
-      Nos alegra informarte que tu solicitud fue <strong style="color:#06C7A5;">aprobada</strong>. Tu negocio ya es visible para miles de personas que buscan proveedores en Santiago.
+      Tu solicitud fue <strong style="color:#06C7A5;">aprobada</strong>. Tu negocio ya es visible para personas que buscan proveedores en Santiago.
     </p>
     <p style="margin:0 0 16px 0;">
       <span style="display:inline-block;background:${planColor};color:#fff;padding:4px 12px;border-radius:20px;font-size:13px;font-weight:600;">
         Plan: ${planNombre}
       </span>
     </p>
-    ${upgradeBlock}
-    <hr style="border:none;border-top:1px solid #E8E4DF;margin:32px 0 16px 0;">
+    ${pageBlock}
+    ${credentialsBlock}
+    <hr style="border:none;border-top:1px solid #E8E4DF;margin:24px 0 16px 0;">
     <p style="margin:0;font-size:12px;color:#8A8278;">
       Enviado automáticamente por CotizaEventos.cl
     </p>
@@ -606,31 +610,60 @@ export async function onRequest(context) {
         .update({ estado: "aprobada", proveedor_id: newProv.id })
         .eq("id", id);
 
-      // 6. If suscriptor exists with this email, link proveedor_id
-      const { data: existingSub } = await supabase
+      // 6. Auto-create suscriptor account
+      const emailNorm = (sol.email || "").toLowerCase();
+      let tempPassword = "";
+      let accountCreated = false;
+
+      // Check if suscriptor already exists
+      const { data: existingRows } = await supabase
         .from("suscriptores")
         .select("id")
-        .eq("email", (sol.email || "").toLowerCase())
-        .single();
-      if (existingSub) {
+        .eq("email", emailNorm)
+        .limit(1);
+
+      if (existingRows && existingRows.length > 0) {
+        // Link existing account to new provider
         await supabase
           .from("suscriptores")
           .update({ proveedor_id: newProv.id })
-          .eq("id", existingSub.id);
+          .eq("id", existingRows[0].id);
+      } else if (emailNorm) {
+        // Generate temporary password (8 chars alphanumeric)
+        const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
+        for (let i = 0; i < 8; i++) tempPassword += chars.charAt(Math.floor(Math.random() * chars.length));
+
+        const passwordHash = await bcrypt.hash(tempPassword, 12);
+
+        await supabase.from("suscriptores").insert([{
+          email: emailNorm,
+          password_hash: passwordHash,
+          nombre: sol.nombre || "Proveedor",
+          proveedor_id: newProv.id,
+        }]);
+        accountCreated = true;
       }
 
-      // 7. Send Email 2
-      if (env.RESEND_API_KEY && env.EMAIL_FROM && sol.email) {
-        const emailHtml = buildApprovalEmail(sol.nombre || "Proveedor", finalPos);
+      // 7. Send approval email with credentials
+      if (env.RESEND_API_KEY && env.EMAIL_FROM && emailNorm) {
+        const provUrl = slug ? `https://www.cotizaeventos.cl/prov/${slug}` : "https://www.cotizaeventos.cl/proveedores.html";
+        const emailHtml = buildApprovalEmailWithAccount(
+          sol.nombre || "Proveedor",
+          finalPos,
+          accountCreated ? emailNorm : null,
+          accountCreated ? tempPassword : null,
+          provUrl,
+          slug
+        );
         await sendEmail(
-          sol.email,
-          "¡Tu negocio ya está en CotizaEventos.cl! 🎉",
+          emailNorm,
+          "¡Tu negocio ya está en CotizaEventos.cl!",
           emailHtml,
           env
         );
       }
 
-      return json({ ok: true, proveedor_id: newProv.id, posicion: finalPos });
+      return json({ ok: true, proveedor_id: newProv.id, posicion: finalPos, slug });
     }
 
     // ── RECHAZAR solicitud ───────────────────────────────────────────
@@ -740,6 +773,96 @@ export async function onRequest(context) {
           .eq("suscriptor_id", sub.id)
           .eq("estado", "activa");
       }
+
+      return json({ ok: true });
+    }
+
+    // ── ACTIVAR PLAN DIRECTO (provider without account) ──────────────
+    if (action === "activar_plan_directo") {
+      const { proveedor_id, plan, fecha_inicio, fecha_vencimiento } = body;
+      if (!proveedor_id || !plan || !fecha_inicio || !fecha_vencimiento) {
+        return err("Faltan campos obligatorios", 400);
+      }
+
+      // Get provider info
+      const { data: prov, error: eProv } = await supabase
+        .from("proveedores")
+        .select("id, nombre, email")
+        .eq("id", proveedor_id)
+        .single();
+      if (eProv || !prov) return err("Proveedor no encontrado", 404);
+
+      const emailNorm = (prov.email || "").toLowerCase();
+
+      // Check if suscriptor already exists for this provider
+      let suscriptorId = null;
+      const { data: existingSub } = await supabase
+        .from("suscriptores")
+        .select("id")
+        .eq("proveedor_id", proveedor_id)
+        .limit(1);
+
+      if (existingSub && existingSub.length > 0) {
+        suscriptorId = existingSub[0].id;
+      } else if (emailNorm) {
+        // Also check by email
+        const { data: existsByEmail } = await supabase
+          .from("suscriptores")
+          .select("id")
+          .eq("email", emailNorm)
+          .limit(1);
+
+        if (existsByEmail && existsByEmail.length > 0) {
+          suscriptorId = existsByEmail[0].id;
+          // Link to provider
+          await supabase.from("suscriptores").update({ proveedor_id }).eq("id", suscriptorId);
+        } else {
+          // Create new account with temp password
+          const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
+          let tempPw = "";
+          for (let i = 0; i < 8; i++) tempPw += chars.charAt(Math.floor(Math.random() * chars.length));
+          const hash = await bcrypt.hash(tempPw, 12);
+
+          const { data: newSub, error: eIns } = await supabase.from("suscriptores").insert([{
+            email: emailNorm,
+            password_hash: hash,
+            nombre: prov.nombre || "Proveedor",
+            proveedor_id,
+          }]).select("id").single();
+
+          if (eIns || !newSub) return err("Error al crear cuenta", 500);
+          suscriptorId = newSub.id;
+
+          // Send email with credentials
+          if (env.RESEND_API_KEY && env.EMAIL_FROM) {
+            const credHtml = `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"></head><body style="font-family:Arial,sans-serif;background:#FAFAF8;padding:32px 16px;color:#1A1714;"><div style="max-width:560px;margin:0 auto;background:#fff;border-radius:14px;padding:40px 32px;border:1px solid #E8E4DF;"><h1 style="font-size:22px;margin:0 0 8px;color:#E8542A;">CotizaEventos.cl</h1><h2 style="font-size:18px;margin:0 0 24px;color:#1A1714;">Tu plan Destacado fue activado</h2><p style="margin:0 0 16px;line-height:1.6;color:#3D3733;">Hola <strong>${prov.nombre}</strong>, tu plan Destacado fue activado. Se creó una cuenta para que gestiones tu perfil.</p><div style="background:#F5F3EF;border-radius:8px;padding:16px;margin:0 0 20px;"><p style="margin:0 0 4px;font-size:13px;color:#8A8278;">Email</p><p style="margin:0 0 12px;font-size:15px;font-weight:600;color:#1A1714;">${emailNorm}</p><p style="margin:0 0 4px;font-size:13px;color:#8A8278;">Contraseña provisoria</p><p style="margin:0;font-size:15px;font-weight:600;color:#1A1714;">${tempPw}</p></div><a href="https://www.cotizaeventos.cl/suscripciones.html" style="display:inline-block;background:#E8542A;color:#fff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;font-size:14px;">Ingresar a mi perfil</a><hr style="border:none;border-top:1px solid #E8E4DF;margin:24px 0 16px;"><p style="margin:0;font-size:12px;color:#8A8278;">Enviado automáticamente por CotizaEventos.cl</p></div></body></html>`;
+            await sendEmail(emailNorm, "Tu plan Destacado fue activado — CotizaEventos.cl", credHtml, env);
+          }
+        }
+      }
+
+      if (!suscriptorId) return err("No se pudo crear o encontrar la cuenta del suscriptor", 500);
+
+      // Cancel any existing active subscription
+      await supabase.from("suscripciones")
+        .update({ estado: "cancelada", fecha_cancelacion: new Date().toISOString() })
+        .eq("suscriptor_id", suscriptorId)
+        .eq("estado", "activa");
+
+      // Create new subscription
+      const monto = plan === "anual" ? 99900 : 9990;
+      const { error: eSub } = await supabase.from("suscripciones").insert([{
+        suscriptor_id: suscriptorId,
+        plan,
+        estado: "activa",
+        fecha_inicio,
+        fecha_vencimiento,
+        monto,
+      }]);
+      if (eSub) return err("Error al crear suscripción", 500);
+
+      // Update provider posicion
+      await supabase.from("proveedores").update({ posicion: 1 }).eq("id", proveedor_id);
 
       return json({ ok: true });
     }
