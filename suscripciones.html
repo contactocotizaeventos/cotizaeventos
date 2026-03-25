@@ -129,6 +129,26 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 
 .plan-note{font-size:13px;color:var(--muted);text-align:center;margin-top:16px;line-height:1.6}
 
+/* ── Plans Table ────────────────────────────────────────────────── */
+.plans-table{display:flex;flex-direction:column;gap:8px}
+.pt-row{display:grid;grid-template-columns:32px 1fr auto auto;align-items:center;gap:12px;padding:16px;border:2px solid var(--border);border-radius:var(--r);cursor:pointer;transition:all .2s var(--ease);background:var(--white)}
+.pt-row:hover{border-color:var(--coral-md);background:var(--coral-lt)}
+.pt-row.pt-selected{border-color:var(--coral);background:linear-gradient(160deg,#FFF9F7,#fff);box-shadow:0 2px 12px rgba(232,84,42,.1)}
+.pt-row.pt-best{border-color:var(--coral-md)}
+.pt-radio{display:flex;align-items:center;justify-content:center}
+.pt-radio input[type=radio]{width:18px;height:18px;accent-color:var(--coral);cursor:pointer}
+.pt-name{font-weight:600;font-size:15px;color:var(--ink);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pt-detail{font-size:13px;color:var(--muted);margin-top:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.pt-badge{display:inline-block;padding:2px 8px;background:#D1FAE5;color:#059669;border-radius:100px;font-size:11px;font-weight:700}
+.pt-tag{display:inline-block;padding:2px 8px;background:var(--coral);color:#fff;border-radius:100px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+.pt-price{font-size:18px;font-weight:700;color:var(--coral);text-align:right;white-space:nowrap}
+.pt-permonth{font-size:12px;color:var(--muted);text-align:right;white-space:nowrap}
+@media(max-width:600px){
+  .pt-row{grid-template-columns:28px 1fr;gap:8px}
+  .pt-price{grid-column:2;font-size:16px}
+  .pt-permonth{grid-column:2;margin-top:-4px}
+}
+
 /* ── Active Subscription View ───────────────────────────────────── */
 .sub-active-info{margin-bottom:20px}
 
@@ -246,6 +266,17 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
       <input type="password" id="loginPass" placeholder="Tu contraseña">
     </div>
     <button class="btn btn-coral" id="loginBtn" onclick="doLogin()">Iniciar sesión</button>
+    <p style="text-align:center;margin-top:14px"><a href="#" onclick="showResetPanel();return false" style="font-size:13px;color:var(--coral);text-decoration:underline">¿Olvidaste tu contraseña?</a></p>
+    <!-- Reset password inline -->
+    <div id="resetPanel" style="display:none;margin-top:20px;padding-top:20px;border-top:1px solid var(--border)">
+      <div class="auth-msg" id="resetMsg"></div>
+      <p style="font-size:14px;color:var(--ink2);margin-bottom:14px">Ingresa tu email y te enviaremos una nueva contraseña provisoria.</p>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="resetEmail" placeholder="tu@negocio.com">
+      </div>
+      <button class="btn btn-coral" id="resetBtn" onclick="doReset()">Enviar nueva contraseña</button>
+    </div>
   </div>
 
   <!-- Register Panel -->
@@ -498,6 +529,8 @@ async function loadDashboard(){
     if(!data.ok)throw new Error(data.error||'Error');
     renderDashboard(data);
   }catch(e){
+    // If session expired, apiGet already called showAuth() — just log it
+    if(e.message==='Sesión expirada'){return}
     console.error('Dashboard error:',e);
   }
 }
@@ -580,28 +613,93 @@ function renderActiveSub(container,sub){
 
 /* ── No subscription view (plan comparison) ───────────────────── */
 function renderNoSub(container,bizName){
-  const name=encodeURIComponent(bizName||'mi negocio');
   container.innerHTML=`
-    <p style="font-size:14px;color:var(--ink2);margin-bottom:16px">No tienes una suscripción activa. Activa tu plan Destacado para obtener máxima visibilidad.</p>
-    <div class="plan-compare">
-      <div class="plan-opt">
-        <h4>Mensual</h4>
-        <div class="price">$9.990</div>
-        <div class="price-sub">por mes</div>
-        <p>Flexibilidad total. Cancela cuando quieras sin compromiso.</p>
-        <a href="https://wa.me/56991999301?text=Hola%2C%20quiero%20contratar%20el%20plan%20Mensual%20para%20${name}%20en%20CotizaEventos.cl" class="btn-plan" target="_blank" rel="noopener">Contratar →</a>
+    <p style="font-size:14px;color:var(--ink2);margin-bottom:20px">No tienes una suscripción activa. Activa tu plan Destacado para obtener máxima visibilidad.</p>
+
+    <div style="font-size:12px;text-transform:uppercase;letter-spacing:2px;color:var(--coral);font-weight:700;margin-bottom:16px">Packs de meses</div>
+
+    <div class="plans-table">
+      <div class="pt-row" onclick="selectPlan('1mes')">
+        <div class="pt-radio"><input type="radio" name="plan" value="1mes" id="p1"></div>
+        <div class="pt-info"><div class="pt-name">1 mes</div><div class="pt-detail">Sin compromiso</div></div>
+        <div class="pt-price">$25.000</div>
+        <div class="pt-permonth">$25.000/mes</div>
       </div>
-      <div class="plan-opt recommended">
-        <div class="plan-opt-badge">Ahorra 2 meses</div>
-        <h4>Anual</h4>
-        <div class="price">$99.900</div>
-        <div class="price-sub">por año ($8.325/mes)</div>
-        <p>El equivalente a 2 meses gratis. La mejor opción para crecer todo el año.</p>
-        <a href="https://wa.me/56991999301?text=Hola%2C%20quiero%20contratar%20el%20plan%20Anual%20para%20${name}%20en%20CotizaEventos.cl" class="btn-plan" target="_blank" rel="noopener">Contratar →</a>
+      <div class="pt-row" onclick="selectPlan('3meses')">
+        <div class="pt-radio"><input type="radio" name="plan" value="3meses" id="p3"></div>
+        <div class="pt-info"><div class="pt-name">3 meses</div><div class="pt-detail"><span class="pt-badge">-16%</span></div></div>
+        <div class="pt-price">$63.000</div>
+        <div class="pt-permonth">$21.000/mes</div>
+      </div>
+      <div class="pt-row" onclick="selectPlan('6meses')">
+        <div class="pt-radio"><input type="radio" name="plan" value="6meses" id="p6"></div>
+        <div class="pt-info"><div class="pt-name">6 meses</div><div class="pt-detail"><span class="pt-badge">-28%</span></div></div>
+        <div class="pt-price">$108.000</div>
+        <div class="pt-permonth">$18.000/mes</div>
+      </div>
+      <div class="pt-row pt-best" onclick="selectPlan('12meses')">
+        <div class="pt-radio"><input type="radio" name="plan" value="12meses" id="p12"></div>
+        <div class="pt-info"><div class="pt-name">12 meses <span class="pt-tag">Más popular</span></div><div class="pt-detail"><span class="pt-badge">-33%</span> Pagas solo 8 meses</div></div>
+        <div class="pt-price">$200.000</div>
+        <div class="pt-permonth">$16.667/mes</div>
       </div>
     </div>
-    <p class="plan-note">El pago se coordina directamente con nuestro equipo por WhatsApp. Una vez confirmado, activamos tu plan Destacado en menos de 24 horas.</p>
+
+    <div style="font-size:12px;text-transform:uppercase;letter-spacing:2px;color:var(--coral);font-weight:700;margin:24px 0 16px">Suscripciones automáticas</div>
+
+    <div class="plans-table">
+      <div class="pt-row" onclick="selectPlan('mensual')">
+        <div class="pt-radio"><input type="radio" name="plan" value="mensual" id="pm"></div>
+        <div class="pt-info"><div class="pt-name">Mensual automático</div><div class="pt-detail"><span class="pt-badge">-12%</span> Cargo cada mes a tu tarjeta</div></div>
+        <div class="pt-price">$22.000<span style="font-size:13px;font-weight:400;color:var(--muted)">/mes</span></div>
+        <div class="pt-permonth">Cancela cuando quieras</div>
+      </div>
+      <div class="pt-row" onclick="selectPlan('anual')">
+        <div class="pt-radio"><input type="radio" name="plan" value="anual" id="pa"></div>
+        <div class="pt-info"><div class="pt-name">Anual automático <span class="pt-tag" style="background:var(--teal)">Mejor precio</span></div><div class="pt-detail"><span class="pt-badge">-33%</span> Pagas solo 8 meses al año</div></div>
+        <div class="pt-price">$200.000<span style="font-size:13px;font-weight:400;color:var(--muted)">/año</span></div>
+        <div class="pt-permonth">$16.667/mes</div>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:24px">
+      <button class="btn btn-coral" id="payBtn" onclick="initPayment()" disabled style="padding:16px 40px;font-size:16px;width:100%;max-width:400px">Selecciona un plan</button>
+      <p style="font-size:12px;color:var(--muted);margin-top:10px">Pago seguro procesado por Flow.cl. Aceptamos tarjetas de crédito, débito y transferencia.</p>
+    </div>
   `;
+}
+
+let selectedPlanId=null;
+function selectPlan(plan){
+  selectedPlanId=plan;
+  document.querySelectorAll('.pt-row').forEach(r=>r.classList.remove('pt-selected'));
+  const radio=document.querySelector('input[value="'+plan+'"]');
+  if(radio){radio.checked=true;radio.closest('.pt-row').classList.add('pt-selected')}
+  const btn=document.getElementById('payBtn');
+  if(btn){btn.disabled=false;btn.textContent='Pagar ahora →'}
+}
+
+async function initPayment(){
+  if(!selectedPlanId)return;
+  const btn=document.getElementById('payBtn');
+  btn.disabled=true;btn.textContent='Conectando con Flow...';
+  try{
+    const res=await fetch('/api/flow-create',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({plan:selectedPlanId,token:getToken()})
+    });
+    const data=await res.json();
+    if(!data.ok)throw new Error(data.error||'Error');
+    if(data.redirectUrl){
+      window.location.href=data.redirectUrl;
+    }else{
+      throw new Error('No se recibió URL de pago');
+    }
+  }catch(e){
+    alert('Error: '+e.message);
+    btn.disabled=false;btn.textContent='Pagar ahora →';
+  }
 }
 
 /* ══════════════════════════════════════════════════════════════════ */
@@ -804,9 +902,42 @@ async function confirmCancel(){
 function logout(){
   clearToken();
   showAuth();
-  // Clear fields
   document.getElementById('loginEmail').value='';
   document.getElementById('loginPass').value='';
+}
+
+/* ══════════════════════════════════════════════════════════════════ */
+/* RESET PASSWORD                                                    */
+/* ══════════════════════════════════════════════════════════════════ */
+function showResetPanel(){
+  const p=document.getElementById('resetPanel');
+  p.style.display=p.style.display==='none'?'':'none';
+  if(p.style.display!=='none'){
+    const loginEmail=document.getElementById('loginEmail').value.trim();
+    if(loginEmail)document.getElementById('resetEmail').value=loginEmail;
+  }
+}
+
+async function doReset(){
+  const email=document.getElementById('resetEmail').value.trim();
+  if(!email){showMsg('resetMsg','Ingresa tu email','error');return}
+  const btn=document.getElementById('resetBtn');
+  btn.disabled=true;btn.textContent='Enviando...';
+  document.getElementById('resetMsg').className='auth-msg';
+  try{
+    const res=await fetch('/api/suscriptor',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'reset_password',email})
+    });
+    const data=await res.json();
+    if(!data.ok)throw new Error(data.error||'Error');
+    showMsg('resetMsg','Si el email existe, recibirás una nueva contraseña en tu correo.','success');
+  }catch(e){
+    showMsg('resetMsg',e.message,'error');
+  }finally{
+    btn.disabled=false;btn.textContent='Enviar nueva contraseña';
+  }
 }
 
 /* ══════════════════════════════════════════════════════════════════ */
