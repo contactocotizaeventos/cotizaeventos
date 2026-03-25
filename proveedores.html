@@ -895,6 +895,13 @@ function matchesSearch(p){
 }
 
 /* ── Card HTML builders ────────────────────────────────────────── */
+function openProv(id){
+  const p=PROVIDERS_MAP[id];
+  if(!p)return;
+  if(p.slug){window.open('/prov/'+encodeURIComponent(p.slug),'_blank');return}
+  if(p.pos===1)openModal(id);else openModalBasic(id);
+}
+
 function renderDestCard(p){
   const imgHtml=p.cover_url
     ?`<img src="${esc(p.cover_url)}" alt="${esc(p.nombre)}" loading="lazy">`
@@ -906,7 +913,7 @@ function renderDestCard(p){
   const waLink=p.whatsapp?`https://wa.me/${esc(p.whatsapp)}`:'';
 
   return`
-  <div class="dest-card" onclick="openModal('${esc(p.id)}')">
+  <div class="dest-card" onclick="openProv('${esc(p.id)}')">
     <div class="dest-card-img">
       ${imgHtml}
       <div class="dest-ribbon">✦ Destacado</div>
@@ -918,7 +925,7 @@ function renderDestCard(p){
       ${price?`<div class="dest-price">${price}</div>`:''}
       <div class="dest-btns">
         ${waLink?`<a href="${waLink}" class="dest-btn-wa" target="_blank" rel="noopener" onclick="event.stopPropagation()">💬 WhatsApp</a>`:''}
-        <button class="dest-btn-ver" onclick="event.stopPropagation();openModal('${esc(p.id)}')">Ver más →</button>
+        <button class="dest-btn-ver" onclick="event.stopPropagation();openProv('${esc(p.id)}')">Ver más →</button>
       </div>
     </div>
   </div>`;
@@ -931,7 +938,7 @@ function renderBasRow(p,extraAttr){
   const waLink=p.whatsapp?`https://wa.me/${esc(p.whatsapp)}`:'';
 
   return`
-  <div class="bas-row"${extraAttr} onclick="openModalBasic('${esc(p.id)}')">
+  <div class="bas-row"${extraAttr} onclick="openProv('${esc(p.id)}')">
     <div class="bas-logo">${logoHtml}</div>
     <div class="bas-info">
       <div class="bas-name">${esc(p.nombre)}</div>
@@ -941,7 +948,7 @@ function renderBasRow(p,extraAttr){
     <div class="bas-price">${p.precio_minimo?esc(p.precio_minimo):''}</div>
     <div class="bas-actions">
       ${waLink?`<a href="${waLink}" class="bas-wa" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="WhatsApp">💬</a>`:''}
-      <button class="bas-ver" onclick="event.stopPropagation();openModalBasic('${esc(p.id)}')" title="Ver">→</button>
+      <button class="bas-ver" onclick="event.stopPropagation();openProv('${esc(p.id)}')" title="Ver">→</button>
     </div>
   </div>`;
 }
