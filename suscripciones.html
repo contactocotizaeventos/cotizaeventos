@@ -315,6 +315,20 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
         <div id="profileEditor"></div>
       </div>
 
+      <!-- Password change -->
+      <div class="profile-card" id="passwordCard" style="margin-top:24px;display:none">
+        <h3>🔒 Cambiar contraseña</h3>
+        <div style="max-width:400px">
+          <div class="field"><label>Contraseña actual <span class="req">*</span></label><input type="password" id="pwCurrent" placeholder="Tu contraseña actual"></div>
+          <div class="field"><label>Nueva contraseña <span class="req">*</span></label><input type="password" id="pwNew" placeholder="Mínimo 6 caracteres"></div>
+          <div class="field"><label>Confirmar nueva contraseña <span class="req">*</span></label><input type="password" id="pwNew2" placeholder="Repite la nueva contraseña"></div>
+          <div class="profile-actions" style="justify-content:flex-start">
+            <button class="btn-save" id="pwSaveBtn" onclick="changePassword()">Cambiar contraseña</button>
+          </div>
+          <div class="profile-msg" id="pwMsg"></div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -596,9 +610,10 @@ function renderNoSub(container,bizName){
 let currentProv=null;
 
 function renderProfileEditor(proveedor){
-  if(!proveedor){document.getElementById('profileCard').style.display='none';return}
+  if(!proveedor){document.getElementById('profileCard').style.display='none';document.getElementById('passwordCard').style.display='none';return}
   currentProv=proveedor;
   document.getElementById('profileCard').style.display='';
+  document.getElementById('passwordCard').style.display='';
   const ed=document.getElementById('profileEditor');
 
   const f=(id,label,val,opts)=>{
@@ -618,7 +633,6 @@ function renderProfileEditor(proveedor){
     <div class="profile-grid">
       ${f('nombre','Nombre del negocio (no editable)',proveedor.nombre,{disabled:true})}
       ${f('responsable','Responsable',proveedor.responsable)}
-      ${f('tagline','Frase corta (tagline)',proveedor.tagline,{full:true})}
       ${f('descripcion','Descripción del servicio',proveedor.descripcion,{type:'textarea',full:true})}
       ${f('diferenciador','¿Qué nos diferencia?',proveedor.diferenciador,{type:'textarea',full:true})}
       ${f('tagline','Frase corta (tagline)',proveedor.tagline)}
@@ -730,6 +744,35 @@ async function saveProfile(){
 /* ══════════════════════════════════════════════════════════════════ */
 /* ACTIONS                                                           */
 /* ══════════════════════════════════════════════════════════════════ */
+async function changePassword(){
+  const cur=document.getElementById('pwCurrent').value;
+  const nw=document.getElementById('pwNew').value;
+  const nw2=document.getElementById('pwNew2').value;
+  const msgEl=document.getElementById('pwMsg');
+  const btn=document.getElementById('pwSaveBtn');
+  msgEl.className='profile-msg';
+
+  if(!cur||!nw){msgEl.textContent='Completa todos los campos';msgEl.className='profile-msg error';return}
+  if(nw.length<6){msgEl.textContent='La nueva contraseña debe tener al menos 6 caracteres';msgEl.className='profile-msg error';return}
+  if(nw!==nw2){msgEl.textContent='Las contraseñas nuevas no coinciden';msgEl.className='profile-msg error';return}
+
+  btn.disabled=true;btn.textContent='Cambiando...';
+  try{
+    const data=await apiPost({action:'change_password',token:getToken(),current_password:cur,new_password:nw});
+    if(!data.ok)throw new Error(data.error||'Error');
+    msgEl.textContent='Contraseña cambiada correctamente';
+    msgEl.className='profile-msg success';
+    document.getElementById('pwCurrent').value='';
+    document.getElementById('pwNew').value='';
+    document.getElementById('pwNew2').value='';
+  }catch(e){
+    msgEl.textContent=e.message;
+    msgEl.className='profile-msg error';
+  }finally{
+    btn.disabled=false;btn.textContent='Cambiar contraseña';
+  }
+}
+
 async function toggleAutoPay(val){
   try{
     const data=await apiPost({action:'toggle_pago_automatico',token:getToken(),valor:val});
