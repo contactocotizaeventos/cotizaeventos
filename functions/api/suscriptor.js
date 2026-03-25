@@ -509,6 +509,44 @@ export async function onRequest(context) {
       return json({ ok: true });
     }
 
+    // ── CHANGE PASSWORD ──────────────────────────────────────────────
+    if (action === "change_password") {
+      const token = extractToken(request) || body.token;
+      const payload = await verifyToken(token, env.SUSCRIPTOR_SECRET);
+      if (!payload) return err("Token inválido o expirado", 401);
+
+      const { current_password, new_password } = body;
+      if (!current_password || !new_password) {
+        return err("Se requieren contraseña actual y nueva", 400);
+      }
+      if (new_password.length < 6) {
+        return err("La nueva contraseña debe tener al menos 6 caracteres", 400);
+      }
+
+      // Load current hash
+      const { data: sub, error: e1 } = await supabase
+        .from("suscriptores")
+        .select("id, password_hash")
+        .eq("id", payload.sub)
+        .single();
+      if (e1 || !sub) return err("Suscriptor no encontrado", 404);
+
+      // Verify current password
+      const match = await bcrypt.compare(current_password, sub.password_hash);
+      if (!match) return err("La contraseña actual es incorrecta", 401);
+
+      // Hash new password
+      const newHash = await bcrypt.hash(new_password, 12);
+
+      const { error: e2 } = await supabase
+        .from("suscriptores")
+        .update({ password_hash: newHash })
+        .eq("id", payload.sub);
+      if (e2) return err("Error al cambiar contraseña", 500);
+
+      return json({ ok: true });
+    }
+
     return err("Acción POST no reconocida", 400);
   }
 
