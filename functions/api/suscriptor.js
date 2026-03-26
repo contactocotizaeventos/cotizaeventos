@@ -547,6 +547,65 @@ export async function onRequest(context) {
       return json({ ok: true });
     }
 
+    // ── ACTIVAR GRATIS (promo lanzamiento) ───────────────────────────
+    if (action === "activar_gratis") {
+      const token = extractToken(request) || body.token;
+      const payload = await verifyToken(token, env.SUSCRIPTOR_SECRET);
+      if (!payload) return err("Token inválido o expirado", 401);
+
+      // Check promo deadline
+      const deadline = new Date("2026-08-10T23:59:59");
+      if (new Date() > deadline) {
+        return err("La promoción de lanzamiento ha finalizado", 400);
+      }
+
+      // Get suscriptor
+      const { data: sub } = await supabase
+        .from("suscriptores")
+        .select("id, proveedor_id, email, nombre")
+        .eq("id", payload.sub)
+        .single();
+      if (!sub || !sub.proveedor_id) return err("Suscriptor o proveedor no encontrado", 400);
+
+      // Check if already has active subscription
+      const { data: existingSubs } = await supabase
+        .from("suscripciones")
+        .select("id")
+        .eq("suscriptor_id", sub.id)
+        .eq("estado", "activa")
+        .limit(1);
+
+      if (existingSubs && existingSubs.length > 0) {
+        return err("Ya tienes una suscripción activa", 400);
+      }
+
+      // Create free subscription until launch date
+      const now = new Date();
+      const { error: eSub } = await supabase.from("suscripciones").insert([{
+        suscriptor_id: sub.id,
+        plan: "promo_lanzamiento",
+        estado: "activa",
+        fecha_inicio: now.toISOString(),
+        fecha_vencimiento: deadline.toISOString(),
+        monto: 0,
+        pago_automatico: false,
+      }]);
+      if (eSub) return err("Error al activar suscripción", 500);
+
+      // Set provider to Destacado
+      await supabase.from("proveedores")
+        .update({ posicion: 1 })
+        .eq("id", sub.proveedor_id);
+
+      // Send confirmation email
+      if (env.RESEND_API_KEY && env.EMAIL_FROM && sub.email) {
+        const emailHtml = `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"></head><body style="font-family:Arial,sans-serif;background:#FAFAF8;padding:32px 16px;color:#1A1714;"><div style="max-width:560px;margin:0 auto;background:#fff;border-radius:14px;padding:40px 32px;border:1px solid #E8E4DF;"><h1 style="font-size:22px;margin:0 0 8px;color:#E8542A;">CotizaEventos.cl</h1><h2 style="font-size:18px;margin:0 0 24px;color:#1A1714;">¡Plan Destacado activado gratis!</h2><p style="margin:0 0 16px;line-height:1.6;color:#3D3733;">Hola <strong>${sub.nombre || "Proveedor"}</strong>, tu plan Destacado fue activado de forma <strong>gratuita</strong> como parte de la promoción de lanzamiento de CotizaEventos.cl.</p><div style="background:#D1FAE5;border-radius:8px;padding:16px;margin:0 0 20px;text-align:center;"><p style="margin:0 0 4px;font-size:13px;color:#059669;font-weight:600;">Vigencia</p><p style="margin:0;font-size:18px;font-weight:700;color:#1A1714;">Gratis hasta el 10 de agosto de 2026</p></div><p style="margin:0 0 16px;line-height:1.6;color:#3D3733;">Tu perfil ahora tiene máxima visibilidad: portada, galería de fotos, descripción completa y contacto directo por WhatsApp.</p><a href="https://www.cotizaeventos.cl/suscripciones.html" style="display:inline-block;background:#E8542A;color:#fff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;font-size:14px;">Ver mi suscripción</a><hr style="border:none;border-top:1px solid #E8E4DF;margin:24px 0 16px;"><p style="margin:0;font-size:12px;color:#8A8278;">Enviado automáticamente por CotizaEventos.cl</p></div></body></html>`;
+        await sendEmail(sub.email, "¡Plan Destacado gratis activado! — CotizaEventos.cl", emailHtml, env);
+      }
+
+      return json({ ok: true });
+    }
+
     // ── RESET PASSWORD (no auth required) ────────────────────────────
     if (action === "reset_password") {
       const { email } = body;
