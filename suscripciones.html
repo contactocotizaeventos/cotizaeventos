@@ -214,6 +214,28 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .profile-upload input[type=file]{display:none}
 .profile-upload p{font-size:13px;color:var(--ink2);margin:0}
 .profile-upload .up-label{font-size:12px;color:var(--muted);margin-top:4px}
+
+/* ── Gallery Editor ─────────────────────────────────────────────── */
+.pf-section{margin-top:24px;padding-top:20px;border-top:1px solid var(--border)}
+.pf-section-label{font-size:12px;text-transform:uppercase;letter-spacing:2px;color:var(--coral);font-weight:700;margin-bottom:12px}
+.pf-gallery{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+@media(max-width:600px){.pf-gallery{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:400px){.pf-gallery{grid-template-columns:repeat(2,1fr)}}
+.pf-gal-item{aspect-ratio:1;border:2px dashed var(--border2);border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;transition:all .2s;position:relative;background:var(--bg)}
+.pf-gal-item:hover{border-color:var(--coral);background:var(--coral-lt)}
+.pf-gal-item.has-img{border-style:solid;border-color:var(--teal)}
+.pf-gal-item img{width:100%;height:100%;object-fit:cover}
+.pf-gal-item .pf-gal-ph{font-size:12px;color:var(--muted);text-align:center;padding:8px;line-height:1.3}
+.pf-gal-item .pf-gal-ph span{display:block;font-size:20px;margin-bottom:4px}
+.pf-gal-item input[type=file]{display:none}
+.pf-gal-remove{position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;font-size:14px;display:none;align-items:center;justify-content:center;cursor:pointer;border:none;transition:background .2s;z-index:2}
+.pf-gal-remove:hover{background:rgba(229,62,62,.9)}
+.pf-gal-item.has-img .pf-gal-remove{display:flex}
+.pf-gal-item.uploading{pointer-events:none;opacity:.6}
+.pf-gal-item.uploading::after{content:'Subiendo...';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.8);font-size:12px;color:var(--coral);font-weight:600}
+.pf-hint{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5}
+.pf-preview-note{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-top:12px;font-size:13px;color:var(--ink2);line-height:1.6;display:flex;align-items:flex-start;gap:10px}
+.pf-preview-note span{font-size:18px;flex-shrink:0}
 .profile-actions{display:flex;gap:10px;margin-top:20px;justify-content:flex-end}
 .btn-save{background:var(--teal);color:#fff;padding:10px 24px;border-radius:var(--r);font-weight:600;font-size:14px;transition:all .2s}
 .btn-save:hover{filter:brightness(1.1)}
@@ -776,67 +798,133 @@ let currentProv=null;
 function renderProfileEditor(proveedor){
   if(!proveedor){document.getElementById('profileCard').style.display='none';document.getElementById('passwordCard').style.display='none';return}
   currentProv=proveedor;
+  pfGalleryUrls=(proveedor.imagenes||[]).filter(function(u){return u}).slice(0,5);
   document.getElementById('profileCard').style.display='';
   document.getElementById('passwordCard').style.display='';
   const ed=document.getElementById('profileEditor');
 
-  const f=(id,label,val,opts)=>{
-    const disabled=opts&&opts.disabled?' disabled':'';
-    const cls=opts&&opts.disabled?' disabled':'';
-    const full=opts&&opts.full?' full':'';
-    const type=opts&&opts.type||'text';
-    const maxlen=opts&&opts.maxlength?` maxlength="${opts.maxlength}"`:'';
-    const oninput=opts&&opts.onlyNumbers?` oninput="this.value=this.value.replace(/[^0-9]/g,'')"` :'';
+  var f=function(id,label,val,opts){
+    var disabled=opts&&opts.disabled?' disabled':'';
+    var cls=opts&&opts.disabled?' disabled':'';
+    var full=opts&&opts.full?' full':'';
+    var type=opts&&opts.type||'text';
+    var maxlen=opts&&opts.maxlength?' maxlength="'+opts.maxlength+'"':'';
+    var oninput=opts&&opts.onlyNumbers?' oninput="this.value=this.value.replace(/[^0-9]/g,\'\')"':'';
+    var ph=opts&&opts.placeholder?' placeholder="'+esc(opts.placeholder)+'"':'';
     if(type==='textarea'){
-      return `<div class="profile-field${full}${cls}"><label>${label}</label><textarea id="pf_${id}"${disabled}>${esc(val||'')}</textarea></div>`;
+      return '<div class="profile-field'+full+cls+'"><label>'+label+'</label><textarea id="pf_'+id+'"'+disabled+ph+'>'+esc(val||'')+'</textarea></div>';
     }
-    return `<div class="profile-field${full}${cls}"><label>${label}</label><input type="${type}" id="pf_${id}" value="${esc(val||'')}"${disabled}${maxlen}${oninput}></div>`;
+    return '<div class="profile-field'+full+cls+'"><label>'+label+'</label><input type="'+type+'" id="pf_'+id+'" value="'+esc(val||'')+'"'+disabled+maxlen+oninput+ph+'></div>';
   };
 
-  ed.innerHTML=`
-    <div class="profile-grid">
-      ${f('nombre','Nombre del negocio (no editable)',proveedor.nombre,{disabled:true})}
-      ${f('responsable','Responsable',proveedor.responsable)}
-      ${f('descripcion','Descripción del servicio',proveedor.descripcion,{type:'textarea',full:true})}
-      ${f('diferenciador','¿Qué nos diferencia?',proveedor.diferenciador,{type:'textarea',full:true})}
-      ${f('tagline','Frase corta (tagline)',proveedor.tagline)}
-      ${f('experiencia','Experiencia',proveedor.experiencia)}
-      ${f('capacidad','Capacidad',proveedor.capacidad)}
-      ${f('comunas','Comunas',proveedor.comunas,{full:true})}
-      ${f('precio_minimo','Precio mínimo ($)',proveedor.precio_minimo,{onlyNumbers:true,maxlength:10})}
-      ${f('precio_maximo','Precio máximo ($)',proveedor.precio_maximo,{onlyNumbers:true,maxlength:10})}
-      ${f('incluye','¿Qué incluye?',proveedor.incluye,{type:'textarea',full:true})}
-      ${f('no_incluye','¿Qué no incluye?',proveedor.no_incluye,{type:'textarea',full:true})}
-      ${f('whatsapp','WhatsApp',proveedor.whatsapp,{maxlength:15,onlyNumbers:true})}
-      ${f('telefono','Teléfono',proveedor.telefono,{maxlength:15,onlyNumbers:true})}
-      ${f('email','Email de contacto',proveedor.email,{type:'email'})}
-      ${f('web','Sitio web',proveedor.web)}
-      ${f('instagram','Instagram',proveedor.instagram)}
-      ${f('facebook','Facebook',proveedor.facebook)}
-      ${f('tiktok','TikTok',proveedor.tiktok)}
-      ${f('youtube','YouTube',proveedor.youtube)}
-    </div>
-    <div class="profile-uploads">
-      <div class="profile-upload${proveedor.logo_url?' has-img':''}" onclick="document.getElementById('pfLogoFile').click()">
-        <p>📷 Logo</p>
-        ${proveedor.logo_url?'<img src="'+esc(proveedor.logo_url)+'" alt="Logo">':'<p class="up-label">Clic para subir</p>'}
-        <input type="file" id="pfLogoFile" accept="image/jpeg,image/png,image/webp" onchange="uploadProfileImg('logo',this)">
-      </div>
-      <div class="profile-upload${proveedor.cover_url?' has-img':''}" onclick="document.getElementById('pfCoverFile').click()">
-        <p>🖼️ Foto de portada</p>
-        ${proveedor.cover_url?'<img src="'+esc(proveedor.cover_url)+'" alt="Portada">':'<p class="up-label">Clic para subir</p>'}
-        <input type="file" id="pfCoverFile" accept="image/jpeg,image/png,image/webp" onchange="uploadProfileImg('cover',this)">
-      </div>
-    </div>
-    <div class="profile-actions">
-      <button class="btn-save" id="profileSaveBtn" onclick="saveProfile()">Guardar cambios</button>
-    </div>
-    <div class="profile-msg" id="profileMsg"></div>
-  `;
+  ed.innerHTML=
+    '<div class="pf-section-label" style="margin-top:0">Información del negocio</div>'+
+    '<div class="profile-grid">'+
+      f('nombre','Nombre del negocio',proveedor.nombre,{disabled:true})+
+      f('responsable','Responsable',proveedor.responsable,{placeholder:'Nombre y apellido'})+
+      f('tagline','Frase corta (se muestra bajo el nombre)',proveedor.tagline,{full:true,placeholder:'Ej: Las mejores pizzas a leña para tu evento'})+
+      f('descripcion','Descripción completa del servicio',proveedor.descripcion,{type:'textarea',full:true,placeholder:'Describe tu servicio, qué ofreces, cómo trabajas...'})+
+      f('diferenciador','¿Qué te diferencia?',proveedor.diferenciador,{type:'textarea',full:true,placeholder:'¿Por qué deberían elegirte?'})+
+    '</div>'+
+
+    '<div class="pf-section">'+
+      '<div class="pf-section-label">Imágenes</div>'+
+      '<div class="profile-uploads">'+
+        '<div class="profile-upload'+(proveedor.logo_url?' has-img':'')+'" onclick="document.getElementById(\'pfLogoFile\').click()">'+
+          '<p>📷 Logo</p>'+
+          (proveedor.logo_url?'<img src="'+esc(proveedor.logo_url)+'" alt="Logo">':'<p class="up-label">Clic para subir</p>')+
+          '<input type="file" id="pfLogoFile" accept="image/jpeg,image/png,image/webp" onchange="uploadProfileImg(\'logo\',this)">'+
+        '</div>'+
+        '<div class="profile-upload'+(proveedor.cover_url?' has-img':'')+'" onclick="document.getElementById(\'pfCoverFile\').click()">'+
+          '<p>🖼️ Foto de portada</p>'+
+          (proveedor.cover_url?'<img src="'+esc(proveedor.cover_url)+'" alt="Portada">':'<p class="up-label">Clic para subir (1200x400 ideal)</p>')+
+          '<input type="file" id="pfCoverFile" accept="image/jpeg,image/png,image/webp" onchange="uploadProfileImg(\'cover\',this)">'+
+        '</div>'+
+      '</div>'+
+      '<div style="margin-top:16px">'+
+        '<label style="font-size:13px;font-weight:500;color:var(--ink2);margin-bottom:8px;display:block">Galería de fotos (hasta 5)</label>'+
+        '<div class="pf-gallery" id="pfGallery"></div>'+
+        '<p class="pf-hint">JPG, PNG o WebP, máx 40MB cada una. Muestra tus mejores trabajos, platos o montajes.</p>'+
+      '</div>'+
+      '<div class="pf-preview-note"><span>💡</span><div>La portada, galería y descripción completa <strong>solo se muestran públicamente en el plan Destacado</strong>. En el plan Básico se muestra nombre, precio, diferenciador y contacto por email. Puedes subir todo ahora y se activará cuando cambies de plan.</div></div>'+
+    '</div>'+
+
+    '<div class="pf-section">'+
+      '<div class="pf-section-label">Detalles del servicio</div>'+
+      '<div class="profile-grid">'+
+        f('experiencia','Experiencia',proveedor.experiencia,{placeholder:'Ej: 5 años'})+
+        f('capacidad','Capacidad',proveedor.capacidad,{placeholder:'Ej: hasta 200 personas'})+
+        f('comunas','Comunas donde ofreces servicio',proveedor.comunas,{full:true,placeholder:'Ej: Las Condes, Vitacura, Providencia'})+
+        f('precio_minimo','Precio mínimo ($)',proveedor.precio_minimo,{onlyNumbers:true,maxlength:10,placeholder:'7000'})+
+        f('precio_maximo','Precio máximo ($)',proveedor.precio_maximo,{onlyNumbers:true,maxlength:10,placeholder:'90000'})+
+        f('incluye','¿Qué incluye el servicio?',proveedor.incluye,{type:'textarea',full:true,placeholder:'Ej: Montaje, vajilla, servicio por 4 horas...'})+
+        f('no_incluye','¿Qué no incluye?',proveedor.no_incluye,{type:'textarea',full:true,placeholder:'Ej: Traslado fuera de Santiago, bebidas...'})+
+      '</div>'+
+    '</div>'+
+
+    '<div class="pf-section">'+
+      '<div class="pf-section-label">Contacto y redes sociales</div>'+
+      '<div class="profile-grid">'+
+        f('whatsapp','WhatsApp',proveedor.whatsapp,{maxlength:15,onlyNumbers:true,placeholder:'56912345678'})+
+        f('telefono','Teléfono',proveedor.telefono,{maxlength:15,onlyNumbers:true,placeholder:'221234567'})+
+        f('email','Email de contacto',proveedor.email,{type:'email',placeholder:'tu@negocio.com'})+
+        f('web','Sitio web',proveedor.web,{placeholder:'https://...'})+
+        f('instagram','Instagram',proveedor.instagram,{placeholder:'@tu_cuenta'})+
+        f('facebook','Facebook',proveedor.facebook,{placeholder:'URL de tu página'})+
+        f('tiktok','TikTok',proveedor.tiktok,{placeholder:'@tu_cuenta'})+
+        f('youtube','YouTube',proveedor.youtube,{placeholder:'URL de tu canal'})+
+      '</div>'+
+    '</div>'+
+
+    '<div class="profile-actions" style="margin-top:24px">'+
+      '<button class="btn-save" id="profileSaveBtn" onclick="saveProfile()">Guardar todos los cambios</button>'+
+    '</div>'+
+    '<div class="profile-msg" id="profileMsg"></div>';
+  renderPfGallery();
 }
 
 let pfLogoUrl='';
 let pfCoverUrl='';
+let pfGalleryUrls=[];
+const MAX_GAL=5;
+
+function renderPfGallery(){
+  var el=document.getElementById('pfGallery');
+  if(!el)return;
+  var html='';
+  for(var i=0;i<MAX_GAL;i++){
+    if(pfGalleryUrls[i]){
+      html+='<div class="pf-gal-item has-img"><img src="'+esc(pfGalleryUrls[i])+'" alt="Foto '+(i+1)+'"><button class="pf-gal-remove" onclick="event.stopPropagation();removePfGalImg('+i+')" title="Eliminar">✕</button></div>';
+    }else{
+      html+='<div class="pf-gal-item" onclick="document.getElementById(\'pfGalFile'+i+'\').click()"><div class="pf-gal-ph"><span>+</span>Foto '+(i+1)+'</div><input type="file" id="pfGalFile'+i+'" accept="image/jpeg,image/png,image/webp" onchange="uploadPfGalImg('+i+',this)"></div>';
+    }
+  }
+  el.innerHTML=html;
+}
+
+async function uploadPfGalImg(idx,input){
+  var file=input.files[0];
+  if(!file)return;
+  if(file.size>40*1024*1024){alert('El archivo excede 40MB');return}
+  var item=input.closest('.pf-gal-item');
+  item.classList.add('uploading');
+  try{
+    var fd=new FormData();fd.append('file',file);
+    var res=await fetch('/api/upload-image',{method:'POST',body:fd});
+    var data=await res.json();
+    if(!data.ok)throw new Error(data.error||'Error');
+    pfGalleryUrls[idx]=data.url;
+    renderPfGallery();
+  }catch(e){
+    alert('Error subiendo imagen: '+e.message);
+    item.classList.remove('uploading');
+  }
+}
+
+function removePfGalImg(idx){
+  pfGalleryUrls.splice(idx,1);
+  renderPfGallery();
+}
 
 async function uploadProfileImg(type,input){
   const file=input.files[0];
@@ -887,21 +975,21 @@ async function saveProfile(){
   };
   if(pfLogoUrl)fields.logo_url=pfLogoUrl;
   if(pfCoverUrl)fields.cover_url=pfCoverUrl;
+  // Always send gallery (even if empty, to allow removing photos)
+  fields.imagenes=pfGalleryUrls.filter(function(u){return u});
 
   try{
     const data=await apiPost({action:'update_profile',token:getToken(),fields});
     if(!data.ok)throw new Error(data.error||'Error');
     msgEl.textContent='✓ Perfil actualizado correctamente';
     msgEl.className='profile-msg success';
-    // Reset upload flags
     pfLogoUrl='';pfCoverUrl='';
-    // Reload dashboard to reflect changes
     setTimeout(()=>loadDashboard(),1500);
   }catch(e){
     msgEl.textContent='Error: '+e.message;
     msgEl.className='profile-msg error';
   }finally{
-    btn.disabled=false;btn.textContent='Guardar cambios';
+    btn.disabled=false;btn.textContent='Guardar todos los cambios';
   }
 }
 
