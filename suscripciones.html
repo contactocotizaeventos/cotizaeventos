@@ -1111,6 +1111,19 @@ async function doReset(){
     showAuth();
   }
 
+  // Payment return notification
+  const params=new URLSearchParams(window.location.search);
+  if(params.get('pago')==='ok'){
+    // Clean URL
+    window.history.replaceState(null,'','/suscripciones.html');
+    // Show toast
+    const toast=document.createElement('div');
+    toast.style.cssText='position:fixed;top:72px;left:50%;transform:translateX(-50%);background:#06C7A5;color:#fff;padding:14px 28px;border-radius:12px;font-weight:600;font-size:15px;z-index:999;box-shadow:0 8px 24px rgba(6,199,165,.3);animation:fadeUp .4s ease';
+    toast.textContent='✓ Pago procesado — tu plan Destacado está activo';
+    document.body.appendChild(toast);
+    setTimeout(function(){toast.style.opacity='0';toast.style.transition='opacity .5s';setTimeout(function(){toast.remove()},500)},5000);
+  }
+
   // Enter key on login/register
   document.getElementById('loginPass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
   document.getElementById('regPass2').addEventListener('keydown',e=>{if(e.key==='Enter')doRegister()});
