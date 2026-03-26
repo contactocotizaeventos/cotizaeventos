@@ -1,654 +1,1029 @@
-/**
- * /api/suscriptor
- *
- * Provider (suscriptor) authentication and subscription management.
- * Uses SUSCRIPTOR_SECRET for HMAC-SHA256 tokens (distinct from ADMIN_SECRET).
- * Passwords hashed with bcryptjs (cost 12).
- *
- * ── POST routes (via body { action, ... }) ──
- *   register                → create suscriptor account (requires approved provider)
- *   login                   → authenticate, return token (24h)
- *   toggle_pago_automatico  → update auto-pay flag on active subscription
- *   cancelar                → cancel active subscription (provider stays Destacado until expiry)
- *
- * ── GET routes (via ?action=...) ──
- *   estado                  → current suscriptor + provider + subscription info
- *
- * Tables used:
- *   - suscriptores (new — see CREATE TABLE in admin-manage.js)
- *   - suscripciones (new — see CREATE TABLE in admin-manage.js)
- *   - proveedores (existing)
- */
-
-import { createClient } from "@supabase/supabase-js";
-import bcrypt from "bcryptjs";
-
-// ══════════════════════════════════════════════════════════════════════
-// HELPERS
-// ══════════════════════════════════════════════════════════════════════
-
-function corsHeaders() {
-  return {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization",
-    "Content-Type": "application/json; charset=utf-8",
-  };
-}
-
-function json(data, status = 200) {
-  return new Response(JSON.stringify(data), { status, headers: corsHeaders() });
-}
-
-function err(message, status = 500) {
-  return json({ ok: false, error: message }, status);
-}
-
-async function sendEmail(to, subject, html, env) {
-  try {
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${env.RESEND_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: env.EMAIL_FROM,
-        to: [to],
-        subject,
-        html,
-      }),
-    });
-    if (!res.ok) {
-      const body = await res.text();
-      console.error(`Resend error (${res.status}):`, body);
-    }
-  } catch (e) {
-    console.error("sendEmail failed:", e);
-  }
-}
-
-// ── HMAC Token creation ──────────────────────────────────────────────
-
-async function createToken(payload, secret) {
-  const encoder = new TextEncoder();
-  const payloadStr = JSON.stringify(payload);
-  const payloadB64 = btoa(payloadStr)
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/, "");
-
-  const key = await crypto.subtle.importKey(
-    "raw",
-    encoder.encode(secret),
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign"]
-  );
-
-  const signature = await crypto.subtle.sign(
-    "HMAC",
-    key,
-    encoder.encode(payloadB64)
-  );
-
-  const sigB64 = btoa(String.fromCharCode(...new Uint8Array(signature)))
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/, "");
-
-  return `${payloadB64}.${sigB64}`;
-}
-
-// ── HMAC Token verification ──────────────────────────────────────────
-
-async function verifyToken(token, secret) {
-  if (!token) return null;
-
-  const dotIdx = token.indexOf(".");
-  if (dotIdx === -1) return null;
-
-  const payloadB64 = token.slice(0, dotIdx);
-  const sigB64 = token.slice(dotIdx + 1);
-
-  const encoder = new TextEncoder();
-  const key = await crypto.subtle.importKey(
-    "raw",
-    encoder.encode(secret),
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["verify"]
-  );
-
-  // Decode signature from base64url
-  const sigStr = atob(sigB64.replace(/-/g, "+").replace(/_/g, "/"));
-  const sigBuf = new Uint8Array(sigStr.length);
-  for (let i = 0; i < sigStr.length; i++) sigBuf[i] = sigStr.charCodeAt(i);
-
-  const valid = await crypto.subtle.verify(
-    "HMAC",
-    key,
-    sigBuf,
-    encoder.encode(payloadB64)
-  );
-
-  if (!valid) return null;
-
-  const payloadStr = atob(payloadB64.replace(/-/g, "+").replace(/_/g, "/"));
-  const payload = JSON.parse(payloadStr);
-
-  // Check expiration
-  if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) return null;
-
-  return payload;
-}
-
-/**
- * Extract token from Authorization header or query param.
- * Supports: "Bearer <token>" header or ?token=<token> query string.
- */
-function extractToken(request) {
-  // Try Authorization header first
-  const auth = request.headers.get("Authorization") || "";
-  if (auth.startsWith("Bearer ")) return auth.slice(7);
-
-  // Fallback to query param (used by GET requests)
-  const url = new URL(request.url);
-  return url.searchParams.get("token") || null;
-}
-
-// ══════════════════════════════════════════════════════════════════════
-// MAIN HANDLER
-// ══════════════════════════════════════════════════════════════════════
-
-export async function onRequest(context) {
-  const { request, env } = context;
-
-  // CORS preflight
-  if (request.method === "OPTIONS") {
-    return new Response(null, { status: 204, headers: corsHeaders() });
-  }
-
-  // Validate env
-  if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_KEY || !env.SUSCRIPTOR_SECRET) {
-    console.error("Missing required env vars for suscriptor");
-    return err("Error de configuración del servidor", 500);
-  }
-
-  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_KEY);
-  const url = new URL(request.url);
-
-  // ══════════════════════════════════════════════════════════════════
-  // GET ROUTES
-  // ══════════════════════════════════════════════════════════════════
-
-  if (request.method === "GET") {
-    const action = url.searchParams.get("action");
-
-    // ── GET estado ───────────────────────────────────────────────────
-    if (action === "estado") {
-      const token = extractToken(request);
-      const payload = await verifyToken(token, env.SUSCRIPTOR_SECRET);
-      if (!payload) return err("Token inválido o expirado", 401);
-
-      // Load suscriptor
-      const { data: sub, error: e1 } = await supabase
-        .from("suscriptores")
-        .select("id, email, nombre, proveedor_id")
-        .eq("id", payload.sub)
-        .single();
-      if (e1 || !sub) return err("Suscriptor no encontrado", 404);
-
-      // Load linked provider
-      let proveedor = null;
-      if (sub.proveedor_id) {
-        const { data: prov } = await supabase
-          .from("proveedores")
-          .select("id, nombre, posicion, activo, categoria, etiqueta_id, cover_url, logo_url, logo_emoji, descripcion, diferenciador, tagline, experiencia, capacidad, comunas, precio_minimo, precio_maximo, incluye, no_incluye, whatsapp, telefono, email, web, instagram, facebook, tiktok, youtube, responsable, slug")
-          .eq("id", sub.proveedor_id)
-          .single();
-        proveedor = prov || null;
-      }
-
-      // Load active subscription
-      let suscripcion = null;
-      const { data: subs } = await supabase
-        .from("suscripciones")
-        .select("*")
-        .eq("suscriptor_id", sub.id)
-        .eq("estado", "activa")
-        .order("fecha_inicio", { ascending: false })
-        .limit(1);
-      if (subs && subs.length > 0) {
-        suscripcion = subs[0];
-      }
-
-      return json({
-        ok: true,
-        suscriptor: { id: sub.id, email: sub.email, nombre: sub.nombre },
-        proveedor,
-        suscripcion,
-      });
-    }
-
-    return err("Acción GET no reconocida", 400);
-  }
-
-  // ══════════════════════════════════════════════════════════════════
-  // POST ROUTES
-  // ══════════════════════════════════════════════════════════════════
-
-  if (request.method === "POST") {
-    let body;
-    try {
-      body = await request.json();
-    } catch {
-      return err("JSON inválido", 400);
-    }
-
-    const { action } = body;
-
-    // ── REGISTER ─────────────────────────────────────────────────────
-    if (action === "register") {
-      const { nombre, email, password } = body;
-
-      if (!nombre || !nombre.trim()) return err("El nombre es obligatorio", 400);
-      if (!email || !email.trim()) return err("El email es obligatorio", 400);
-      if (!password || password.length < 6) {
-        return err("La contraseña debe tener al menos 6 caracteres", 400);
-      }
-
-      const emailNorm = email.trim().toLowerCase();
-
-      // 1. Verify approved provider exists with this email
-      const { data: provRows, error: eProv } = await supabase
-        .from("proveedores")
-        .select("id, nombre")
-        .eq("email", emailNorm)
-        .eq("activo", true)
-        .limit(1);
-
-      const prov = (provRows && provRows.length > 0) ? provRows[0] : null;
-
-      if (eProv || !prov) {
-        return err(
-          "No encontramos un negocio aprobado con ese email. Primero debes registrar tu negocio.",
-          400
-        );
-      }
-
-      // 2. Verify suscriptor doesn't already exist
-      const { data: existingRows } = await supabase
-        .from("suscriptores")
-        .select("id")
-        .eq("email", emailNorm)
-        .limit(1);
-
-      if (existingRows && existingRows.length > 0) {
-        return err("Ya tienes una cuenta. Inicia sesión.", 400);
-      }
-
-      // 3. Hash password (bcrypt cost 12)
-      const passwordHash = await bcrypt.hash(password, 12);
-
-      // 4. Insert suscriptor
-      const { data: newSub, error: eInsert } = await supabase.from("suscriptores").insert([{
-        email: emailNorm,
-        password_hash: passwordHash,
-        nombre: nombre.trim(),
-        proveedor_id: prov.id,
-      }]).select("id").single();
-
-      if (eInsert || !newSub) {
-        console.error("Error inserting suscriptor:", eInsert);
-        return err("Error al crear la cuenta", 500);
-      }
-
-      // 5. Send welcome email with password
-      if (env.RESEND_API_KEY && env.EMAIL_FROM) {
-        const welcomeHtml = `
 <!DOCTYPE html>
 <html lang="es">
-<head><meta charset="utf-8"></head>
-<body style="font-family:Arial,Helvetica,sans-serif;background:#FAFAF8;padding:32px 16px;color:#1A1714;">
-  <div style="max-width:560px;margin:0 auto;background:#FFFFFF;border-radius:14px;padding:40px 32px;border:1px solid #E8E4DF;">
-    <h1 style="font-size:22px;margin:0 0 8px 0;color:#E8542A;">CotizaEventos.cl</h1>
-    <h2 style="font-size:18px;margin:0 0 24px 0;color:#1A1714;">¡Tu cuenta fue creada!</h2>
-    <p style="margin:0 0 16px 0;line-height:1.6;color:#3D3733;">
-      Hola <strong>${nombre.trim()}</strong>, tu cuenta para gestionar <strong>${prov.nombre || "tu negocio"}</strong> en CotizaEventos.cl fue creada exitosamente.
-    </p>
-    <p style="margin:0 0 8px 0;line-height:1.6;color:#3D3733;">Guarda tus datos de acceso:</p>
-    <div style="background:#F5F3EF;border-radius:8px;padding:16px;margin:0 0 20px 0;">
-      <p style="margin:0 0 6px 0;font-size:14px;color:#8A8278;">Email</p>
-      <p style="margin:0 0 14px 0;font-size:16px;font-weight:600;color:#1A1714;">${emailNorm}</p>
-      <p style="margin:0 0 6px 0;font-size:14px;color:#8A8278;">Contraseña</p>
-      <p style="margin:0;font-size:16px;font-weight:600;color:#1A1714;">${password}</p>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mi Suscripción — CotizaEventos.cl</title>
+<meta name="description" content="Gestiona tu suscripción y perfil de proveedor en CotizaEventos.cl.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="author" content="CotizaEventos.cl">
+<meta property="og:site_name" content="CotizaEventos.cl">
+<meta property="og:locale" content="es_CL">
+<link rel="canonical" href="https://www.cotizaeventos.cl/suscripciones.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --coral:#E8542A;--coral2:#FF7A54;--coral-lt:#FFF0EB;--coral-md:#FFCFC2;
+  --sun:#F0A500;--teal:#06C7A5;
+  --bg:#FAFAF8;--bg2:#F5F3EF;--white:#FFFFFF;
+  --ink:#1A1714;--ink2:#3D3733;--muted:#8A8278;
+  --border:#E8E4DF;--border2:#D4CFC9;
+  --r:14px;--ease:cubic-bezier(.4,0,.2,1);
+  --shadow:0 2px 12px rgba(0,0,0,.07);
+  --shadow-md:0 8px 32px rgba(0,0,0,.1);
+  --shadow-lg:0 20px 60px rgba(0,0,0,.12);
+  --font-title:'Fraunces',serif;
+  --font-body:'Outfit',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);color:var(--ink);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+::selection{background:var(--coral);color:#fff}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--coral);border-radius:9px}
+
+/* ── Nav ────────────────────────────────────────────────────────── */
+.nav{position:sticky;top:0;z-index:100;height:56px;background:rgba(255,255,255,.97);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:56px;max-width:1140px;margin:0 auto;padding:0 20px}
+.nav-logo{font-family:var(--font-title);font-weight:700;font-size:20px;color:var(--ink)}
+.nav-logo span{color:var(--coral)}
+.nav-links{display:flex;align-items:center;gap:28px}
+.nav-links a{font-size:14px;font-weight:500;color:var(--ink2);transition:color .2s}
+.nav-links a:hover{color:var(--coral)}
+.nav-cta{padding:8px 18px;background:var(--coral);color:#fff!important;border-radius:var(--r);font-weight:600;font-size:13px}
+.nav-burger{display:none;width:32px;height:32px;flex-direction:column;justify-content:center;gap:5px;cursor:pointer}
+.nav-burger i{display:block;height:2px;background:var(--ink);border-radius:2px}
+.nav-mobile{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:var(--white);z-index:200;flex-direction:column;padding:80px 32px 32px}
+.nav-mobile.open{display:flex}
+.nav-mobile a{font-size:22px;font-weight:500;padding:16px 0;border-bottom:1px solid var(--border);color:var(--ink)}
+.nav-mobile-close{position:absolute;top:16px;right:20px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--ink)}
+@media(max-width:860px){.nav-links{display:none}.nav-burger{display:flex}}
+
+/* ── Layout ─────────────────────────────────────────────────────── */
+.page-header{background:#1A1410;color:#fff;padding:48px 0 40px;text-align:center}
+.page-header h1{font-family:var(--font-title);font-weight:700;font-size:clamp(24px,4vw,36px);margin-bottom:6px}
+.page-header p{color:rgba(255,255,255,.55);font-size:15px}
+.container{max-width:900px;margin:0 auto;padding:0 20px}
+.section{padding:48px 0}
+
+/* ── Auth Screen ────────────────────────────────────────────────── */
+.auth-wrap{max-width:440px;margin:48px auto 80px;background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.auth-tabs{display:flex;border-bottom:1px solid var(--border)}
+.auth-tab{flex:1;padding:14px;text-align:center;font-weight:600;font-size:14px;color:var(--muted);cursor:pointer;transition:all .2s var(--ease);background:var(--bg2)}
+.auth-tab.active{color:var(--coral);background:var(--white);box-shadow:inset 0 -2px 0 var(--coral)}
+.auth-panel{display:none;padding:32px 28px}
+.auth-panel.active{display:block;animation:fadeUp .3s var(--ease)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+.field{margin-bottom:18px}
+.field label{display:block;font-size:14px;font-weight:500;color:var(--ink2);margin-bottom:6px}
+.field label .req{color:var(--coral)}
+.field input{width:100%;padding:12px 16px;border:1px solid var(--border);border-radius:var(--r);font-family:var(--font-body);font-size:15px;background:var(--bg);transition:border-color .2s}
+.field input:focus{outline:none;border-color:var(--coral);background:var(--white)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 28px;border-radius:var(--r);font-weight:600;font-size:15px;transition:all .3s var(--ease);width:100%}
+.btn-coral{background:var(--coral);color:#fff}
+.btn-coral:hover{background:var(--coral2)}
+.btn-coral:disabled{opacity:.5;cursor:not-allowed}
+.auth-msg{font-size:14px;padding:10px 14px;border-radius:8px;margin-bottom:16px;display:none}
+.auth-msg.error{display:block;background:#FEE2E2;color:#DC2626;border:1px solid #FECACA}
+.auth-msg.success{display:block;background:#D1FAE5;color:#059669;border:1px solid #A7F3D0}
+
+/* ── Dashboard ──────────────────────────────────────────────────── */
+.dash{display:none}
+.dash.show{display:block}
+
+.dash-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:36px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+.dash-biz{display:flex;align-items:center;gap:14px}
+.dash-biz-logo{width:52px;height:52px;border-radius:14px;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;overflow:hidden}
+.dash-biz-logo img{width:100%;height:100%;object-fit:cover}
+.dash-biz h2{font-family:var(--font-title);font-size:20px;font-weight:600}
+.dash-badge{display:inline-flex;align-items:center;gap:5px;padding:5px 14px;border-radius:100px;font-size:13px;font-weight:600}
+.badge-dest{background:var(--coral);color:#fff}
+.badge-basico{background:var(--bg2);color:var(--muted);border:1px solid var(--border)}
+.dash-logout{font-size:13px;color:var(--muted);cursor:pointer;text-decoration:underline}
+.dash-logout:hover{color:var(--coral)}
+
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+@media(max-width:700px){.dash-grid{grid-template-columns:1fr}}
+
+/* ── Info Card ──────────────────────────────────────────────────── */
+.info-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:28px}
+.info-card h3{font-family:var(--font-title);font-size:18px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.info-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px}
+.info-row:last-child{border-bottom:none}
+.info-row .label{color:var(--muted)}
+.info-row .value{font-weight:500;color:var(--ink)}
+
+/* ── Subscription Card ──────────────────────────────────────────── */
+.sub-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:28px}
+.sub-card h3{font-family:var(--font-title);font-size:18px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+
+/* ── Plan Comparison ────────────────────────────────────────────── */
+.plan-compare{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px}
+@media(max-width:480px){.plan-compare{grid-template-columns:1fr}}
+.plan-opt{border:2px solid var(--border);border-radius:var(--r);padding:24px 20px;text-align:center;transition:all .3s var(--ease);position:relative}
+.plan-opt:hover{border-color:var(--coral-md)}
+.plan-opt.recommended{border-color:var(--coral);background:linear-gradient(160deg,#FFF9F7,#fff)}
+.plan-opt-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--coral);color:#fff;font-size:11px;font-weight:600;padding:3px 12px;border-radius:100px;white-space:nowrap}
+.plan-opt h4{font-family:var(--font-title);font-size:18px;font-weight:600;margin-bottom:4px}
+.plan-opt .price{font-size:28px;font-weight:700;color:var(--coral);margin:8px 0}
+.plan-opt .price-sub{font-size:13px;color:var(--muted);margin-bottom:12px}
+.plan-opt p{font-size:13px;color:var(--ink2);line-height:1.6;margin-bottom:16px}
+.plan-opt .btn-plan{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:var(--coral);color:#fff;border-radius:var(--r);font-weight:600;font-size:14px;transition:all .2s var(--ease)}
+.plan-opt .btn-plan:hover{background:var(--coral2)}
+
+.plan-note{font-size:13px;color:var(--muted);text-align:center;margin-top:16px;line-height:1.6}
+
+/* ── Plans Table ────────────────────────────────────────────────── */
+.plans-table{display:flex;flex-direction:column;gap:8px}
+.pt-row{display:grid;grid-template-columns:32px 1fr auto auto;align-items:center;gap:12px;padding:16px;border:2px solid var(--border);border-radius:var(--r);cursor:pointer;transition:all .2s var(--ease);background:var(--white)}
+.pt-row:hover{border-color:var(--coral-md);background:var(--coral-lt)}
+.pt-row.pt-selected{border-color:var(--coral);background:linear-gradient(160deg,#FFF9F7,#fff);box-shadow:0 2px 12px rgba(232,84,42,.1)}
+.pt-row.pt-best{border-color:var(--coral-md)}
+.pt-radio{display:flex;align-items:center;justify-content:center}
+.pt-radio input[type=radio]{width:18px;height:18px;accent-color:var(--coral);cursor:pointer}
+.pt-name{font-weight:600;font-size:15px;color:var(--ink);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pt-detail{font-size:13px;color:var(--muted);margin-top:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.pt-badge{display:inline-block;padding:2px 8px;background:#D1FAE5;color:#059669;border-radius:100px;font-size:11px;font-weight:700}
+.pt-tag{display:inline-block;padding:2px 8px;background:var(--coral);color:#fff;border-radius:100px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+.pt-price{font-size:18px;font-weight:700;color:var(--coral);text-align:right;white-space:nowrap}
+.pt-permonth{font-size:12px;color:var(--muted);text-align:right;white-space:nowrap}
+@media(max-width:600px){
+  .pt-row{grid-template-columns:28px 1fr;gap:8px}
+  .pt-price{grid-column:2;font-size:16px}
+  .pt-permonth{grid-column:2;margin-top:-4px}
+}
+
+/* ── Promo Free Banner ──────────────────────────────────────────── */
+.promo-free{background:linear-gradient(135deg,#ECFDF5 0%,#F0FDF4 50%,#FFF 100%);border:2px solid #06C7A5;border-radius:var(--r);padding:32px;text-align:center;position:relative;overflow:hidden}
+.promo-free::before{content:'';position:absolute;top:-40px;right:-40px;width:140px;height:140px;background:radial-gradient(circle,rgba(6,199,165,.15) 0%,transparent 70%);pointer-events:none}
+.promo-free-badge{display:inline-block;padding:5px 14px;background:#06C7A5;color:#fff;border-radius:100px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px}
+.promo-free-title{font-family:var(--font-title);font-size:clamp(22px,4vw,28px);font-weight:700;color:var(--ink);margin-bottom:10px}
+.promo-free-title span{color:#06C7A5}
+.promo-free-desc{font-size:15px;color:var(--ink2);line-height:1.6;margin-bottom:20px;max-width:460px;margin-left:auto;margin-right:auto}
+.promo-free-date{display:inline-flex;align-items:center;gap:12px;background:var(--white);border:1px solid var(--border);border-radius:12px;padding:14px 24px;margin-bottom:20px}
+.promo-free-ico{font-size:28px}
+.promo-free-label{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:1px}
+.promo-free-val{font-size:18px;font-weight:700;color:var(--ink);font-family:var(--font-title)}
+.promo-free-features{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:20px}
+.promo-free-features span{padding:6px 14px;background:rgba(6,199,165,.1);border:1px solid rgba(6,199,165,.25);border-radius:100px;font-size:12px;font-weight:600;color:#059669}
+.promo-free-btn{background:#06C7A5!important}
+.promo-free-btn:hover{background:#05B396!important}
+
+/* ── Active Subscription View ───────────────────────────────────── */
+.sub-active-info{margin-bottom:20px}
+
+/* Toggle switch */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border)}
+.toggle-row .toggle-label{font-size:14px;color:var(--ink2)}
+.toggle{position:relative;width:48px;height:26px;flex-shrink:0}
+.toggle input{display:none}
+.toggle-track{position:absolute;inset:0;background:var(--border2);border-radius:13px;cursor:pointer;transition:background .3s var(--ease)}
+.toggle-track::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform .3s var(--ease);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.toggle input:checked+.toggle-track{background:var(--teal)}
+.toggle input:checked+.toggle-track::after{transform:translateX(22px)}
+
+.btn-cancel{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border:1px solid #e53e3e;color:#e53e3e;border-radius:var(--r);font-weight:500;font-size:14px;transition:all .2s var(--ease);margin-top:16px;background:transparent}
+.btn-cancel:hover{background:#FEE2E2}
+
+/* ── Cancel Modal ───────────────────────────────────────────────── */
+.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(26,23,20,.6);backdrop-filter:blur(10px);z-index:300;justify-content:center;align-items:center}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--white);border-radius:20px;max-width:420px;width:calc(100% - 40px);padding:32px;text-align:center}
+.modal-box h3{font-family:var(--font-title);font-size:20px;font-weight:600;margin-bottom:10px}
+.modal-box p{font-size:15px;color:var(--ink2);line-height:1.7;margin-bottom:24px}
+.modal-btns{display:flex;gap:10px;justify-content:center}
+.modal-btns .btn{width:auto}
+.btn-outline{border:2px solid var(--border2);color:var(--ink);background:var(--white);padding:12px 24px;border-radius:var(--r);font-weight:600;font-size:14px}
+.btn-outline:hover{border-color:var(--coral);color:var(--coral)}
+.btn-danger{background:#e53e3e;color:#fff;padding:12px 24px;border-radius:var(--r);font-weight:600;font-size:14px}
+.btn-danger:hover{background:#c53030}
+
+/* ── Profile Editor ──────────────────────────────────────────────── */
+.profile-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:28px;grid-column:1/-1}
+.profile-card h3{font-family:var(--font-title);font-size:18px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:600px){.profile-grid{grid-template-columns:1fr}}
+.profile-field label{display:block;font-size:13px;font-weight:500;color:var(--muted);margin-bottom:4px}
+.profile-field input,.profile-field textarea{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-family:var(--font-body);font-size:14px;background:var(--bg);transition:border-color .2s}
+.profile-field input:focus,.profile-field textarea:focus{outline:none;border-color:var(--coral);background:#fff}
+.profile-field textarea{resize:vertical;min-height:70px}
+.profile-field.full{grid-column:1/-1}
+.profile-field.disabled input{background:var(--bg2);color:var(--muted);cursor:not-allowed}
+.profile-uploads{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+@media(max-width:600px){.profile-uploads{grid-template-columns:1fr}}
+.profile-upload{border:2px dashed var(--border2);border-radius:var(--r);padding:16px;text-align:center;cursor:pointer;transition:all .2s;background:var(--white);position:relative}
+.profile-upload:hover{border-color:var(--coral);background:var(--coral-lt)}
+.profile-upload.has-img{border-style:solid;border-color:var(--teal)}
+.profile-upload img{max-height:80px;border-radius:6px;margin:8px auto 0;display:block}
+.profile-upload input[type=file]{display:none}
+.profile-upload p{font-size:13px;color:var(--ink2);margin:0}
+.profile-upload .up-label{font-size:12px;color:var(--muted);margin-top:4px}
+.profile-actions{display:flex;gap:10px;margin-top:20px;justify-content:flex-end}
+.btn-save{background:var(--teal);color:#fff;padding:10px 24px;border-radius:var(--r);font-weight:600;font-size:14px;transition:all .2s}
+.btn-save:hover{filter:brightness(1.1)}
+.btn-save:disabled{opacity:.5;cursor:not-allowed}
+.profile-msg{font-size:13px;padding:8px 14px;border-radius:8px;margin-top:12px;display:none}
+.profile-msg.success{display:block;background:#D1FAE5;color:#059669;border:1px solid #A7F3D0}
+.profile-msg.error{display:block;background:#FEE2E2;color:#DC2626;border:1px solid #FECACA}
+
+/* ── Footer ─────────────────────────────────────────────────────── */
+.footer{background:var(--bg2);border-top:1px solid var(--border);padding:48px 0 32px}
+.footer-inner{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:32px;max-width:1140px;margin:0 auto;padding:0 20px}
+.footer-logo{font-family:var(--font-title);font-weight:700;font-size:18px;margin-bottom:8px}
+.footer-logo span{color:var(--coral)}
+.footer-copy{font-size:13px;color:var(--muted)}
+.footer-links{display:flex;gap:24px;flex-wrap:wrap}
+.footer-links a{font-size:14px;color:var(--ink2);transition:color .2s}
+.footer-links a:hover{color:var(--coral)}
+</style>
+</head>
+<body>
+
+<!-- ══ NAV ═══════════════════════════════════════════════════════════ -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">Cotiza<span>Eventos</span>.cl</a>
+    <div class="nav-links">
+      <a href="index.html">Inicio</a>
+      <a href="proveedores.html">Proveedores</a>
+      <a href="nosotros.html">Nosotros</a>
+      <a href="index.html#contacto">Contacto</a>
+      <a href="form.html" class="nav-cta">✦ Publica tu negocio</a>
     </div>
-    <a href="https://www.cotizaeventos.cl/suscripciones.html" style="display:inline-block;background:#E8542A;color:#fff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;font-size:14px;">
-      Gestionar mi suscripción
-    </a>
-    <hr style="border:none;border-top:1px solid #E8E4DF;margin:32px 0 16px 0;">
-    <p style="margin:0;font-size:12px;color:#8A8278;">
-      Este correo fue enviado automáticamente por CotizaEventos.cl. Te recomendamos no compartir tu contraseña.
-    </p>
+    <div class="nav-burger" onclick="document.getElementById('navMobile').classList.toggle('open')"><i></i><i></i><i></i></div>
   </div>
-</body>
-</html>`.trim();
-        await sendEmail(emailNorm, "Tu cuenta en CotizaEventos.cl fue creada", welcomeHtml, env);
-      }
+</nav>
+<div class="nav-mobile" id="navMobile">
+  <button class="nav-mobile-close" onclick="document.getElementById('navMobile').classList.remove('open')">✕</button>
+  <a href="index.html">Inicio</a>
+  <a href="proveedores.html">Proveedores</a>
+  <a href="nosotros.html">Nosotros</a>
+  <a href="form.html">Publica tu negocio</a>
+</div>
 
-      // 6. Auto-login: create token
-      const now = Math.floor(Date.now() / 1000);
-      const expiresIn = 86400;
-      const tokenPayload = {
-        sub: newSub.id,
-        email: emailNorm,
-        exp: now + expiresIn,
-      };
-      const token = await createToken(tokenPayload, env.SUSCRIPTOR_SECRET);
+<!-- ══ PAGE HEADER ══════════════════════════════════════════════════ -->
+<section class="page-header">
+  <h1>Mi Suscripción</h1>
+  <p>Gestiona tu cuenta y plan de proveedor</p>
+</section>
 
-      return json({
-        ok: true,
-        token,
-        expiresIn,
-        suscriptor: {
-          id: newSub.id,
-          nombre: nombre.trim(),
-          email: emailNorm,
-          proveedor_id: prov.id,
-        },
-      });
+<!-- ══ AUTH SCREEN ══════════════════════════════════════════════════ -->
+<div class="auth-wrap" id="authWrap">
+  <div class="auth-tabs">
+    <div class="auth-tab active" onclick="switchTab('login')">Iniciar sesión</div>
+    <div class="auth-tab" onclick="switchTab('register')">Registrarse</div>
+  </div>
+
+  <!-- Login Panel -->
+  <div class="auth-panel active" id="panelLogin">
+    <div class="auth-msg" id="loginMsg"></div>
+    <div class="field">
+      <label>Email <span class="req">*</span></label>
+      <input type="email" id="loginEmail" placeholder="tu@negocio.com">
+    </div>
+    <div class="field">
+      <label>Contraseña <span class="req">*</span></label>
+      <input type="password" id="loginPass" placeholder="Tu contraseña">
+    </div>
+    <button class="btn btn-coral" id="loginBtn" onclick="doLogin()">Iniciar sesión</button>
+    <p style="text-align:center;margin-top:14px"><a href="#" onclick="showResetPanel();return false" style="font-size:13px;color:var(--coral);text-decoration:underline">¿Olvidaste tu contraseña?</a></p>
+    <!-- Reset password inline -->
+    <div id="resetPanel" style="display:none;margin-top:20px;padding-top:20px;border-top:1px solid var(--border)">
+      <div class="auth-msg" id="resetMsg"></div>
+      <p style="font-size:14px;color:var(--ink2);margin-bottom:14px">Ingresa tu email y te enviaremos una nueva contraseña provisoria.</p>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="resetEmail" placeholder="tu@negocio.com">
+      </div>
+      <button class="btn btn-coral" id="resetBtn" onclick="doReset()">Enviar nueva contraseña</button>
+    </div>
+  </div>
+
+  <!-- Register Panel -->
+  <div class="auth-panel" id="panelRegister">
+    <div class="auth-msg" id="registerMsg"></div>
+    <div class="field">
+      <label>Nombre <span class="req">*</span></label>
+      <input type="text" id="regNombre" placeholder="Tu nombre">
+    </div>
+    <div class="field">
+      <label>Email <span class="req">*</span></label>
+      <input type="email" id="regEmail" placeholder="El mismo email de tu negocio aprobado">
+    </div>
+    <div class="field">
+      <label>Contraseña <span class="req">*</span></label>
+      <input type="password" id="regPass" placeholder="Mínimo 6 caracteres">
+    </div>
+    <div class="field">
+      <label>Confirmar contraseña <span class="req">*</span></label>
+      <input type="password" id="regPass2" placeholder="Repite tu contraseña">
+    </div>
+    <button class="btn btn-coral" id="regBtn" onclick="doRegister()">Crear cuenta</button>
+  </div>
+</div>
+
+<!-- ══ DASHBOARD ════════════════════════════════════════════════════ -->
+<div class="dash" id="dashboard">
+  <div class="section">
+    <div class="container">
+
+      <!-- Top bar: business info + badge -->
+      <div class="dash-top">
+        <div class="dash-biz">
+          <div class="dash-biz-logo" id="dashLogo">✦</div>
+          <div>
+            <h2 id="dashName">—</h2>
+            <span class="dash-badge badge-basico" id="dashBadge">📋 Básico</span>
+          </div>
+        </div>
+        <span class="dash-logout" onclick="logout()">Cerrar sesión</span>
+      </div>
+
+      <!-- Two-column layout -->
+      <div class="dash-grid">
+
+        <!-- Left: Business info -->
+        <div class="info-card">
+          <h3>📊 Mi negocio</h3>
+          <div id="infoRows">
+            <div class="info-row"><span class="label">Cargando...</span><span class="value">—</span></div>
+          </div>
+        </div>
+
+        <!-- Right: Subscription -->
+        <div class="sub-card" id="subCard">
+          <h3>✦ Mi suscripción</h3>
+          <div id="subContent">
+            <p style="color:var(--muted);font-size:14px">Cargando...</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Profile Editor -->
+      <div class="profile-card" id="profileCard" style="margin-top:24px;display:none">
+        <h3>✏️ Editar mi perfil</h3>
+        <div id="profileEditor"></div>
+      </div>
+
+      <!-- Password change -->
+      <div class="profile-card" id="passwordCard" style="margin-top:24px;display:none">
+        <h3>🔒 Cambiar contraseña</h3>
+        <div style="max-width:400px">
+          <div class="field"><label>Contraseña actual <span class="req">*</span></label><input type="password" id="pwCurrent" placeholder="Tu contraseña actual"></div>
+          <div class="field"><label>Nueva contraseña <span class="req">*</span></label><input type="password" id="pwNew" placeholder="Mínimo 6 caracteres"></div>
+          <div class="field"><label>Confirmar nueva contraseña <span class="req">*</span></label><input type="password" id="pwNew2" placeholder="Repite la nueva contraseña"></div>
+          <div class="profile-actions" style="justify-content:flex-start">
+            <button class="btn-save" id="pwSaveBtn" onclick="changePassword()">Cambiar contraseña</button>
+          </div>
+          <div class="profile-msg" id="pwMsg"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══ CANCEL MODAL ═════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="cancelModal" onclick="if(event.target===this)closeCancelModal()">
+  <div class="modal-box">
+    <h3>¿Cancelar suscripción?</h3>
+    <p>Tu perfil Destacado se mantiene activo hasta la fecha de vencimiento aunque canceles. Después de esa fecha, tu cuenta volverá al plan Básico.</p>
+    <div class="modal-btns">
+      <button class="btn-outline" onclick="closeCancelModal()">Volver</button>
+      <button class="btn-danger" id="confirmCancelBtn" onclick="confirmCancel()">Sí, cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FOOTER ═══════════════════════════════════════════════════════ -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo">Cotiza<span>Eventos</span>.cl</div>
+      <p class="footer-copy">&copy; 2025 CotizaEventos.cl — Todos los derechos reservados.</p>
+    </div>
+    <div class="footer-links">
+      <a href="proveedores.html">Proveedores</a>
+      <a href="nosotros.html">Nosotros</a>
+      <a href="terminos.html">Términos</a>
+      <a href="form.html">Publicar negocio</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════ */
+/* HELPERS                                                           */
+/* ══════════════════════════════════════════════════════════════════ */
+function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;')}
+
+function getToken(){return localStorage.getItem('suscriptor_token')||''}
+function setToken(t){localStorage.setItem('suscriptor_token',t)}
+function clearToken(){localStorage.removeItem('suscriptor_token')}
+
+async function apiPost(body){
+  const res=await fetch('/api/suscriptor',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+getToken()},
+    body:JSON.stringify(body)
+  });
+  const data=await res.json();
+  if(res.status===401){clearToken();showAuth();throw new Error('Sesión expirada')}
+  return data;
+}
+
+async function apiGet(params){
+  const q=new URLSearchParams(params).toString();
+  const res=await fetch('/api/suscriptor?'+q,{
+    headers:{'Authorization':'Bearer '+getToken()}
+  });
+  const data=await res.json();
+  if(res.status===401){clearToken();showAuth();throw new Error('Sesión expirada')}
+  return data;
+}
+
+function showMsg(id,text,type){
+  const el=document.getElementById(id);
+  el.textContent=text;
+  el.className='auth-msg '+type;
+}
+function hideMsg(id){
+  const el=document.getElementById(id);
+  el.className='auth-msg';
+  el.textContent='';
+}
+
+function fmtDate(d){if(!d)return'—';return new Date(d).toLocaleDateString('es-CL')}
+function fmtMoney(n){if(!n)return'—';return new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0}).format(n)}
+
+/* ══════════════════════════════════════════════════════════════════ */
+/* AUTH TABS                                                         */
+/* ══════════════════════════════════════════════════════════════════ */
+function switchTab(tab){
+  document.querySelectorAll('.auth-tab').forEach((t,i)=>{
+    t.classList.toggle('active',i===(tab==='login'?0:1));
+  });
+  document.getElementById('panelLogin').classList.toggle('active',tab==='login');
+  document.getElementById('panelRegister').classList.toggle('active',tab==='register');
+  hideMsg('loginMsg');hideMsg('registerMsg');
+}
+
+function showAuth(){
+  document.getElementById('authWrap').style.display='';
+  document.getElementById('dashboard').classList.remove('show');
+}
+
+function showDash(){
+  document.getElementById('authWrap').style.display='none';
+  document.getElementById('dashboard').classList.add('show');
+}
+
+/* ══════════════════════════════════════════════════════════════════ */
+/* LOGIN                                                             */
+/* ══════════════════════════════════════════════════════════════════ */
+async function doLogin(){
+  const email=document.getElementById('loginEmail').value.trim();
+  const password=document.getElementById('loginPass').value;
+  if(!email||!password){showMsg('loginMsg','Completa todos los campos','error');return}
+
+  const btn=document.getElementById('loginBtn');
+  btn.disabled=true;btn.textContent='Ingresando...';
+  hideMsg('loginMsg');
+
+  try{
+    const data=await apiPost({action:'login',email,password});
+    if(!data.ok)throw new Error(data.error||'Error');
+    setToken(data.token);
+    showDash();
+    loadDashboard();
+  }catch(e){
+    showMsg('loginMsg',e.message,'error');
+  }finally{
+    btn.disabled=false;btn.textContent='Iniciar sesión';
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════ */
+/* REGISTER                                                          */
+/* ══════════════════════════════════════════════════════════════════ */
+async function doRegister(){
+  const nombre=document.getElementById('regNombre').value.trim();
+  const email=document.getElementById('regEmail').value.trim();
+  const pass=document.getElementById('regPass').value;
+  const pass2=document.getElementById('regPass2').value;
+
+  if(!nombre||!email||!pass){showMsg('registerMsg','Completa todos los campos','error');return}
+  if(pass.length<6){showMsg('registerMsg','La contraseña debe tener al menos 6 caracteres','error');return}
+  if(pass!==pass2){showMsg('registerMsg','Las contraseñas no coinciden','error');return}
+
+  const btn=document.getElementById('regBtn');
+  btn.disabled=true;btn.textContent='Creando cuenta...';
+  hideMsg('registerMsg');
+
+  try{
+    const data=await apiPost({action:'register',nombre,email,password:pass});
+    if(!data.ok)throw new Error(data.error||'Error');
+    // Auto-login: server returns token on register
+    if(data.token){
+      setToken(data.token);
+      showDash();
+      loadDashboard();
+    }else{
+      showMsg('registerMsg','Cuenta creada. Ahora inicia sesión.','success');
+      setTimeout(()=>switchTab('login'),1500);
     }
+  }catch(e){
+    showMsg('registerMsg',e.message,'error');
+  }finally{
+    btn.disabled=false;btn.textContent='Crear cuenta';
+  }
+}
 
-    // ── LOGIN ────────────────────────────────────────────────────────
-    if (action === "login") {
-      const { email, password } = body;
+/* ══════════════════════════════════════════════════════════════════ */
+/* DASHBOARD                                                         */
+/* ══════════════════════════════════════════════════════════════════ */
+async function loadDashboard(){
+  try{
+    const data=await apiGet({action:'estado',token:getToken()});
+    if(!data.ok)throw new Error(data.error||'Error');
+    renderDashboard(data);
+  }catch(e){
+    // If session expired, apiGet already called showAuth() — just log it
+    if(e.message==='Sesión expirada'){return}
+    console.error('Dashboard error:',e);
+  }
+}
 
-      if (!email || !password) {
-        return err("Email y contraseña son obligatorios", 400);
-      }
+function renderDashboard(data){
+  const{suscriptor,proveedor,suscripcion}=data;
 
-      const emailNorm = email.trim().toLowerCase();
+  // Top bar
+  const name=proveedor?proveedor.nombre:suscriptor.nombre;
+  document.getElementById('dashName').textContent=name;
 
-      // 1. Find suscriptor by email
-      const { data: sub, error: eSub } = await supabase
-        .from("suscriptores")
-        .select("id, email, nombre, password_hash, proveedor_id")
-        .eq("email", emailNorm)
-        .single();
-
-      if (eSub || !sub) {
-        return err("Email o contraseña incorrectos", 401);
-      }
-
-      // 2. Compare password
-      const match = await bcrypt.compare(password, sub.password_hash);
-      if (!match) {
-        return err("Email o contraseña incorrectos", 401);
-      }
-
-      // 3. Create token (24h expiry)
-      const now = Math.floor(Date.now() / 1000);
-      const expiresIn = 86400; // 24 hours
-
-      const tokenPayload = {
-        sub: sub.id,
-        email: sub.email,
-        exp: now + expiresIn,
-      };
-
-      const token = await createToken(tokenPayload, env.SUSCRIPTOR_SECRET);
-
-      return json({
-        ok: true,
-        token,
-        expiresIn,
-        suscriptor: {
-          id: sub.id,
-          nombre: sub.nombre,
-          email: sub.email,
-          proveedor_id: sub.proveedor_id,
-        },
-      });
-    }
-
-    // ── TOGGLE PAGO AUTOMÁTICO ───────────────────────────────────────
-    if (action === "toggle_pago_automatico") {
-      const token = extractToken(request) || body.token;
-      const payload = await verifyToken(token, env.SUSCRIPTOR_SECRET);
-      if (!payload) return err("Token inválido o expirado", 401);
-
-      const { valor } = body;
-      if (typeof valor !== "boolean") {
-        return err("Se requiere 'valor' como booleano", 400);
-      }
-
-      const { error } = await supabase
-        .from("suscripciones")
-        .update({ pago_automatico: valor })
-        .eq("suscriptor_id", payload.sub)
-        .eq("estado", "activa");
-
-      if (error) {
-        console.error("Error toggling pago_automatico:", error);
-        return err("Error al actualizar pago automático", 500);
-      }
-
-      return json({ ok: true });
-    }
-
-    // ── CANCELAR SUSCRIPCIÓN ─────────────────────────────────────────
-    if (action === "cancelar") {
-      const token = extractToken(request) || body.token;
-      const payload = await verifyToken(token, env.SUSCRIPTOR_SECRET);
-      if (!payload) return err("Token inválido o expirado", 401);
-
-      // Cancel active subscription — do NOT change provider posicion.
-      // Provider stays Destacado until fecha_vencimiento.
-      const { error } = await supabase
-        .from("suscripciones")
-        .update({
-          estado: "cancelada",
-          fecha_cancelacion: new Date().toISOString(),
-        })
-        .eq("suscriptor_id", payload.sub)
-        .eq("estado", "activa");
-
-      if (error) {
-        console.error("Error cancelling subscription:", error);
-        return err("Error al cancelar suscripción", 500);
-      }
-
-      return json({ ok: true });
-    }
-
-    // ── UPDATE PROFILE ───────────────────────────────────────────────
-    if (action === "update_profile") {
-      const token = extractToken(request) || body.token;
-      const payload = await verifyToken(token, env.SUSCRIPTOR_SECRET);
-      if (!payload) return err("Token inválido o expirado", 401);
-
-      // Get suscriptor to find proveedor_id
-      const { data: sub } = await supabase
-        .from("suscriptores")
-        .select("proveedor_id")
-        .eq("id", payload.sub)
-        .single();
-      if (!sub || !sub.proveedor_id) return err("No se encontró proveedor vinculado", 400);
-
-      // Whitelist of editable fields (nombre and etiqueta_id NOT allowed)
-      const allowed = [
-        "responsable","descripcion","diferenciador","tagline",
-        "experiencia","capacidad","comunas",
-        "precio_minimo","precio_maximo","incluye","no_incluye",
-        "whatsapp","telefono","email","web",
-        "instagram","facebook","tiktok","youtube",
-        "logo_url","cover_url","logo_emoji"
-      ];
-
-      const fields = body.fields || {};
-      const safeFields = {};
-      for (const key of Object.keys(fields)) {
-        if (allowed.includes(key)) safeFields[key] = fields[key];
-      }
-
-      if (Object.keys(safeFields).length === 0) {
-        return err("No se proporcionaron campos válidos", 400);
-      }
-
-      const { error } = await supabase
-        .from("proveedores")
-        .update(safeFields)
-        .eq("id", sub.proveedor_id);
-
-      if (error) {
-        console.error("Error updating profile:", error);
-        return err("Error al actualizar perfil", 500);
-      }
-
-      return json({ ok: true });
-    }
-
-    // ── CHANGE PASSWORD ──────────────────────────────────────────────
-    if (action === "change_password") {
-      const token = extractToken(request) || body.token;
-      const payload = await verifyToken(token, env.SUSCRIPTOR_SECRET);
-      if (!payload) return err("Token inválido o expirado", 401);
-
-      const { current_password, new_password } = body;
-      if (!current_password || !new_password) {
-        return err("Se requieren contraseña actual y nueva", 400);
-      }
-      if (new_password.length < 6) {
-        return err("La nueva contraseña debe tener al menos 6 caracteres", 400);
-      }
-
-      // Load current hash
-      const { data: sub, error: e1 } = await supabase
-        .from("suscriptores")
-        .select("id, password_hash")
-        .eq("id", payload.sub)
-        .single();
-      if (e1 || !sub) return err("Suscriptor no encontrado", 404);
-
-      // Verify current password
-      const match = await bcrypt.compare(current_password, sub.password_hash);
-      if (!match) return err("La contraseña actual es incorrecta", 401);
-
-      // Hash new password
-      const newHash = await bcrypt.hash(new_password, 12);
-
-      const { error: e2 } = await supabase
-        .from("suscriptores")
-        .update({ password_hash: newHash })
-        .eq("id", payload.sub);
-      if (e2) return err("Error al cambiar contraseña", 500);
-
-      return json({ ok: true });
-    }
-
-    // ── ACTIVAR GRATIS (promo lanzamiento) ───────────────────────────
-    if (action === "activar_gratis") {
-      const token = extractToken(request) || body.token;
-      const payload = await verifyToken(token, env.SUSCRIPTOR_SECRET);
-      if (!payload) return err("Token inválido o expirado", 401);
-
-      // Check promo deadline
-      const deadline = new Date("2026-08-10T23:59:59");
-      if (new Date() > deadline) {
-        return err("La promoción de lanzamiento ha finalizado", 400);
-      }
-
-      // Get suscriptor
-      const { data: sub } = await supabase
-        .from("suscriptores")
-        .select("id, proveedor_id, email, nombre")
-        .eq("id", payload.sub)
-        .single();
-      if (!sub || !sub.proveedor_id) return err("Suscriptor o proveedor no encontrado", 400);
-
-      // Check if already has active subscription
-      const { data: existingSubs } = await supabase
-        .from("suscripciones")
-        .select("id")
-        .eq("suscriptor_id", sub.id)
-        .eq("estado", "activa")
-        .limit(1);
-
-      if (existingSubs && existingSubs.length > 0) {
-        return err("Ya tienes una suscripción activa", 400);
-      }
-
-      // Create free subscription until launch date
-      const now = new Date();
-      const { error: eSub } = await supabase.from("suscripciones").insert([{
-        suscriptor_id: sub.id,
-        plan: "promo_lanzamiento",
-        estado: "activa",
-        fecha_inicio: now.toISOString(),
-        fecha_vencimiento: deadline.toISOString(),
-        monto: 0,
-        pago_automatico: false,
-      }]);
-      if (eSub) return err("Error al activar suscripción", 500);
-
-      // Set provider to Destacado
-      await supabase.from("proveedores")
-        .update({ posicion: 1 })
-        .eq("id", sub.proveedor_id);
-
-      // Send confirmation email
-      if (env.RESEND_API_KEY && env.EMAIL_FROM && sub.email) {
-        const emailHtml = `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"></head><body style="font-family:Arial,sans-serif;background:#FAFAF8;padding:32px 16px;color:#1A1714;"><div style="max-width:560px;margin:0 auto;background:#fff;border-radius:14px;padding:40px 32px;border:1px solid #E8E4DF;"><h1 style="font-size:22px;margin:0 0 8px;color:#E8542A;">CotizaEventos.cl</h1><h2 style="font-size:18px;margin:0 0 24px;color:#1A1714;">¡Plan Destacado activado gratis!</h2><p style="margin:0 0 16px;line-height:1.6;color:#3D3733;">Hola <strong>${sub.nombre || "Proveedor"}</strong>, tu plan Destacado fue activado de forma <strong>gratuita</strong> como parte de la promoción de lanzamiento de CotizaEventos.cl.</p><div style="background:#D1FAE5;border-radius:8px;padding:16px;margin:0 0 20px;text-align:center;"><p style="margin:0 0 4px;font-size:13px;color:#059669;font-weight:600;">Vigencia</p><p style="margin:0;font-size:18px;font-weight:700;color:#1A1714;">Gratis hasta el 10 de agosto de 2026</p></div><p style="margin:0 0 16px;line-height:1.6;color:#3D3733;">Tu perfil ahora tiene máxima visibilidad: portada, galería de fotos, descripción completa y contacto directo por WhatsApp.</p><a href="https://www.cotizaeventos.cl/suscripciones.html" style="display:inline-block;background:#E8542A;color:#fff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;font-size:14px;">Ver mi suscripción</a><hr style="border:none;border-top:1px solid #E8E4DF;margin:24px 0 16px;"><p style="margin:0;font-size:12px;color:#8A8278;">Enviado automáticamente por CotizaEventos.cl</p></div></body></html>`;
-        await sendEmail(sub.email, "¡Plan Destacado gratis activado! — CotizaEventos.cl", emailHtml, env);
-      }
-
-      return json({ ok: true });
-    }
-
-    // ── RESET PASSWORD (no auth required) ────────────────────────────
-    if (action === "reset_password") {
-      const { email } = body;
-      if (!email || !email.trim()) return err("El email es obligatorio", 400);
-
-      const emailNorm = email.trim().toLowerCase();
-
-      // Find suscriptor
-      const { data: subRows } = await supabase
-        .from("suscriptores")
-        .select("id, nombre")
-        .eq("email", emailNorm)
-        .limit(1);
-
-      const sub = (subRows && subRows.length > 0) ? subRows[0] : null;
-      if (!sub) {
-        // Don't reveal if email exists — return ok anyway
-        return json({ ok: true });
-      }
-
-      // Generate new temp password
-      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
-      let tempPw = "";
-      for (let i = 0; i < 8; i++) tempPw += chars.charAt(Math.floor(Math.random() * chars.length));
-
-      const newHash = await bcrypt.hash(tempPw, 12);
-
-      await supabase
-        .from("suscriptores")
-        .update({ password_hash: newHash })
-        .eq("id", sub.id);
-
-      // Send email with new password
-      if (env.RESEND_API_KEY && env.EMAIL_FROM) {
-        const resetHtml = `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"></head><body style="font-family:Arial,sans-serif;background:#FAFAF8;padding:32px 16px;color:#1A1714;"><div style="max-width:560px;margin:0 auto;background:#fff;border-radius:14px;padding:40px 32px;border:1px solid #E8E4DF;"><h1 style="font-size:22px;margin:0 0 8px;color:#E8542A;">CotizaEventos.cl</h1><h2 style="font-size:18px;margin:0 0 24px;color:#1A1714;">Nueva contraseña</h2><p style="margin:0 0 16px;line-height:1.6;color:#3D3733;">Hola <strong>${sub.nombre || "Proveedor"}</strong>, recibimos tu solicitud para restablecer la contraseña.</p><div style="background:#F5F3EF;border-radius:8px;padding:16px;margin:0 0 20px;"><p style="margin:0 0 4px;font-size:13px;color:#8A8278;">Tu nueva contraseña provisoria</p><p style="margin:0;font-size:20px;font-weight:700;color:#1A1714;letter-spacing:1px;">${tempPw}</p></div><p style="margin:0 0 16px;line-height:1.6;color:#3D3733;">Ingresa con esta contraseña y cámbiala desde la sección "Cambiar contraseña" en tu perfil.</p><a href="https://www.cotizaeventos.cl/suscripciones.html" style="display:inline-block;background:#E8542A;color:#fff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;font-size:14px;">Ingresar a mi cuenta</a><hr style="border:none;border-top:1px solid #E8E4DF;margin:24px 0 16px;"><p style="margin:0;font-size:12px;color:#8A8278;">Si no solicitaste este cambio, puedes ignorar este correo. Enviado automáticamente por CotizaEventos.cl</p></div></body></html>`;
-        await sendEmail(emailNorm, "Nueva contraseña — CotizaEventos.cl", resetHtml, env);
-      }
-
-      return json({ ok: true });
-    }
-
-    return err("Acción POST no reconocida", 400);
+  const logoEl=document.getElementById('dashLogo');
+  if(proveedor&&proveedor.logo_url){
+    logoEl.innerHTML=`<img src="${esc(proveedor.logo_url)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:12px">`;
+  }else if(proveedor&&proveedor.logo_emoji){
+    logoEl.textContent=proveedor.logo_emoji;
   }
 
-  return err("Método no permitido", 405);
+  const badge=document.getElementById('dashBadge');
+  if(proveedor&&proveedor.posicion===1){
+    badge.className='dash-badge badge-dest';
+    badge.textContent='✦ Destacado';
+  }else{
+    badge.className='dash-badge badge-basico';
+    badge.textContent='📋 Básico';
+  }
+
+  // Business info
+  const infoEl=document.getElementById('infoRows');
+  if(proveedor){
+    const pageLink=proveedor.slug?`<div class="info-row"><span class="label">Mi página</span><span class="value"><a href="/prov/${esc(proveedor.slug)}" target="_blank" rel="noopener" style="color:var(--coral);font-weight:600;text-decoration:underline">Ver mi página pública →</a></span></div>`:'';
+    infoEl.innerHTML=`
+      <div class="info-row"><span class="label">Email</span><span class="value">${esc(suscriptor.email)}</span></div>
+      <div class="info-row"><span class="label">Categoría</span><span class="value">${esc(proveedor.categoria)}</span></div>
+      <div class="info-row"><span class="label">Estado</span><span class="value">${proveedor.activo?'Activo':'Inactivo'}</span></div>
+      <div class="info-row"><span class="label">Plan actual</span><span class="value">${proveedor.posicion===1?'Destacado':'Básico'}</span></div>
+      ${pageLink}
+    `;
+  }else{
+    infoEl.innerHTML='<p style="color:var(--muted);font-size:14px">No se encontró proveedor vinculado.</p>';
+  }
+
+  // Subscription section
+  const subEl=document.getElementById('subContent');
+
+  if(suscripcion){
+    renderActiveSub(subEl,suscripcion);
+  }else{
+    renderNoSub(subEl,name);
+  }
+
+  // Profile editor
+  renderProfileEditor(proveedor);
 }
+
+/* ── Active subscription view ─────────────────────────────────── */
+function renderActiveSub(container,sub){
+  const isPromo = sub.plan === 'promo_lanzamiento';
+  const planLabel = isPromo ? 'Destacado Gratis (Lanzamiento)' : sub.plan==='anual'?'Anual':sub.plan==='mensual'?'Mensual':esc(sub.plan);
+  const montoLabel = isPromo ? 'Gratis' : fmtMoney(sub.monto);
+
+  container.innerHTML=`
+    ${isPromo ? `<div style="background:linear-gradient(135deg,#ECFDF5,#FFF);border:1.5px solid #06C7A5;border-radius:var(--r);padding:20px;margin-bottom:16px;text-align:center">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:#059669;font-weight:700;margin-bottom:4px">Promoción de lanzamiento</div>
+      <div style="font-family:var(--font-title);font-size:20px;font-weight:700;color:var(--ink)">Destacado gratis hasta el 10/08/2026</div>
+    </div>` : ''}
+    <div class="sub-active-info">
+      <div class="info-row"><span class="label">Plan</span><span class="value" ${isPromo?'style="color:#059669;font-weight:600"':''}>${planLabel}</span></div>
+      <div class="info-row"><span class="label">Monto</span><span class="value">${montoLabel}</span></div>
+      <div class="info-row"><span class="label">Inicio</span><span class="value">${fmtDate(sub.fecha_inicio)}</span></div>
+      <div class="info-row"><span class="label">Vencimiento</span><span class="value">${fmtDate(sub.fecha_vencimiento)}</span></div>
+      <div class="info-row"><span class="label">Estado</span><span class="value" style="color:var(--teal);font-weight:600">✓ Activa</span></div>
+    </div>
+
+    ${!isPromo ? `<div class="toggle-row">
+      <span class="toggle-label">Pago automático</span>
+      <label class="toggle">
+        <input type="checkbox" id="autoPay" ${sub.pago_automatico?'checked':''} onchange="toggleAutoPay(this.checked)">
+        <span class="toggle-track"></span>
+      </label>
+    </div>
+    <button class="btn-cancel" onclick="openCancelModal()">Cancelar suscripción</button>
+    <p style="font-size:12px;color:var(--muted);margin-top:10px">Tu perfil Destacado se mantiene activo hasta la fecha de vencimiento aunque canceles.</p>` : `
+    <p style="font-size:13px;color:var(--muted);margin-top:16px;line-height:1.6">Tu plan gratuito se desactiva automáticamente el 10 de agosto de 2026. Después podrás elegir un plan de pago para continuar como Destacado.</p>`}
+  `;
+}
+
+/* ── No subscription view (plan comparison) ───────────────────── */
+function renderNoSub(container,bizName){
+  // Check if promo is still valid
+  const promoActive = new Date() < new Date("2026-08-10T23:59:59");
+
+  container.innerHTML=`
+    ${promoActive ? `
+    <div class="promo-free">
+      <div class="promo-free-badge">Promoción de lanzamiento</div>
+      <h3 class="promo-free-title">Plan Destacado <span>gratis</span></h3>
+      <p class="promo-free-desc">Activa todos los beneficios del plan Destacado sin costo hasta el lanzamiento oficial de CotizaEventos.cl.</p>
+      <div class="promo-free-date">
+        <span class="promo-free-ico">🎁</span>
+        <div>
+          <div class="promo-free-label">Gratis hasta</div>
+          <div class="promo-free-val">10 de agosto de 2026</div>
+        </div>
+      </div>
+      <div class="promo-free-features">
+        <span>✓ Foto de portada</span>
+        <span>✓ Galería de fotos</span>
+        <span>✓ WhatsApp directo</span>
+        <span>✓ Descripción completa</span>
+        <span>✓ Posición prioritaria</span>
+      </div>
+      <button class="btn btn-coral promo-free-btn" id="promoFreeBtn" onclick="activarGratis()" style="width:100%;padding:16px;font-size:16px">
+        Activar Destacado gratis →
+      </button>
+      <p style="font-size:12px;color:var(--muted);margin-top:10px;text-align:center">Sin tarjeta de crédito. Sin compromisos. Se desactiva automáticamente el 10/08/2026.</p>
+    </div>
+    <div style="text-align:center;margin:28px 0;color:var(--muted);font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:2px">— o elige un plan de pago —</div>
+    ` : '<p style="font-size:14px;color:var(--ink2);margin-bottom:20px">No tienes una suscripción activa. Activa tu plan Destacado para obtener máxima visibilidad.</p>'}
+
+    <div style="font-size:12px;text-transform:uppercase;letter-spacing:2px;color:var(--coral);font-weight:700;margin-bottom:16px">Packs de meses</div>
+
+    <div class="plans-table">
+      <div class="pt-row" onclick="selectPlan('1mes')">
+        <div class="pt-radio"><input type="radio" name="plan" value="1mes" id="p1"></div>
+        <div class="pt-info"><div class="pt-name">1 mes</div><div class="pt-detail">Sin compromiso</div></div>
+        <div class="pt-price">$25.000</div>
+        <div class="pt-permonth">$25.000/mes</div>
+      </div>
+      <div class="pt-row" onclick="selectPlan('3meses')">
+        <div class="pt-radio"><input type="radio" name="plan" value="3meses" id="p3"></div>
+        <div class="pt-info"><div class="pt-name">3 meses</div><div class="pt-detail"><span class="pt-badge">-16%</span></div></div>
+        <div class="pt-price">$63.000</div>
+        <div class="pt-permonth">$21.000/mes</div>
+      </div>
+      <div class="pt-row" onclick="selectPlan('6meses')">
+        <div class="pt-radio"><input type="radio" name="plan" value="6meses" id="p6"></div>
+        <div class="pt-info"><div class="pt-name">6 meses</div><div class="pt-detail"><span class="pt-badge">-28%</span></div></div>
+        <div class="pt-price">$108.000</div>
+        <div class="pt-permonth">$18.000/mes</div>
+      </div>
+      <div class="pt-row pt-best" onclick="selectPlan('12meses')">
+        <div class="pt-radio"><input type="radio" name="plan" value="12meses" id="p12"></div>
+        <div class="pt-info"><div class="pt-name">12 meses <span class="pt-tag">Más popular</span></div><div class="pt-detail"><span class="pt-badge">-33%</span> Pagas solo 8 meses</div></div>
+        <div class="pt-price">$200.000</div>
+        <div class="pt-permonth">$16.667/mes</div>
+      </div>
+    </div>
+
+    <div style="font-size:12px;text-transform:uppercase;letter-spacing:2px;color:var(--coral);font-weight:700;margin:24px 0 16px">Suscripciones automáticas</div>
+
+    <div class="plans-table">
+      <div class="pt-row" onclick="selectPlan('mensual')">
+        <div class="pt-radio"><input type="radio" name="plan" value="mensual" id="pm"></div>
+        <div class="pt-info"><div class="pt-name">Mensual automático</div><div class="pt-detail"><span class="pt-badge">-12%</span> Cargo cada mes a tu tarjeta</div></div>
+        <div class="pt-price">$22.000<span style="font-size:13px;font-weight:400;color:var(--muted)">/mes</span></div>
+        <div class="pt-permonth">Cancela cuando quieras</div>
+      </div>
+      <div class="pt-row" onclick="selectPlan('anual')">
+        <div class="pt-radio"><input type="radio" name="plan" value="anual" id="pa"></div>
+        <div class="pt-info"><div class="pt-name">Anual automático <span class="pt-tag" style="background:var(--teal)">Mejor precio</span></div><div class="pt-detail"><span class="pt-badge">-33%</span> Pagas solo 8 meses al año</div></div>
+        <div class="pt-price">$200.000<span style="font-size:13px;font-weight:400;color:var(--muted)">/año</span></div>
+        <div class="pt-permonth">$16.667/mes</div>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:24px">
+      <button class="btn btn-coral" id="payBtn" onclick="initPayment()" disabled style="padding:16px 40px;font-size:16px;width:100%;max-width:400px">Selecciona un plan</button>
+      <p style="font-size:12px;color:var(--muted);margin-top:10px">Pago seguro procesado por Flow.cl. Aceptamos tarjetas de crédito, débito y transferencia.</p>
+    </div>
+  `;
+}
+
+let selectedPlanId=null;
+function selectPlan(plan){
+  selectedPlanId=plan;
+  document.querySelectorAll('.pt-row').forEach(r=>r.classList.remove('pt-selected'));
+  const radio=document.querySelector('input[value="'+plan+'"]');
+  if(radio){radio.checked=true;radio.closest('.pt-row').classList.add('pt-selected')}
+  const btn=document.getElementById('payBtn');
+  if(btn){btn.disabled=false;btn.textContent='Pagar ahora →'}
+}
+
+async function initPayment(){
+  if(!selectedPlanId)return;
+  const btn=document.getElementById('payBtn');
+  btn.disabled=true;btn.textContent='Conectando con Flow...';
+  try{
+    const res=await fetch('/api/flow-create',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({plan:selectedPlanId,token:getToken()})
+    });
+    const data=await res.json();
+    if(!data.ok)throw new Error(data.error||'Error');
+    if(data.redirectUrl){
+      window.location.href=data.redirectUrl;
+    }else{
+      throw new Error('No se recibió URL de pago');
+    }
+  }catch(e){
+    alert('Error: '+e.message);
+    btn.disabled=false;btn.textContent='Pagar ahora →';
+  }
+}
+
+async function activarGratis(){
+  const btn=document.getElementById('promoFreeBtn');
+  if(!btn)return;
+  btn.disabled=true;btn.textContent='Activando...';
+  try{
+    const data=await apiPost({action:'activar_gratis',token:getToken()});
+    if(!data.ok)throw new Error(data.error||'Error');
+    // Reload dashboard to show active subscription
+    loadDashboard();
+  }catch(e){
+    alert('Error: '+e.message);
+    btn.disabled=false;btn.textContent='Activar Destacado gratis →';
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════ */
+/* PROFILE EDITOR                                                    */
+/* ══════════════════════════════════════════════════════════════════ */
+let currentProv=null;
+
+function renderProfileEditor(proveedor){
+  if(!proveedor){document.getElementById('profileCard').style.display='none';document.getElementById('passwordCard').style.display='none';return}
+  currentProv=proveedor;
+  document.getElementById('profileCard').style.display='';
+  document.getElementById('passwordCard').style.display='';
+  const ed=document.getElementById('profileEditor');
+
+  const f=(id,label,val,opts)=>{
+    const disabled=opts&&opts.disabled?' disabled':'';
+    const cls=opts&&opts.disabled?' disabled':'';
+    const full=opts&&opts.full?' full':'';
+    const type=opts&&opts.type||'text';
+    const maxlen=opts&&opts.maxlength?` maxlength="${opts.maxlength}"`:'';
+    const oninput=opts&&opts.onlyNumbers?` oninput="this.value=this.value.replace(/[^0-9]/g,'')"` :'';
+    if(type==='textarea'){
+      return `<div class="profile-field${full}${cls}"><label>${label}</label><textarea id="pf_${id}"${disabled}>${esc(val||'')}</textarea></div>`;
+    }
+    return `<div class="profile-field${full}${cls}"><label>${label}</label><input type="${type}" id="pf_${id}" value="${esc(val||'')}"${disabled}${maxlen}${oninput}></div>`;
+  };
+
+  ed.innerHTML=`
+    <div class="profile-grid">
+      ${f('nombre','Nombre del negocio (no editable)',proveedor.nombre,{disabled:true})}
+      ${f('responsable','Responsable',proveedor.responsable)}
+      ${f('descripcion','Descripción del servicio',proveedor.descripcion,{type:'textarea',full:true})}
+      ${f('diferenciador','¿Qué nos diferencia?',proveedor.diferenciador,{type:'textarea',full:true})}
+      ${f('tagline','Frase corta (tagline)',proveedor.tagline)}
+      ${f('experiencia','Experiencia',proveedor.experiencia)}
+      ${f('capacidad','Capacidad',proveedor.capacidad)}
+      ${f('comunas','Comunas',proveedor.comunas,{full:true})}
+      ${f('precio_minimo','Precio mínimo ($)',proveedor.precio_minimo,{onlyNumbers:true,maxlength:10})}
+      ${f('precio_maximo','Precio máximo ($)',proveedor.precio_maximo,{onlyNumbers:true,maxlength:10})}
+      ${f('incluye','¿Qué incluye?',proveedor.incluye,{type:'textarea',full:true})}
+      ${f('no_incluye','¿Qué no incluye?',proveedor.no_incluye,{type:'textarea',full:true})}
+      ${f('whatsapp','WhatsApp',proveedor.whatsapp,{maxlength:15,onlyNumbers:true})}
+      ${f('telefono','Teléfono',proveedor.telefono,{maxlength:15,onlyNumbers:true})}
+      ${f('email','Email de contacto',proveedor.email,{type:'email'})}
+      ${f('web','Sitio web',proveedor.web)}
+      ${f('instagram','Instagram',proveedor.instagram)}
+      ${f('facebook','Facebook',proveedor.facebook)}
+      ${f('tiktok','TikTok',proveedor.tiktok)}
+      ${f('youtube','YouTube',proveedor.youtube)}
+    </div>
+    <div class="profile-uploads">
+      <div class="profile-upload${proveedor.logo_url?' has-img':''}" onclick="document.getElementById('pfLogoFile').click()">
+        <p>📷 Logo</p>
+        ${proveedor.logo_url?'<img src="'+esc(proveedor.logo_url)+'" alt="Logo">':'<p class="up-label">Clic para subir</p>'}
+        <input type="file" id="pfLogoFile" accept="image/jpeg,image/png,image/webp" onchange="uploadProfileImg('logo',this)">
+      </div>
+      <div class="profile-upload${proveedor.cover_url?' has-img':''}" onclick="document.getElementById('pfCoverFile').click()">
+        <p>🖼️ Foto de portada</p>
+        ${proveedor.cover_url?'<img src="'+esc(proveedor.cover_url)+'" alt="Portada">':'<p class="up-label">Clic para subir</p>'}
+        <input type="file" id="pfCoverFile" accept="image/jpeg,image/png,image/webp" onchange="uploadProfileImg('cover',this)">
+      </div>
+    </div>
+    <div class="profile-actions">
+      <button class="btn-save" id="profileSaveBtn" onclick="saveProfile()">Guardar cambios</button>
+    </div>
+    <div class="profile-msg" id="profileMsg"></div>
+  `;
+}
+
+let pfLogoUrl='';
+let pfCoverUrl='';
+
+async function uploadProfileImg(type,input){
+  const file=input.files[0];
+  if(!file)return;
+  const wrap=input.closest('.profile-upload');
+  wrap.querySelector('p').textContent='Subiendo...';
+  try{
+    const fd=new FormData();
+    fd.append('file',file);
+    const res=await fetch('/api/upload-image',{method:'POST',body:fd});
+    const data=await res.json();
+    if(!data.ok)throw new Error(data.error||'Error');
+    if(type==='logo'){pfLogoUrl=data.url}else{pfCoverUrl=data.url}
+    wrap.classList.add('has-img');
+    wrap.innerHTML=`<p>${type==='logo'?'📷 Logo':'🖼️ Portada'}</p><img src="${esc(data.url)}" alt=""><p class="up-label">✓ Subida</p><input type="file" id="${type==='logo'?'pfLogoFile':'pfCoverFile'}" accept="image/jpeg,image/png,image/webp" onchange="uploadProfileImg('${type}',this)" style="display:none">`;
+  }catch(e){
+    wrap.querySelector('p').textContent='Error: '+e.message;
+  }
+}
+
+async function saveProfile(){
+  const btn=document.getElementById('profileSaveBtn');
+  btn.disabled=true;btn.textContent='Guardando...';
+  const msgEl=document.getElementById('profileMsg');
+  msgEl.className='profile-msg';
+
+  const gv=(id)=>(document.getElementById('pf_'+id)||{}).value||'';
+  const fields={
+    responsable:gv('responsable'),
+    descripcion:gv('descripcion'),
+    diferenciador:gv('diferenciador'),
+    tagline:gv('tagline'),
+    experiencia:gv('experiencia'),
+    capacidad:gv('capacidad'),
+    comunas:gv('comunas'),
+    precio_minimo:gv('precio_minimo'),
+    precio_maximo:gv('precio_maximo'),
+    incluye:gv('incluye'),
+    no_incluye:gv('no_incluye'),
+    whatsapp:gv('whatsapp'),
+    telefono:gv('telefono'),
+    email:gv('email'),
+    web:gv('web'),
+    instagram:gv('instagram'),
+    facebook:gv('facebook'),
+    tiktok:gv('tiktok'),
+    youtube:gv('youtube'),
+  };
+  if(pfLogoUrl)fields.logo_url=pfLogoUrl;
+  if(pfCoverUrl)fields.cover_url=pfCoverUrl;
+
+  try{
+    const data=await apiPost({action:'update_profile',token:getToken(),fields});
+    if(!data.ok)throw new Error(data.error||'Error');
+    msgEl.textContent='✓ Perfil actualizado correctamente';
+    msgEl.className='profile-msg success';
+    // Reset upload flags
+    pfLogoUrl='';pfCoverUrl='';
+    // Reload dashboard to reflect changes
+    setTimeout(()=>loadDashboard(),1500);
+  }catch(e){
+    msgEl.textContent='Error: '+e.message;
+    msgEl.className='profile-msg error';
+  }finally{
+    btn.disabled=false;btn.textContent='Guardar cambios';
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════ */
+/* ACTIONS                                                           */
+/* ══════════════════════════════════════════════════════════════════ */
+async function changePassword(){
+  const cur=document.getElementById('pwCurrent').value;
+  const nw=document.getElementById('pwNew').value;
+  const nw2=document.getElementById('pwNew2').value;
+  const msgEl=document.getElementById('pwMsg');
+  const btn=document.getElementById('pwSaveBtn');
+  msgEl.className='profile-msg';
+
+  if(!cur||!nw){msgEl.textContent='Completa todos los campos';msgEl.className='profile-msg error';return}
+  if(nw.length<6){msgEl.textContent='La nueva contraseña debe tener al menos 6 caracteres';msgEl.className='profile-msg error';return}
+  if(nw!==nw2){msgEl.textContent='Las contraseñas nuevas no coinciden';msgEl.className='profile-msg error';return}
+
+  btn.disabled=true;btn.textContent='Cambiando...';
+  try{
+    const data=await apiPost({action:'change_password',token:getToken(),current_password:cur,new_password:nw});
+    if(!data.ok)throw new Error(data.error||'Error');
+    msgEl.textContent='Contraseña cambiada correctamente';
+    msgEl.className='profile-msg success';
+    document.getElementById('pwCurrent').value='';
+    document.getElementById('pwNew').value='';
+    document.getElementById('pwNew2').value='';
+  }catch(e){
+    msgEl.textContent=e.message;
+    msgEl.className='profile-msg error';
+  }finally{
+    btn.disabled=false;btn.textContent='Cambiar contraseña';
+  }
+}
+
+async function toggleAutoPay(val){
+  try{
+    const data=await apiPost({action:'toggle_pago_automatico',token:getToken(),valor:val});
+    if(!data.ok)throw new Error(data.error);
+  }catch(e){
+    alert('Error: '+e.message);
+    document.getElementById('autoPay').checked=!val;
+  }
+}
+
+function openCancelModal(){document.getElementById('cancelModal').classList.add('open')}
+function closeCancelModal(){document.getElementById('cancelModal').classList.remove('open')}
+
+async function confirmCancel(){
+  const btn=document.getElementById('confirmCancelBtn');
+  btn.disabled=true;btn.textContent='Cancelando...';
+  try{
+    const data=await apiPost({action:'cancelar',token:getToken()});
+    if(!data.ok)throw new Error(data.error);
+    closeCancelModal();
+    loadDashboard();
+  }catch(e){
+    alert('Error: '+e.message);
+  }finally{
+    btn.disabled=false;btn.textContent='Sí, cancelar';
+  }
+}
+
+function logout(){
+  clearToken();
+  showAuth();
+  document.getElementById('loginEmail').value='';
+  document.getElementById('loginPass').value='';
+}
+
+/* ══════════════════════════════════════════════════════════════════ */
+/* RESET PASSWORD                                                    */
+/* ══════════════════════════════════════════════════════════════════ */
+function showResetPanel(){
+  const p=document.getElementById('resetPanel');
+  p.style.display=p.style.display==='none'?'':'none';
+  if(p.style.display!=='none'){
+    const loginEmail=document.getElementById('loginEmail').value.trim();
+    if(loginEmail)document.getElementById('resetEmail').value=loginEmail;
+  }
+}
+
+async function doReset(){
+  const email=document.getElementById('resetEmail').value.trim();
+  if(!email){showMsg('resetMsg','Ingresa tu email','error');return}
+  const btn=document.getElementById('resetBtn');
+  btn.disabled=true;btn.textContent='Enviando...';
+  document.getElementById('resetMsg').className='auth-msg';
+  try{
+    const res=await fetch('/api/suscriptor',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'reset_password',email})
+    });
+    const data=await res.json();
+    if(!data.ok)throw new Error(data.error||'Error');
+    showMsg('resetMsg','Si el email existe, recibirás una nueva contraseña en tu correo.','success');
+  }catch(e){
+    showMsg('resetMsg',e.message,'error');
+  }finally{
+    btn.disabled=false;btn.textContent='Enviar nueva contraseña';
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════ */
+/* INIT                                                              */
+/* ══════════════════════════════════════════════════════════════════ */
+(function init(){
+  const token=getToken();
+  if(token){
+    showDash();
+    loadDashboard();
+  }else{
+    showAuth();
+  }
+
+  // Enter key on login/register
+  document.getElementById('loginPass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+  document.getElementById('regPass2').addEventListener('keydown',e=>{if(e.key==='Enter')doRegister()});
+  // Escape closes cancel modal
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCancelModal()});
+})();
+</script>
+</body>
+</html>
