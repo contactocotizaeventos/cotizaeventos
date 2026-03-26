@@ -762,6 +762,11 @@ async function initPayment(){
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({plan:selectedPlanId,token:getToken()})
     });
+    if(!res.ok){
+      var errText='';
+      try{var errData=await res.json();errText=errData.error||''}catch(e){}
+      throw new Error(errText||'Error del servidor ('+res.status+')');
+    }
     const data=await res.json();
     if(!data.ok)throw new Error(data.error||'Error');
     if(data.redirectUrl){
