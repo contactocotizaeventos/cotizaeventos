@@ -95,8 +95,8 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .dash-badge{display:inline-flex;align-items:center;gap:5px;padding:5px 14px;border-radius:100px;font-size:13px;font-weight:600}
 .badge-dest{background:var(--coral);color:#fff}
 .badge-basico{background:var(--bg2);color:var(--muted);border:1px solid var(--border)}
-.dash-logout{font-size:13px;color:var(--muted);cursor:pointer;text-decoration:underline}
-.dash-logout:hover{color:var(--coral)}
+.dash-logout{font-size:13px;color:var(--ink2);cursor:pointer;padding:8px 16px;border:1px solid var(--border);border-radius:8px;transition:all .2s;background:var(--white)}
+.dash-logout:hover{border-color:#e53e3e;color:#e53e3e;background:#FEE2E2}
 
 .dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px}
 @media(max-width:700px){.dash-grid{grid-template-columns:1fr}}
@@ -356,8 +356,6 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
         </div>
         <span class="dash-logout" onclick="logout()">Cerrar sesión</span>
       </div>
-
-      <!-- Two-column layout -->
       <div class="dash-grid">
 
         <!-- Left: Business info -->
@@ -406,7 +404,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 <div class="modal-overlay" id="cancelModal" onclick="if(event.target===this)closeCancelModal()">
   <div class="modal-box">
     <h3>¿Cancelar suscripción?</h3>
-    <p>Tu perfil Destacado se mantiene activo hasta la fecha de vencimiento aunque canceles. Después de esa fecha, tu cuenta volverá al plan Básico.</p>
+    <p>Al cancelar, tu perfil volverá al plan Básico de forma inmediata. Perderás la visibilidad Destacada, la portada, galería y el botón de WhatsApp directo. Tu información y fotos se mantendrán guardadas por si reactivas el plan en el futuro.</p>
     <div class="modal-btns">
       <button class="btn-outline" onclick="closeCancelModal()">Volver</button>
       <button class="btn-danger" id="confirmCancelBtn" onclick="confirmCancel()">Sí, cancelar</button>
@@ -651,7 +649,7 @@ function renderActiveSub(container,sub){
       </label>
     </div>
     <button class="btn-cancel" onclick="openCancelModal()">Cancelar suscripción</button>
-    <p style="font-size:12px;color:var(--muted);margin-top:10px">Tu perfil Destacado se mantiene activo hasta la fecha de vencimiento aunque canceles.</p>` : `
+    <p style="font-size:12px;color:var(--muted);margin-top:10px">Al cancelar, tu perfil vuelve a Básico de forma inmediata. Tus datos y fotos se mantienen guardados.</p>` : `
     <p style="font-size:13px;color:var(--muted);margin-top:16px;line-height:1.6">Tu plan gratuito se desactiva automáticamente el 10 de agosto de 2026. Después podrás elegir un plan de pago para continuar como Destacado.</p>`}
   `;
 }
