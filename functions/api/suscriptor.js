@@ -443,8 +443,14 @@ export async function onRequest(context) {
       const payload = await verifyToken(token, env.SUSCRIPTOR_SECRET);
       if (!payload) return err("Token inválido o expirado", 401);
 
-      // Cancel active subscription — do NOT change provider posicion.
-      // Provider stays Destacado until fecha_vencimiento.
+      // Get suscriptor to find proveedor_id
+      const { data: sub } = await supabase
+        .from("suscriptores")
+        .select("proveedor_id")
+        .eq("id", payload.sub)
+        .single();
+
+      // Cancel active subscription
       const { error } = await supabase
         .from("suscripciones")
         .update({
@@ -457,6 +463,14 @@ export async function onRequest(context) {
       if (error) {
         console.error("Error cancelling subscription:", error);
         return err("Error al cancelar suscripción", 500);
+      }
+
+      // Set provider back to Básico
+      if (sub && sub.proveedor_id) {
+        await supabase
+          .from("proveedores")
+          .update({ posicion: 0 })
+          .eq("id", sub.proveedor_id);
       }
 
       return json({ ok: true });
