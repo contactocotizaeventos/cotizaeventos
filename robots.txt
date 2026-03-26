@@ -4,5 +4,10 @@ Allow: /
 # Páginas privadas — sin indexación
 Disallow: /admin.html
 Disallow: /suscripciones.html
+Disallow: /api/
 
-Sitemap: https://www.cotizaeventos.cl/sitemap.xml
+# Permitir sitemap dinámico
+Allow: /api/sitemap
+
+# Sitemap dinámico (incluye todas las páginas de proveedores)
+Sitemap: https://www.cotizaeventos.cl/api/sitemap
