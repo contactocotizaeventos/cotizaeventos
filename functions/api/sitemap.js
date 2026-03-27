@@ -19,11 +19,11 @@ export async function onRequest(context) {
   const staticPages = [
     { url: "/", priority: "1.0", freq: "daily" },
     { url: "/proveedores.html", priority: "0.9", freq: "daily" },
-    { url: "/form.html", priority: "0.8", freq: "monthly" },
+    { url: "/form.html", priority: "0.5", freq: "monthly" },
     { url: "/nosotros.html", priority: "0.6", freq: "monthly" },
-    { url: "/registro-proveedores-eventos.html", priority: "0.8", freq: "monthly" },
+    { url: "/repro.html", priority: "0.9", freq: "monthly" },
     { url: "/contratar-proveedores-eventos.html", priority: "0.7", freq: "monthly" },
-    { url: "/terminos.html", priority: "0.3", freq: "yearly" },
+    { url: "/terminos.html", priority: "0.1", freq: "yearly" },
   ];
 
   // Build static entries
