@@ -21,6 +21,7 @@ export async function onRequest(context) {
     { url: "/proveedores.html", priority: "0.9", freq: "daily" },
     { url: "/form.html", priority: "0.8", freq: "monthly" },
     { url: "/nosotros.html", priority: "0.6", freq: "monthly" },
+    { url: "/registro-proveedores-eventos.html", priority: "0.8", freq: "monthly" },
     { url: "/contratar-proveedores-eventos.html", priority: "0.7", freq: "monthly" },
     { url: "/terminos.html", priority: "0.3", freq: "yearly" },
   ];
