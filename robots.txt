@@ -1,13 +1,18 @@
 User-agent: *
 Allow: /
 
-# Páginas privadas — sin indexación
+# Páginas privadas
 Disallow: /admin.html
 Disallow: /suscripciones.html
 Disallow: /api/
+Disallow: /repro.html
 
-# Permitir sitemap dinámico
+# Parámetros de filtro (son la misma página, no indexar)
+Disallow: /*?cat=
+Disallow: /*?q=
+
+# Permitir sitemap
 Allow: /api/sitemap
 
-# Sitemap dinámico (incluye todas las páginas de proveedores)
+# Sitemap
 Sitemap: https://www.cotizaeventos.cl/api/sitemap
