@@ -22,6 +22,7 @@ export async function onRequest(context) {
     { url: "/form.html", priority: "0.5", freq: "monthly" },
     { url: "/nosotros.html", priority: "0.6", freq: "monthly" },
     { url: "/repro.html", priority: "0.9", freq: "monthly" },
+    { url: "/tutorial.html", priority: "0.5", freq: "monthly" },
     { url: "/contratar-proveedores-eventos.html", priority: "0.7", freq: "monthly" },
     { url: "/terminos.html", priority: "0.1", freq: "yearly" },
   ];

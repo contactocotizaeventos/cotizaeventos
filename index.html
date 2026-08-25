@@ -328,7 +328,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
   <a href="nosotros.html" onclick="toggleMobile()">Nosotros</a>
   <a href="#contacto" onclick="toggleMobile()">Contacto</a>
   <a href="form.html" onclick="toggleMobile()">✦ Publica tu negocio</a>
-   <a href="suscripciones.html" class="nav-cta">Mi Cuenta</a>
+  <a href="suscripciones.html" class="nav-cta">Mi Cuenta</a>
 </div>
 
 
@@ -784,6 +784,7 @@ function handleContactEmail(){
 /* ── Load data from API ───────────────────────────────────────────── */
 let GRUPOS=[];
 let PROVIDERS=[];
+const WHATSAPP_MESSAGE='¡Hola! Te escribo desde Cotizaeventos.cl. ¿Puedes darme más información de tu servicio? ';
 
 async function loadData(){
   try{
@@ -791,7 +792,7 @@ async function loadData(){
     const data=await res.json();
     if(!data.ok)throw new Error(data.error||'Error');
     GRUPOS=data.grupos||[];
-    PROVIDERS=data.providers||[];
+    PROVIDERS=(data.providers||[]).filter(p=>p.cover_url);
     renderCategories();
     renderHighlighted();
   }catch(e){
@@ -845,7 +846,7 @@ document.addEventListener('click',function(e){
 function renderHighlighted(){
   const grid=document.getElementById('hlGrid');
 
-  const destacados=PROVIDERS;
+  const destacados=PROVIDERS.filter(p=>p.cover_url);
 
   if(!destacados.length){
     grid.innerHTML='<p class="hl-empty">Aún no hay proveedores destacados. ¡Sé el primero!</p>';
@@ -873,7 +874,7 @@ function renderHighlighted(){
       ?`<img src="${esc(p.logo_url)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:8px">`
       :`${esc(p.logo_emoji)||'✦'}`;
     const price=p.precio_minimo?`Desde ${esc(p.precio_minimo)}`:'';
-    const waLink=p.whatsapp?`https://wa.me/${esc(p.whatsapp)}`:'#';
+    const waLink=p.whatsapp?`https://wa.me/${esc(p.whatsapp)}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`:'#';
 
     const cardUrl=p.slug?'/prov/'+encodeURIComponent(p.slug):'proveedores.html?open='+encodeURIComponent(p.id);
 

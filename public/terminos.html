@@ -83,21 +83,26 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
     <a href="index.html" class="nav-logo">Cotiza<span>Eventos</span>.cl</a>
     <div class="nav-links">
       <a href="index.html">Inicio</a>
-      <a href="proveedores.html">Proveedores</a>
+      <a href="proveedores.html">Servicios para ti</a>
+      <a href="index.html#como">¿Cómo funciona?</a>
       <a href="index.html#como">¿Cómo funciona?</a>
       <a href="nosotros.html">Nosotros</a>
       <a href="index.html#contacto">Contacto</a>
       <a href="form.html" class="nav-cta">✦ Publica tu negocio</a>
+      <a href="suscripciones.html" class="nav-cta">Mi Cuenta</a>
     </div>
-    <div class="nav-burger" onclick="document.getElementById('navMobile').classList.toggle('open')"><i></i><i></i><i></i></div>
+    <div class="nav-burger" onclick="toggleMobile()" aria-label="Menú"><span></span><span></span><span></span></div>
   </div>
 </nav>
 <div class="nav-mobile" id="navMobile">
-  <button class="nav-mobile-close" onclick="document.getElementById('navMobile').classList.remove('open')">✕</button>
-  <a href="index.html">Inicio</a>
-  <a href="proveedores.html">Proveedores</a>
-  <a href="nosotros.html">Nosotros</a>
-  <a href="form.html">Publica tu negocio</a>
+  <button class="nav-mobile-close" onclick="toggleMobile()">✕</button>
+  <a href="index.html" onclick="toggleMobile()">Inicio</a>
+  <a href="proveedores.html" onclick="toggleMobile()">Proveedores</a>
+  <a href="index.html#como" onclick="toggleMobile()">¿Cómo funciona?</a>
+  <a href="nosotros.html" onclick="toggleMobile()">Nosotros</a>
+  <a href="index.html#contacto" onclick="toggleMobile()">Contacto</a>
+  <a href="form.html" onclick="toggleMobile()">✦ Publica tu negocio</a>
+  <a href="suscripciones.html" class="nav-cta">Mi Cuenta</a>
 </div>
 
 <!-- ══ PAGE HEADER ══════════════════════════════════════════════════ -->
@@ -167,5 +172,6 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
     </div>
   </div>
 </footer>
+<script>function toggleMobile(){document.getElementById('navMobile').classList.toggle('open')}</script>
 </body>
 </html>

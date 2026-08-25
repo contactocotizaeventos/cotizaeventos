@@ -154,6 +154,8 @@ export async function onRequest(context) {
       .from("proveedores")
       .select("*")
       .eq("activo", true)
+      .not("cover_url", "is", null)
+      .neq("cover_url", "")
       .order("categoria", { ascending: true })
       .order("posicion", { ascending: true });
 
