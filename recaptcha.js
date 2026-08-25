@@ -4,17 +4,11 @@
   let pendingLink;
   let modal;
 
-  function loadApi() {
-    if (!siteKeyPromise) {
-      siteKeyPromise = fetch('/api/recaptcha-config')
-        .then(response => response.json())
-        .then(data => {
-          if (!data.ok || !data.siteKey) throw new Error(data.error || 'reCAPTCHA no configurado');
-          return data.siteKey;
-        });
-    }
-    return siteKeyPromise;
-  }
+function loadApi() {
+  return Promise.resolve(
+    '6LeBkpgtAAAAAGTijdbMNLqllmM7CMtuVdBl6QId'
+  );
+}
 
   function createModal() {
     if (modal) return modal;
@@ -75,11 +69,23 @@
     const errorBox = modal.querySelector('.ce-captcha-error');
     const target = new URL(link.href, window.location.href);
     try {
-      const response = await fetch('/api/whatsapp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, phone: target.pathname.split('/').filter(Boolean).pop(), text: target.searchParams.get('text') || '' }),
-      });
+   const response = await fetch(
+  'https://cotizaeventos-captcha.contactocotizaeventos.workers.dev',
+  {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      token,
+      phone: target.pathname
+        .split('/')
+        .filter(Boolean)
+        .pop(),
+      text: target.searchParams.get('text') || ''
+    }),
+  }
+);
       const result = await response.json();
       if (!response.ok || !result.ok) throw new Error(result.error || 'No se pudo verificar el contacto');
       window.open(result.url, '_blank', 'noopener');
@@ -90,13 +96,13 @@
     }
   }
 
-  document.addEventListener('click', event => {
-    const link = event.target.closest('a[href*="wa.me/"]');
-    if (!link) return;
-    const target = new URL(link.href, window.location.href);
-    if (target.pathname.endsWith('/56991999301')) return;
-    event.preventDefault();
-    event.stopPropagation();
-    open(link);
-  }, true);
+document.addEventListener('click', event => {
+  const link = event.target.closest('a[href*="wa.me/"]');
+  if (!link) return;
+
+  event.preventDefault();
+  event.stopPropagation();
+
+  open(link);
+}, true);
 })();
