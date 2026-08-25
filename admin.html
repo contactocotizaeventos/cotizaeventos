@@ -201,7 +201,6 @@ tr.inconsistent td{background:#FEF2F2}
   <div class="tabs" id="tabsBar">
     <div class="tab active" onclick="switchTab('solicitudes')">Solicitudes <span class="badge" id="solBadge" style="display:none">0</span></div>
     <div class="tab" onclick="switchTab('proveedores')">Proveedores</div>
-    <div class="tab" onclick="switchTab('suscripciones')">Suscripciones</div>
     <div class="tab" onclick="switchTab('categorias')">Categorías</div>
   </div>
 
@@ -213,12 +212,6 @@ tr.inconsistent td{background:#FEF2F2}
   <!-- Tab: Proveedores -->
   <div class="tab-content" id="tabProveedores">
     <div class="tbl-wrap" id="provTable"><p class="empty">Cargando proveedores...</p></div>
-  </div>
-
-  <!-- Tab: Suscripciones -->
-  <div class="tab-content" id="tabSuscripciones">
-    <div class="filters" id="subFilters"></div>
-    <div class="tbl-wrap" id="subTable"><p class="empty">Cargando suscripciones...</p></div>
   </div>
 
   <!-- Tab: Categorías -->
@@ -304,7 +297,7 @@ function logout(){clearToken();showLogin()}
 /* ══════════════════════════════════════════════════════════════════ */
 function switchTab(name){
   document.querySelectorAll('.tab').forEach((t,i)=>{
-    const names=['solicitudes','proveedores','suscripciones','categorias'];
+    const names=['solicitudes','proveedores','categorias'];
     t.classList.toggle('active',names[i]===name);
   });
   document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
@@ -316,16 +309,14 @@ function switchTab(name){
 /* ══════════════════════════════════════════════════════════════════ */
 async function loadAll(){
   try{
-    const[solRes,provRes,subRes,catRes,cfgRes]=await Promise.all([
+    const[solRes,provRes,catRes,cfgRes]=await Promise.all([
       apiGet({action:'solicitudes'}),
       apiGet({action:'proveedores'}),
-      apiGet({action:'suscripciones'}),
       apiGet({action:'categorias'}),
       apiGet({action:'config'})
     ]);
     allSolicitudes=solRes.solicitudes||[];
     allProveedores=provRes.proveedores||provRes.providers||[];
-    allSubData=subRes.suscripciones||[];
     allGrupos=catRes.grupos||[];
 
     // Config
@@ -336,7 +327,6 @@ async function loadAll(){
 
     renderSolicitudes();
     renderProveedores();
-    renderSuscripciones();
     renderCategorias();
   }catch(e){console.error('loadAll error:',e)}
 }

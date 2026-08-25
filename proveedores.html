@@ -29,6 +29,7 @@
 <script type="application/ld+json">[{"@context":"https://schema.org","@type":"CollectionPage","name":"Proveedores de Eventos en Santiago","description":"Directorio completo de proveedores de eventos en Santiago de Chile.","url":"https://www.cotizaeventos.cl/proveedores.html","inLanguage":"es-CL","isPartOf":{"@type":"WebSite","name":"CotizaEventos.cl","url":"https://www.cotizaeventos.cl"},"about":{"@type":"Service","name":"Proveedores de eventos","areaServed":{"@type":"City","name":"Santiago"}}},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://www.cotizaeventos.cl/"},{"@type":"ListItem","position":2,"name":"Proveedores de Eventos","item":"https://www.cotizaeventos.cl/proveedores.html"}]}]</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9257154700327932" crossorigin="anonymous"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -41,6 +42,7 @@
 --r:14px;--e:cubic-bezier(.4,0,.2,1);
 --sh:0 2px 12px rgba(0,0,0,.06);--sh2:0 8px 30px rgba(0,0,0,.1);--sh3:0 20px 60px rgba(0,0,0,.12);
 --ft:'Fraunces',serif;--fb:'Outfit',sans-serif}
+.ad-slot{min-height:120px;margin:28px 0;padding:18px;border:1px solid var(--b);background:repeating-linear-gradient(135deg,var(--bg2),var(--bg2) 8px,#fff 8px,#fff 16px);display:flex;align-items:center;justify-content:center;color:var(--m);font-size:11px;letter-spacing:1.5px;text-transform:uppercase}
 html{scroll-behavior:smooth}
 body{font-family:var(--fb);color:var(--k);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 body.modal-open{overflow:hidden}
@@ -400,10 +402,9 @@ function render(){
     for(const et of g.etiquetas){
       const etProvs=(et.proveedores||[]).filter(p=>matchesSearch(p));if(!etProvs.length)continue;
       if(showByEtiq)html+=`<div class="etiq-label">${esc(et.nombre)}</div>`;
-      const destacados=shuffle(etProvs.filter(p=>p.pos===1)),basicos=etProvs.filter(p=>p.pos===0);
-      if(destacados.length){html+=`<div class="dest-grid">`;for(const p of destacados)html+=renderDestCard(p);html+=`</div>`}
-      else html+=`<div class="no-dest-cta">¿Quieres aparecer aquí con máxima visibilidad? <a href="form.html">Registra tu negocio como Destacado</a></div>`;
-      if(basicos.length){const basId=`bas_${et.id}`;html+=`<div class="bas-list" id="${basId}">`;for(let i=0;i<basicos.length;i++){const hidden=i>=3?' style="display:none" data-extra="1"':'';html+=renderBasRow(basicos[i],hidden)}html+=`</div>`;if(basicos.length>3)html+=`<button class="show-all-btn" onclick="showAllBasics('${basId}',this)">Ver todos (${basicos.length}) ↓</button>`}
+      const proveedores=shuffle(etProvs);
+      html+=`<div class="dest-grid">`;for(const p of proveedores)html+=renderDestCard(p);html+=`</div>`;
+      if(totalShown === groupProviders.length)html+=`<ins class="ad-slot" data-ad-slot="directory-list" aria-label="Espacio publicitario"></ins>`;
     }
     html+=`</div>`;
   }
@@ -413,7 +414,7 @@ function render(){
 function matchesSearch(p){if(!searchQuery)return true;const q=searchQuery;return(p.nombre||'').toLowerCase().includes(q)||(p.tagline||'').toLowerCase().includes(q)||(p.diferenciador||'').toLowerCase().includes(q)||(p.descripcion||'').toLowerCase().includes(q)||(p.comunas||'').toLowerCase().includes(q)}
 
 /* ══ CARDS ══ */
-function openProv(id){const p=PROVIDERS_MAP[id];if(!p)return;if(p.slug){window.open('/prov/'+encodeURIComponent(p.slug),'_blank');return}if(p.pos===1)openModal(id);else openModalBasic(id)}
+function openProv(id){const p=PROVIDERS_MAP[id];if(!p)return;if(p.slug){window.open('/prov/'+encodeURIComponent(p.slug),'_blank');return}openModal(id)}
 
 function renderDestCard(p){
   const imgHtml=p.cover_url?`<img src="${esc(p.cover_url)}" alt="${esc(p.nombre)}" loading="lazy">`:`<div class="placeholder"></div>`;

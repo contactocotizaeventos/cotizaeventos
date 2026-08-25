@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Mi Suscripción — CotizaEventos.cl</title>
-<meta name="description" content="Gestiona tu suscripción y perfil de proveedor en CotizaEventos.cl.">
+<title>Mi Perfil — CotizaEventos.cl</title>
+<meta name="description" content="Gestiona tu perfil de proveedor en CotizaEventos.cl.">
 <meta name="robots" content="noindex, nofollow">
 <meta name="author" content="CotizaEventos.cl">
 <meta property="og:site_name" content="CotizaEventos.cl">
@@ -281,8 +281,8 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 
 <!-- ══ PAGE HEADER ══════════════════════════════════════════════════ -->
 <section class="page-header">
-  <h1>Mi Suscripción</h1>
-  <p>Gestiona tu cuenta y plan de proveedor</p>
+  <h1>Mi Perfil</h1>
+  <p>Gestiona tu cuenta y perfil de proveedor</p>
 </section>
 
 <!-- ══ AUTH SCREEN ══════════════════════════════════════════════════ -->
@@ -368,9 +368,9 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 
         <!-- Right: Subscription -->
         <div class="sub-card" id="subCard">
-          <h3>✦ Mi suscripción</h3>
+          <h3>✦ Visibilidad del perfil</h3>
           <div id="subContent">
-            <p style="color:var(--muted);font-size:14px">Cargando...</p>
+            <p style="color:var(--muted);font-size:14px">Todos los perfiles aprobados tienen máxima visibilidad.</p>
           </div>
         </div>
 
@@ -396,18 +396,6 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
         </div>
       </div>
 
-    </div>
-  </div>
-</div>
-
-<!-- ══ CANCEL MODAL ═════════════════════════════════════════════════ -->
-<div class="modal-overlay" id="cancelModal" onclick="if(event.target===this)closeCancelModal()">
-  <div class="modal-box">
-    <h3>¿Cancelar suscripción?</h3>
-    <p>Al cancelar, tu perfil volverá al plan Básico de forma inmediata. Perderás la visibilidad Destacada, la portada, galería y el botón de WhatsApp directo. Tu información y fotos se mantendrán guardadas por si reactivas el plan en el futuro.</p>
-    <div class="modal-btns">
-      <button class="btn-outline" onclick="closeCancelModal()">Volver</button>
-      <button class="btn-danger" id="confirmCancelBtn" onclick="confirmCancel()">Sí, cancelar</button>
     </div>
   </div>
 </div>
@@ -572,7 +560,7 @@ async function loadDashboard(){
 }
 
 function renderDashboard(data){
-  const{suscriptor,proveedor,suscripcion}=data;
+  const{suscriptor,proveedor}=data;
 
   // Top bar
   const name=proveedor?proveedor.nombre:suscriptor.nombre;
@@ -610,13 +598,7 @@ function renderDashboard(data){
   }
 
   // Subscription section
-  const subEl=document.getElementById('subContent');
-
-  if(suscripcion){
-    renderActiveSub(subEl,suscripcion);
-  }else{
-    renderNoSub(subEl,name);
-  }
+  document.getElementById('subContent').innerHTML='<p style="color:var(--teal);font-size:14px;font-weight:600">✓ Máxima visibilidad activa</p><p style="color:var(--muted);font-size:13px;margin-top:8px">Todos los proveedores aprobados se muestran con la presentación premium.</p>';
 
   // Profile editor
   renderProfileEditor(proveedor);

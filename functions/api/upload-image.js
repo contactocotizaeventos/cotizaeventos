@@ -1,12 +1,12 @@
 /**
  * POST /api/upload-image
  *
- * Public endpoint — no authentication required.
+ * Public endpoint — the public registration flow uploads before approval.
  * Accepts an image via multipart/form-data or JSON with base64 data.
  * Validates file type and size, then uploads to Supabase Storage bucket "portadas".
  *
  * Supported types: jpg, jpeg, png, webp, heic, heif
- * Max size: 50 MB
+ * Max size: 10 MB
  *
  * Returns: { ok: true, url: "<public URL>" }
  */
@@ -44,14 +44,33 @@ const ALLOWED_TYPES = {
   "image/heif": "heif",
 };
 
-const MAX_SIZE = 50 * 1024 * 1024; // 50 MB
+const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
+
+function hasValidSignature(buffer, mimeType) {
+  const bytes = new Uint8Array(buffer);
+  if (mimeType === "image/jpeg") {
+    return bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
+  }
+  if (mimeType === "image/png") {
+    return bytes.length >= 8 && bytes.slice(0, 8).every((value, index) => value === [137, 80, 78, 71, 13, 10, 26, 10][index]);
+  }
+  if (mimeType === "image/webp") {
+    return bytes.length >= 12 && new TextDecoder().decode(bytes.slice(0, 4)) === "RIFF" && new TextDecoder().decode(bytes.slice(8, 12)) === "WEBP";
+  }
+  // HEIC brands begin at byte 4 in the ISO base media file format.
+  if (mimeType === "image/heic" || mimeType === "image/heif") {
+    const brand = new TextDecoder().decode(bytes.slice(4, 12));
+    return brand.includes("heic") || brand.includes("heix") || brand.includes("mif1") || brand.includes("msf1");
+  }
+  return false;
+}
 
 /**
  * Generate a unique filename: proveedores/<timestamp>-<random>.<ext>
  */
 function generateFilename(ext) {
   const ts = Date.now();
-  const rand = Math.random().toString(36).substring(2, 10);
+  const rand = Array.from(crypto.getRandomValues(new Uint8Array(8)), b => b.toString(16).padStart(2, "0")).join("");
   return `proveedores/${ts}-${rand}.${ext}`;
 }
 
@@ -102,7 +121,7 @@ export async function onRequest(context) {
       }
 
       if (file.size > MAX_SIZE) {
-        return errorResponse("El archivo excede el límite de 50 MB", 400);
+        return errorResponse("El archivo excede el límite de 10 MB", 400);
       }
 
       fileBuffer = await file.arrayBuffer();
@@ -140,7 +159,7 @@ export async function onRequest(context) {
       }
 
       if (fileBuffer.byteLength > MAX_SIZE) {
-        return errorResponse("El archivo excede el límite de 50 MB", 400);
+        return errorResponse("El archivo excede el límite de 10 MB", 400);
       }
 
     } else {
@@ -148,6 +167,10 @@ export async function onRequest(context) {
         "Content-Type no soportado. Usa multipart/form-data o application/json.",
         400
       );
+    }
+
+    if (!fileBuffer || !hasValidSignature(fileBuffer, mimeType)) {
+      return errorResponse("El contenido no coincide con el tipo de imagen declarado", 400);
     }
 
     // ── HEIC/HEIF normalization note ─────────────────────────────────

@@ -27,6 +27,7 @@
 <link rel="canonical" href="https://www.cotizaeventos.cl/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9257154700327932" crossorigin="anonymous"></script>
   <link rel="icon" type="image/png" href="/favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -75,6 +76,8 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .btn-white{background:#fff;color:var(--ink)}
 .btn-white:hover{background:var(--coral-lt);color:var(--coral)}
 .btn-sm{padding:10px 20px;font-size:14px}
+.ad-slot{min-height:120px;margin:28px 0;padding:18px;border:1px solid var(--border);background:repeating-linear-gradient(135deg,var(--bg2),var(--bg2) 8px,#fff 8px,#fff 16px);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:11px;letter-spacing:1.5px;text-transform:uppercase}
+.premium-notice{padding:7px 16px;background:var(--coral-lt);border-bottom:1px solid var(--coral-md);color:var(--coral);font-size:12px;font-weight:600;text-align:center}
 
 /* ── Animations ─────────────────────────────────────────────────── */
 @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
@@ -294,40 +297,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 <body>
 
 
-<div class="launch-banner" role="status" aria-label="Aviso importante">
-  <div class="launch-banner-inner">
-    <div class="launch-main">
-      <span class="launch-badge">Convocatoria abierta</span>
-
-      <p class="launch-text">
-        <strong>Estamos buscando proveedores para CotizaEventos.cl.</strong>
-        Postula desde ahora para ser parte de nuestra selección inicial.
-        <span class="launch-date-text">Lanzamiento oficial: 10 de agosto de 2026.</span>
-      </p>
-    </div>
-
-    <div class="launch-countdown" id="launchCountdown" aria-label="Cuenta regresiva al lanzamiento">
-      <div class="count-item">
-        <span id="days">000</span>
-        <small>Días</small>
-      </div>
-      <div class="count-item">
-        <span id="hours">00</span>
-        <small>Horas</small>
-      </div>
-      <div class="count-item">
-        <span id="minutes">00</span>
-        <small>Min</small>
-      </div>
-      <div class="count-item">
-        <span id="seconds">00</span>
-        <small>Seg</small>
-      </div>
-    </div>
-
-    <a href="form.html" class="launch-btn">Inscribir proveedor</a>
-  </div>
-</div>
+<div class="premium-notice" role="status">Ahora todos los perfiles son premium para siempre!</div>
 
 <!-- ══ NAV ═══════════════════════════════════════════════════════════ -->
 <nav class="nav">
@@ -782,8 +752,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
     </div>
   </div>
 </footer>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9257154700327932"
-     crossorigin="anonymous"></script>
+
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 /* ── Escape HTML ──────────────────────────────────────────────────── */
 function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;')}
@@ -875,8 +844,7 @@ document.addEventListener('click',function(e){
 function renderHighlighted(){
   const grid=document.getElementById('hlGrid');
 
-  // Filter only Destacados (pos === 1)
-  const destacados=PROVIDERS.filter(p=>p.pos===1);
+  const destacados=PROVIDERS;
 
   if(!destacados.length){
     grid.innerHTML='<p class="hl-empty">Aún no hay proveedores destacados. ¡Sé el primero!</p>';
@@ -895,7 +863,7 @@ function renderHighlighted(){
   }
 
   let html='';
-  for(const p of shuffled){
+  for(const [index,p] of shuffled.entries()){
     const catLabel=etiqMap[p.etiqueta_id]||etiqMap[p.categoria]||'';
     const imgHtml=p.cover_url
       ?`<img src="${esc(p.cover_url)}" alt="${esc(p.nombre)}" loading="lazy">`
@@ -908,7 +876,7 @@ function renderHighlighted(){
 
     const cardUrl=p.slug?'/prov/'+encodeURIComponent(p.slug):'proveedores.html?open='+encodeURIComponent(p.id);
 
-    html+=`
+    html+=`${index === 8 ? '<ins class="ad-slot" data-ad-slot="directory-top" aria-label="Espacio publicitario"></ins>' : ''}
     <div class="hl-card" onclick="window.open('${cardUrl}','_blank')">
       <div class="hl-card-img">
         ${imgHtml}
@@ -947,7 +915,9 @@ loadData();
 
 
 
-  <script>
+  <!-- Obsolete countdown script removed. -->
+  <script src="/ads.js" defer></script>
+  <!--
     /*         Esto es para el anuncio volante con cuenta regresiva */
   (function () {
     // Fecha objetivo: 10 de agosto de 2027 a las 00:00:00
@@ -998,6 +968,6 @@ loadData();
     updateCountdown();
     setInterval(updateCountdown, 1000);
   })();
-</script>
+</script> -->
 </body>
 </html>

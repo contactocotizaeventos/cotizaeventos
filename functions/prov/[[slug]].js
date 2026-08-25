@@ -14,7 +14,7 @@ export async function onRequest(context) {
   const { data: prov, error } = await supabase.from("proveedores").select("*").eq("slug", slug).eq("activo", true).limit(1);
   if (error || !prov || prov.length === 0) return new Response(build404(slug), { status: 404, headers: { "Content-Type": "text/html; charset=utf-8" } });
   const p = prov[0];
-  const dest = p.posicion && p.posicion > 0;
+  const dest = true;
   const imgs = p.imagenes || [];
   let catName = "";
   try { const { data: etiq } = await supabase.from("etiquetas").select("nombre").eq("id", p.categoria).limit(1); if (etiq && etiq.length > 0) catName = etiq[0].nombre; } catch (e) {}
@@ -25,6 +25,9 @@ export async function onRequest(context) {
 }
 
 function esc(s) { if (!s) return ""; return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;"); }
+function safeUrl(value) {
+  try { const url = new URL(value); return url.protocol === "https:" ? url.href : ""; } catch { return ""; }
+}
 function fmtPrice(n) { if (!n) return ""; return "$" + Number(n).toLocaleString("es-CL"); }
 
 function build404(slug) {
@@ -58,7 +61,7 @@ function meta(p, catName) {
     address: { "@type": "PostalAddress", addressLocality: "Santiago", addressRegion: "Región Metropolitana", addressCountry: "CL" },
     priceRange: p.precio_minimo ? `CLP ${p.precio_minimo}${p.precio_maximo ? " - " + p.precio_maximo : "+"}` : undefined,
     category: catName || undefined,
-    sameAs: [p.instagram ? "https://instagram.com/" + p.instagram : null, p.facebook || null, p.tiktok ? "https://tiktok.com/@" + p.tiktok : null, p.youtube || null, p.web || null].filter(Boolean),
+    sameAs: [p.instagram ? "https://instagram.com/" + p.instagram : null, safeUrl(p.facebook), p.tiktok ? "https://tiktok.com/@" + p.tiktok : null, safeUrl(p.youtube), safeUrl(p.web)].filter(Boolean),
     isPartOf: { "@type": "WebSite", name: "CotizaEventos.cl", url: "https://www.cotizaeventos.cl" },
   };
   // Clean undefined
@@ -90,8 +93,9 @@ function meta(p, catName) {
 <meta name="twitter:image" content="${esc(img)}">
 <meta name="geo.region" content="CL-RM">
 <meta name="geo.placename" content="Santiago">
-<script type="application/ld+json">${JSON.stringify(schema)}</script>
-<script type="application/ld+json">${JSON.stringify(bc)}</script>
+<script type="application/ld+json">${JSON.stringify(schema).replace(/</g, "\\u003c")}</script>
+<script type="application/ld+json">${JSON.stringify(bc).replace(/</g, "\\u003c")}</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9257154700327932" crossorigin="anonymous"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">`;
@@ -115,7 +119,7 @@ function footH() {
 function socH(p) {
   const s = [];
   if (p.instagram) s.push(["https://instagram.com/" + esc(p.instagram), "Instagram", '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5"/></svg>']);
-  if (p.facebook) s.push([esc(p.facebook), "Facebook", '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>']);
+  if (safeUrl(p.facebook)) s.push([esc(safeUrl(p.facebook)), "Facebook", '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>']);
   if (p.tiktok) s.push(["https://tiktok.com/@" + esc(p.tiktok), "TikTok", '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-.88-5.64V9.01a6.33 6.33 0 00-1 12.58 6.33 6.33 0 006.88-6.31V9.4a8.16 8.16 0 005.1 1.76V7.72a4.85 4.85 0 01-1-.58z"/></svg>']);
   if (p.youtube) s.push([esc(p.youtube), "YouTube", '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.19a3.02 3.02 0 00-2.12-2.14C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.55A3.02 3.02 0 00.5 6.19 31.76 31.76 0 000 12a31.76 31.76 0 00.5 5.81 3.02 3.02 0 002.12 2.14c1.84.55 9.38.55 9.38.55s7.54 0 9.38-.55a3.02 3.02 0 002.12-2.14A31.76 31.76 0 0024 12a31.76 31.76 0 00-.5-5.81zM9.75 15.02V8.98L15.5 12l-5.75 3.02z"/></svg>']);
   if (p.web) s.push([esc(p.web), "Sitio web", '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>']);
@@ -158,6 +162,7 @@ html{scroll-behavior:smooth}
 body{font-family:var(--fb);color:var(--k);background:var(--bg);line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 img{display:block;max-width:100%}a{color:inherit;text-decoration:none}::selection{background:var(--c);color:#fff}
 .cx{max-width:1080px;margin:0 auto;padding:0 24px}
+.ad-slot{min-height:120px;margin:28px 0;padding:18px;border:1px solid var(--b);background:repeating-linear-gradient(135deg,var(--bg2),var(--bg2) 8px,#fff 8px,#fff 16px);display:flex;align-items:center;justify-content:center;color:var(--m);font-size:11px;letter-spacing:1.5px;text-transform:uppercase}
 
 /* Nav */
 .n{position:sticky;top:0;z-index:100;height:56px;background:rgba(255,255,255,.97);backdrop-filter:blur(16px);border-bottom:1px solid var(--b)}
@@ -344,6 +349,7 @@ ${soc ? `<section class="sec"><div class="sl">Encuéntranos en redes</div><div c
 <div class="ctab"><h3>¿Organizas un evento?</h3><p>Contacta a ${esc(p.nombre)} directamente y solicita tu cotización sin compromiso.</p>
 ${wa ? `<a href="${wa}" target="_blank" rel="noopener">${WA} Pedir cotización</a>` : `<a href="mailto:${esc(p.email)}">✉️ Solicitar información</a>`}
 </div>
+<ins class="ad-slot" data-ad-slot="provider-profile" aria-label="Espacio publicitario"></ins>
 </main>
 
 <aside class="aside">
@@ -381,7 +387,7 @@ function openLb(i){li=i;document.getElementById('lbi').src=im[i];document.getEle
 function closeLb(){document.getElementById('lb').classList.remove('open');document.body.style.overflow=''}
 function lbN(d){li=(li+d+im.length)%im.length;document.getElementById('lbi').src=im[li];document.getElementById('lbc').textContent=(li+1)+'/'+im.length}
 document.addEventListener('keydown',e=>{const lb=document.getElementById('lb');if(!lb||!lb.classList.contains('open'))return;if(e.key==='Escape')closeLb();if(e.key==='ArrowLeft')lbN(-1);if(e.key==='ArrowRight')lbN(1)});
-</script></body></html>`;
+</script><script src="/ads.js" defer></script></body></html>`;
 }
 
 /* ═══ BÁSICO PAGE ═══ */

@@ -210,24 +210,10 @@ export async function onRequest(context) {
         proveedor = prov || null;
       }
 
-      // Load active subscription
-      let suscripcion = null;
-      const { data: subs } = await supabase
-        .from("suscripciones")
-        .select("*")
-        .eq("suscriptor_id", sub.id)
-        .eq("estado", "activa")
-        .order("fecha_inicio", { ascending: false })
-        .limit(1);
-      if (subs && subs.length > 0) {
-        suscripcion = subs[0];
-      }
-
       return json({
         ok: true,
         suscriptor: { id: sub.id, email: sub.email, nombre: sub.nombre },
         proveedor,
-        suscripcion,
       });
     }
 
@@ -247,6 +233,10 @@ export async function onRequest(context) {
     }
 
     const { action } = body;
+
+    if (["toggle_pago_automatico", "cancelar", "activar_gratis"].includes(action)) {
+      return err("Las suscripciones y los pagos ya no están disponibles", 410);
+    }
 
     // ── REGISTER ─────────────────────────────────────────────────────
     if (action === "register") {

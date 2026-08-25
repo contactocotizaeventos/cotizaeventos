@@ -270,7 +270,7 @@ const PROVIDER_FIELDS = [
   "precio_minimo", "precio_maximo", "incluye", "no_incluye",
   "whatsapp", "telefono", "email", "web", "instagram", "facebook",
   "tiktok", "youtube", "logo_emoji", "logo_url", "cover_url",
-  "posicion", "activo",
+  "activo",
 ];
 
 // ══════════════════════════════════════════════════════════════════════
@@ -377,6 +377,8 @@ export async function onRequest(context) {
 
     // ── GET suscripciones (admin view: ALL providers + subscription status)
     if (action === "suscripciones") {
+      return err("Las suscripciones y los pagos ya no están disponibles", 410);
+      /*
       // Load all three tables
       const { data: proveedores, error: e1 } = await supabase
         .from("proveedores")
@@ -421,7 +423,7 @@ export async function onRequest(context) {
         };
       });
 
-      return json({ ok: true, suscripciones: result, proveedores });
+      return json({ ok: true, suscripciones: result, proveedores }); */
     }
 
     return err("Acción GET no reconocida", 400);
@@ -523,15 +525,7 @@ export async function onRequest(context) {
       }
 
       // 3. Check modo_prueba
-      let finalPos = typeof posicion === "number" ? posicion : parseInt(posicion || "0", 10);
-      const { data: configRows } = await supabase
-        .from("config")
-        .select("valor")
-        .eq("clave", "modo_prueba")
-        .single();
-      if (configRows && configRows.valor === "true") {
-        finalPos = 1; // Force Destacado in test mode
-      }
+      const finalPos = 1;
 
       // 4. Generate slug: name-last4digits
       const slugBase = (sol.nombre || "proveedor")
@@ -692,7 +686,8 @@ export async function onRequest(context) {
 
     // ── SET SUSCRIPCION (admin registers a payment) ──────────────────
     if (action === "set_suscripcion") {
-      const { suscriptor_id, plan, fecha_inicio, fecha_vencimiento, monto } = body;
+      return err("Las suscripciones y los pagos ya no están disponibles", 410);
+      /* const { suscriptor_id, plan, fecha_inicio, fecha_vencimiento, monto } = body;
       if (!suscriptor_id || !plan || !fecha_inicio || !fecha_vencimiento || !monto) {
         return err("Faltan campos obligatorios", 400);
       }
@@ -744,13 +739,12 @@ export async function onRequest(context) {
         );
       }
 
-      return json({ ok: true });
+      return json({ ok: true }); */
     }
 
     // ── QUITAR DESTACADO ─────────────────────────────────────────────
     if (action === "quitar_destacado") {
-      const { proveedor_id } = body;
-      if (!proveedor_id) return err("Se requiere proveedor_id", 400);
+      return err("Todos los proveedores mantienen máxima visibilidad", 410);
 
       // Set provider to Básico
       const { error: e1 } = await supabase
@@ -779,7 +773,8 @@ export async function onRequest(context) {
 
     // ── ACTIVAR PLAN DIRECTO (provider without account) ──────────────
     if (action === "activar_plan_directo") {
-      const { proveedor_id, plan, fecha_inicio, fecha_vencimiento } = body;
+      return err("Las suscripciones y los pagos ya no están disponibles", 410);
+      /* const { proveedor_id, plan, fecha_inicio, fecha_vencimiento } = body;
       if (!proveedor_id || !plan || !fecha_inicio || !fecha_vencimiento) {
         return err("Faltan campos obligatorios", 400);
       }
@@ -864,7 +859,7 @@ export async function onRequest(context) {
       // Update provider posicion
       await supabase.from("proveedores").update({ posicion: 1 }).eq("id", proveedor_id);
 
-      return json({ ok: true });
+      return json({ ok: true }); */
     }
 
     // ── CATEGORÍAS CRUD ──────────────────────────────────────────────

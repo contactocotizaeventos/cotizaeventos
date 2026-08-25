@@ -1,3 +1,8 @@
 /index.html / 301
 /prov/ /proveedores.html 301
 /prov /proveedores.html 301
+/public/index.html /index.html 301
+/public/proveedores.html /proveedores.html 301
+/public/form.html /form.html 301
+/public/suscripciones.html /suscripciones.html 301
+/public/terminos.html /terminos.html 301

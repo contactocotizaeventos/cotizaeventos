@@ -455,27 +455,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
         </div>
       </div>
 
-      <!-- Básico notice (visible only in básico preview) -->
-      <div class="basico-notice">En el plan <strong>Básico</strong>, los clientes solo podrán contactarte por email. Para habilitar WhatsApp directo, galería de fotos y portada, activa el plan Destacado.</div>
-
-      <!-- Plan selection -->
-      <div class="tpl-section">
-        <div class="tpl-section-label">Elige tu plan</div>
-        <div class="plan-row">
-          <label class="plan-opt" id="planBasico" onclick="selectPlan('0')">
-            <input type="radio" name="posicion" value="0">
-            <h4>Básico</h4>
-            <p>Listado con nombre, precio y contacto por email</p>
-            <span class="plan-tag" style="background:var(--muted);color:#fff">Gratis</span>
-          </label>
-          <label class="plan-opt" id="planDestacado" onclick="selectPlan('1')">
-            <input type="radio" name="posicion" value="1">
-            <h4>Destacado</h4>
-            <p>Página completa con fotos, WhatsApp directo y máxima visibilidad</p>
-            <span class="plan-tag" id="destTag" style="background:var(--coral);color:#fff">Recomendado</span>
-          </label>
-        </div>
-      </div>
+      <div class="tpl-section"><div class="tpl-section-label">Publicación con visibilidad premium</div><p>Todos los negocios aprobados tendrán el mismo nivel de presentación y visibilidad.</p></div>
 
       <!-- Submit area -->
       <div class="submit-area" id="submitArea">
@@ -699,8 +679,7 @@ async function submitForm(){
 
   var btn=document.getElementById('submitBtn');
   btn.disabled=true;btn.textContent='Enviando...';
-  var pos=document.querySelector('input[name="posicion"]:checked');
-  var posVal=pos?pos.value:'0';
+  var posVal='1';
   var imgs=galleryUrls.filter(function(u){return u});
 
   var payload={

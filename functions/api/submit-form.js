@@ -168,7 +168,7 @@ export async function onRequestPost(context) {
       tiktok: (body.tiktok || "").trim(),
       youtube: (body.youtube || "").trim(),
       direccion: (body.direccion || "").trim(),
-      posicion_deseada: body.posicion_deseada || "0",
+      posicion_deseada: "1",
       logo_url: (body.logo_url || "").trim(),
       cover_url: (body.cover_url || "").trim(),
       logo_emoji: (body.logo_emoji || "").trim(),
