@@ -6,3 +6,7 @@
 /public/form.html /form.html 301
 /public/suscripciones.html /suscripciones.html 301
 /public/terminos.html /terminos.html 301
+/sitemap.xml /api/sitemap 200
+/registro-proveedores-eventos.html /repro.html 301
+/public/admin.html /admin.html 301
+/public/nosotros.html /nosotros.html 301

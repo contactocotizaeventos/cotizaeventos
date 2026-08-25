@@ -452,6 +452,8 @@ export async function onRequest(context) {
       return err("No se proporcionaron campos válidos", 400);
     }
 
+    safeFields.posicion = 1;
+
     const { error } = await supabase
       .from("proveedores")
       .update(safeFields)

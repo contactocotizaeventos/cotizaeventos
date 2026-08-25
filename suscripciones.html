@@ -351,7 +351,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
           <div class="dash-biz-logo" id="dashLogo">✦</div>
           <div>
             <h2 id="dashName">—</h2>
-            <span class="dash-badge badge-basico" id="dashBadge">📋 Básico</span>
+            <span class="dash-badge badge-dest" id="dashBadge">✦ Premium</span>
           </div>
         </div>
         <span class="dash-logout" onclick="logout()">Cerrar sesión</span>
@@ -574,13 +574,8 @@ function renderDashboard(data){
   }
 
   const badge=document.getElementById('dashBadge');
-  if(proveedor&&proveedor.posicion===1){
-    badge.className='dash-badge badge-dest';
-    badge.textContent='✦ Destacado';
-  }else{
-    badge.className='dash-badge badge-basico';
-    badge.textContent='📋 Básico';
-  }
+  badge.className='dash-badge badge-dest';
+  badge.textContent='✦ Premium';
 
   // Business info
   const infoEl=document.getElementById('infoRows');
@@ -590,7 +585,7 @@ function renderDashboard(data){
       <div class="info-row"><span class="label">Email</span><span class="value">${esc(suscriptor.email)}</span></div>
       <div class="info-row"><span class="label">Categoría</span><span class="value">${esc(proveedor.categoria)}</span></div>
       <div class="info-row"><span class="label">Estado</span><span class="value">${proveedor.activo?'Activo':'Inactivo'}</span></div>
-      <div class="info-row"><span class="label">Plan actual</span><span class="value">${proveedor.posicion===1?'Destacado':'Básico'}</span></div>
+      <div class="info-row"><span class="label">Visibilidad</span><span class="value">Premium activa</span></div>
       ${pageLink}
     `;
   }else{

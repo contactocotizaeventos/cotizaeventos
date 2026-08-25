@@ -77,6 +77,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .btn-white:hover{background:var(--coral-lt);color:var(--coral)}
 .btn-sm{padding:10px 20px;font-size:14px}
 .ad-slot{min-height:120px;margin:28px 0;padding:18px;border:1px solid var(--border);background:repeating-linear-gradient(135deg,var(--bg2),var(--bg2) 8px,#fff 8px,#fff 16px);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:11px;letter-spacing:1.5px;text-transform:uppercase}
+.ad-slot.ad-ready{border:0;background:none;min-height:0;padding:0}
 .premium-notice{padding:7px 16px;background:var(--coral-lt);border-bottom:1px solid var(--coral-md);color:var(--coral);font-size:12px;font-weight:600;text-align:center}
 
 /* ── Animations ─────────────────────────────────────────────────── */
@@ -200,8 +201,8 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .hl-card-logo{position:absolute;bottom:-18px;right:12px;width:40px;height:40px;border-radius:10px;background:var(--white);border:2px solid var(--coral);display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:var(--shadow)}
 .hl-card-body{padding:24px 16px 16px}
 .hl-card-cat{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:600;margin-bottom:4px}
-.hl-card-name{font-family:var(--font-title);font-weight:600;font-size:16px;color:var(--ink);margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
-.hl-card-tagline{font-size:13px;color:var(--ink2);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:10px;min-height:39px}
+.hl-card-name{font-family:var(--font-title);font-weight:600;font-size:16px;color:var(--ink);margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:1;line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.hl-card-tagline{font-size:13px;color:var(--ink2);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:10px;min-height:39px}
 .hl-card-footer{display:flex;align-items:center;justify-content:space-between}
 .hl-card-price{font-size:13px;font-weight:600;color:var(--coral)}
 .hl-card-wa{display:inline-flex;align-items:center;gap:4px;background:#25D366;color:#fff;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;transition:all .2s var(--ease)}
@@ -604,6 +605,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
       <div class="hl-skel"></div><div class="hl-skel"></div><div class="hl-skel"></div><div class="hl-skel"></div>
       <div class="hl-skel"></div><div class="hl-skel"></div><div class="hl-skel"></div><div class="hl-skel"></div>
     </div>
+    <ins class="ad-slot" data-ad-slot="homepage" aria-label="Espacio publicitario"></ins>
     <div class="hl-more">
       <a href="proveedores.html" class="btn btn-coral">Ver todos los proveedores →</a>
     </div>
@@ -743,8 +745,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
       <div class="footer-links">
         <a href="proveedores.html">Proveedores</a>
         <a href="contratar-proveedores-eventos.html">Contratar proveedores</a>
-        <a href="registro-proveedores-eventos.html">Registrar negocio</a>
-        <a href="foro.html">Foro</a>
+        <a href="repro.html">Registrar negocio</a>
         <a href="nosotros.html">Nosotros</a>
         <a href="form.html">Publicar negocio</a>
         <a href="terminos.html">Términos</a>
@@ -840,7 +841,7 @@ document.addEventListener('click',function(e){
   }
 });
 
-/* ── Render highlighted providers (4×4 grid, shuffled) ────────────── */
+/* ── Render highlighted providers (2×4 grid, shuffled) ────────────── */
 function renderHighlighted(){
   const grid=document.getElementById('hlGrid');
 
@@ -851,8 +852,8 @@ function renderHighlighted(){
     return;
   }
 
-  // Shuffle and take up to 16
-  const shuffled=shuffle(destacados).slice(0,16);
+  // Shuffle and take up to 8
+  const shuffled=shuffle(destacados).slice(0,8);
 
   // Find etiqueta names for category labels
   const etiqMap={};
@@ -867,7 +868,7 @@ function renderHighlighted(){
     const catLabel=etiqMap[p.etiqueta_id]||etiqMap[p.categoria]||'';
     const imgHtml=p.cover_url
       ?`<img src="${esc(p.cover_url)}" alt="${esc(p.nombre)}" loading="lazy">`
-      :`<div class="placeholder">img</div>`;
+      :`<img src="/noimage.png" alt="${esc(p.nombre)}" loading="lazy">`;
     const logoHtml=p.logo_url
       ?`<img src="${esc(p.logo_url)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:8px">`
       :`${esc(p.logo_emoji)||'✦'}`;
@@ -876,8 +877,7 @@ function renderHighlighted(){
 
     const cardUrl=p.slug?'/prov/'+encodeURIComponent(p.slug):'proveedores.html?open='+encodeURIComponent(p.id);
 
-    html+=`${index === 8 ? '<ins class="ad-slot" data-ad-slot="directory-top" aria-label="Espacio publicitario"></ins>' : ''}
-    <div class="hl-card" onclick="window.open('${cardUrl}','_blank')">
+    html+=`<div class="hl-card" onclick="window.open('${cardUrl}','_blank')">
       <div class="hl-card-img">
         ${imgHtml}
         <div class="hl-card-badge">✦ Destacado</div>
@@ -915,59 +915,6 @@ loadData();
 
 
 
-  <!-- Obsolete countdown script removed. -->
   <script src="/ads.js" defer></script>
-  <!--
-    /*         Esto es para el anuncio volante con cuenta regresiva */
-  (function () {
-    // Fecha objetivo: 10 de agosto de 2027 a las 00:00:00
-    // Puedes cambiar la hora si quieres, por ejemplo "2027-08-10T09:00:00"
-    const launchDate = new Date("2026-08-10T00:00:00").getTime();
-
-    const daysEl = document.getElementById("days");
-    const hoursEl = document.getElementById("hours");
-    const minutesEl = document.getElementById("minutes");
-    const secondsEl = document.getElementById("seconds");
-
-    function formatNumber(num) {
-      return String(num).padStart(2, "0");
-    }
-
-    function updateCountdown() {
-      const now = new Date().getTime();
-      const distance = launchDate - now;
-
-      if (distance <= 0) {
-        daysEl.textContent = "000";
-        hoursEl.textContent = "00";
-        minutesEl.textContent = "00";
-        secondsEl.textContent = "00";
-
-        const bannerText = document.querySelector(".launch-text");
-        if (bannerText) {
-          bannerText.innerHTML = "<strong>CotizaEventos.cl ya fue lanzado oficialmente.</strong> Ya puedes ser parte de la plataforma.";
-        }
-
-        const badge = document.querySelector(".launch-badge");
-        if (badge) badge.textContent = "Ya disponible";
-
-        return;
-      }
-
-      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((distance / (1000 * 60 * 60)) % 24);
-      const minutes = Math.floor((distance / (1000 * 60)) % 60);
-      const seconds = Math.floor((distance / 1000) % 60);
-
-      daysEl.textContent = String(days).padStart(3, "0");
-      hoursEl.textContent = formatNumber(hours);
-      minutesEl.textContent = formatNumber(minutes);
-      secondsEl.textContent = formatNumber(seconds);
-    }
-
-    updateCountdown();
-    setInterval(updateCountdown, 1000);
-  })();
-</script> -->
 </body>
 </html>
