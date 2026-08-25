@@ -1,3 +1,9 @@
 name = "cotizaeventos"
 pages_build_output_dir = "."
 compatibility_date = "2024-01-01"
+
+[vars]
+RECAPTCHA_SITE_KEY = "6LeBkpgtAAAAAGTijdbMNLqllmM7CMtuVdBl6QId"
+
+# Configure RECAPTCHA_SITE_KEY as a plain variable and
+# RECAPTCHA_SECRET_KEY with: npx wrangler secret put RECAPTCHA_SECRET_KEY

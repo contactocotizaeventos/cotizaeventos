@@ -93,6 +93,7 @@ function meta(p, catName) {
 <meta name="twitter:image" content="${esc(img)}">
 <meta name="geo.region" content="CL-RM">
 <meta name="geo.placename" content="Santiago">
+<script src="/recaptcha.js" defer></script>
 <script type="application/ld+json">${JSON.stringify(schema).replace(/</g, "\\u003c")}</script>
 <script type="application/ld+json">${JSON.stringify(bc).replace(/</g, "\\u003c")}</script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9257154700327932" crossorigin="anonymous"></script>
