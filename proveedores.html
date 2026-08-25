@@ -42,7 +42,7 @@
 --r:14px;--e:cubic-bezier(.4,0,.2,1);
 --sh:0 2px 12px rgba(0,0,0,.06);--sh2:0 8px 30px rgba(0,0,0,.1);--sh3:0 20px 60px rgba(0,0,0,.12);
 --ft:'Fraunces',serif;--fb:'Outfit',sans-serif}
-.ad-slot{min-height:120px;margin:28px 0;padding:18px;border:1px solid var(--b);background:repeating-linear-gradient(135deg,var(--bg2),var(--bg2) 8px,#fff 8px,#fff 16px);display:flex;align-items:center;justify-content:center;color:var(--m);font-size:11px;letter-spacing:1.5px;text-transform:uppercase}
+.ad-slot{min-height:120px;margin:28px 0;padding:18px;border:1px solid var(--b);background:repeating-linear-gradient(135deg,var(--bg2),var(--bg2) 8px,#fff 8px,#fff 16px);display:flex;align-items:center;justify-content:center;color:var(--m);font-size:11px;letter-spacing:1.5px;text-transform:uppercase}.ad-slot.ad-ready{border:0;background:none;min-height:0;padding:0}
 html{scroll-behavior:smooth}
 body{font-family:var(--fb);color:var(--k);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 body.modal-open{overflow:hidden}
@@ -229,32 +229,9 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .footer-copy{font-size:13px;color:var(--m)}
 .footer-links{display:flex;gap:24px;flex-wrap:wrap}.footer-links a{font-size:14px;color:var(--k2);transition:color .2s}.footer-links a:hover{color:var(--c)}
 
-/* ── Launch banner ──────────────────────────────────────────────── */
-.launch-banner{position:relative;top:0;z-index:1;width:100%;background:linear-gradient(90deg,#1A1410,#2A1D16);color:#fff;border-bottom:1px solid rgba(255,255,255,.08)}
-.launch-banner-inner{max-width:1180px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
-.launch-main{display:flex;align-items:center;gap:12px;flex:1 1 420px;min-width:260px}
-.launch-badge{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--c);color:#fff;font-size:12px;font-weight:700;letter-spacing:.3px;white-space:nowrap;flex-shrink:0}
-.launch-text{margin:0;font-size:14px;line-height:1.5}.launch-text strong{color:#fff}
-.launch-date-text{display:inline;margin-left:4px;font-weight:700;color:#FFD7C9}
-.launch-countdown{display:flex;align-items:center;gap:8px;flex:0 1 auto;flex-wrap:wrap}
-.count-item{min-width:64px;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);text-align:center}
-.count-item span{display:block;font-size:20px;line-height:1;font-weight:800;color:#fff}
-.count-item small{display:block;margin-top:2px;font-size:9px;letter-spacing:.3px;text-transform:uppercase;color:rgba(255,255,255,.6)}
-.launch-btn{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 18px;border-radius:10px;background:var(--c);color:#fff;text-decoration:none;font-size:14px;font-weight:700;transition:all .2s;white-space:nowrap}.launch-btn:hover{opacity:.9}
-@media(max-width:900px){.launch-banner-inner{justify-content:center;text-align:center;padding:10px 14px}.launch-main{flex-direction:column;align-items:center;gap:8px;min-width:100%}.launch-text{font-size:13px}.launch-date-text{display:block;margin:4px 0 0}.launch-countdown{justify-content:center;width:100%}.launch-btn{width:100%;max-width:240px}}
-@media(max-width:560px){.launch-banner-inner{padding:8px 10px;gap:8px}.launch-text{font-size:12px}.launch-countdown{display:grid;grid-template-columns:repeat(2,minmax(54px,1fr));gap:6px;width:100%;max-width:180px}.count-item{min-width:0;padding:6px 4px}.count-item span{font-size:16px}.launch-btn{max-width:200px;min-height:36px;font-size:12px}}
 </style>
 </head>
 <body>
-
-<!-- Launch Banner -->
-<div class="launch-banner">
-<div class="launch-banner-inner">
-<div class="launch-main"><span class="launch-badge">Convocatoria abierta</span>
-<p class="launch-text"><strong>Estamos buscando proveedores para CotizaEventos.cl.</strong> Postula desde ahora para ser parte de nuestra selección inicial. <span class="launch-date-text">Lanzamiento oficial: 10 de agosto de 2026.</span></p></div>
-<div class="launch-countdown"><div class="count-item"><span id="days">000</span><small>Días</small></div><div class="count-item"><span id="hours">00</span><small>Horas</small></div><div class="count-item"><span id="minutes">00</span><small>Min</small></div><div class="count-item"><span id="seconds">00</span><small>Seg</small></div></div>
-<a href="form.html" class="launch-btn">Inscribir proveedor</a>
-</div></div>
 
 <!-- Nav -->
 <nav class="nav"><div class="nav-inner">
@@ -474,18 +451,5 @@ function checkDeepLink(){if(!pendingOpen)return;const id=pendingOpen;pendingOpen
 loadProviders();
 </script>
 
-<script>
-(function(){
-const launchDate=new Date("2026-08-10T00:00:00").getTime();
-const daysEl=document.getElementById("days"),hoursEl=document.getElementById("hours"),minutesEl=document.getElementById("minutes"),secondsEl=document.getElementById("seconds");
-function fmt(n){return String(n).padStart(2,"0")}
-function update(){
-const d=launchDate-Date.now();
-if(d<=0){daysEl.textContent="000";hoursEl.textContent="00";minutesEl.textContent="00";secondsEl.textContent="00";const t=document.querySelector(".launch-text");if(t)t.innerHTML="<strong>CotizaEventos.cl ya fue lanzado.</strong> Ya puedes ser parte de la plataforma.";const b=document.querySelector(".launch-badge");if(b)b.textContent="Ya disponible";return}
-daysEl.textContent=String(Math.floor(d/864e5)).padStart(3,"0");hoursEl.textContent=fmt(Math.floor(d/36e5%24));minutesEl.textContent=fmt(Math.floor(d/6e4%60));secondsEl.textContent=fmt(Math.floor(d/1e3%60));
-}
-update();setInterval(update,1000);
-})();
-</script>
 </body>
 </html>

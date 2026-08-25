@@ -1,7 +1,7 @@
 /* Configure these values after approving the site in AdSense. */
 window.COTIZA_ADSENSE_CLIENT = "ca-pub-9257154700327932";
 window.COTIZA_ADSENSE_SLOTS = {
-  "directory-top": "5300097516",
+  "homepage": "5300097516",
   "directory-list": "3761881069",
   "provider-profile": "5893220388"
 };

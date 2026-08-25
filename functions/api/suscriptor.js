@@ -404,6 +404,7 @@ export async function onRequest(context) {
 
     // ── TOGGLE PAGO AUTOMÁTICO ───────────────────────────────────────
     if (action === "toggle_pago_automatico") {
+      return err("Las suscripciones y los pagos ya no están disponibles", 410);
       const token = extractToken(request) || body.token;
       const payload = await verifyToken(token, env.SUSCRIPTOR_SECRET);
       if (!payload) return err("Token inválido o expirado", 401);
@@ -429,6 +430,7 @@ export async function onRequest(context) {
 
     // ── CANCELAR SUSCRIPCIÓN ─────────────────────────────────────────
     if (action === "cancelar") {
+      return err("Las suscripciones y los pagos ya no están disponibles", 410);
       const token = extractToken(request) || body.token;
       const payload = await verifyToken(token, env.SUSCRIPTOR_SECRET);
       if (!payload) return err("Token inválido o expirado", 401);
@@ -553,6 +555,7 @@ export async function onRequest(context) {
 
     // ── ACTIVAR GRATIS (promo lanzamiento) ───────────────────────────
     if (action === "activar_gratis") {
+      return err("La promoción de lanzamiento ha finalizado", 410);
       const token = extractToken(request) || body.token;
       const payload = await verifyToken(token, env.SUSCRIPTOR_SECRET);
       if (!payload) return err("Token inválido o expirado", 401);

@@ -162,7 +162,7 @@ html{scroll-behavior:smooth}
 body{font-family:var(--fb);color:var(--k);background:var(--bg);line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 img{display:block;max-width:100%}a{color:inherit;text-decoration:none}::selection{background:var(--c);color:#fff}
 .cx{max-width:1080px;margin:0 auto;padding:0 24px}
-.ad-slot{min-height:120px;margin:28px 0;padding:18px;border:1px solid var(--b);background:repeating-linear-gradient(135deg,var(--bg2),var(--bg2) 8px,#fff 8px,#fff 16px);display:flex;align-items:center;justify-content:center;color:var(--m);font-size:11px;letter-spacing:1.5px;text-transform:uppercase}
+.ad-slot{min-height:120px;margin:28px 0;padding:18px;border:1px solid var(--b);background:repeating-linear-gradient(135deg,var(--bg2),var(--bg2) 8px,#fff 8px,#fff 16px);display:flex;align-items:center;justify-content:center;color:var(--m);font-size:11px;letter-spacing:1.5px;text-transform:uppercase}.ad-slot.ad-ready{border:0;background:none;min-height:0;padding:0}
 
 /* Nav */
 .n{position:sticky;top:0;z-index:100;height:56px;background:rgba(255,255,255,.97);backdrop-filter:blur(16px);border-bottom:1px solid var(--b)}
