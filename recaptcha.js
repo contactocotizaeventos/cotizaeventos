@@ -45,14 +45,67 @@ function loadApi() {
     try {
       const siteKey = await loadApi();
       await new Promise((resolve, reject) => {
-        if (window.grecaptcha) return resolve();
-        const script = document.createElement('script');
-        script.src = 'https://www.google.com/recaptcha/api.js?render=explicit';
-        script.onload = resolve;
-        script.onerror = () => reject(new Error('No se pudo cargar reCAPTCHA'));
-        document.head.appendChild(script);
-      });
-      widgetId = grecaptcha.render(currentModal.querySelector('.ce-captcha-widget'), {
+
+  // Si reCAPTCHA ya está completamente listo
+  if (
+    window.grecaptcha &&
+    typeof window.grecaptcha.render === 'function'
+  ) {
+    return resolve();
+  }
+
+  const waitUntilReady = () => {
+    const started = Date.now();
+
+    const check = () => {
+      if (
+        window.grecaptcha &&
+        typeof window.grecaptcha.render === 'function'
+      ) {
+        resolve();
+        return;
+      }
+
+      if (Date.now() - started > 10000) {
+        reject(new Error('reCAPTCHA tardó demasiado en cargar'));
+        return;
+      }
+
+      setTimeout(check, 50);
+    };
+
+    check();
+  };
+
+  // Evitar cargar api.js dos veces
+  const existingScript = document.querySelector(
+    'script[src*="google.com/recaptcha/api.js"]'
+  );
+
+  if (existingScript) {
+    waitUntilReady();
+    return;
+  }
+
+  const script = document.createElement('script');
+
+  script.src =
+    'https://www.google.com/recaptcha/api.js?render=explicit';
+
+  script.async = true;
+  script.defer = true;
+
+  script.onload = waitUntilReady;
+
+  script.onerror = () =>
+    reject(new Error('No se pudo cargar reCAPTCHA'));
+
+  document.head.appendChild(script);
+});
+
+widgetId = window.grecaptcha.render(
+  currentModal.querySelector('.ce-captcha-widget'),
+  {
         sitekey: siteKey,
         callback: verify,
         'expired-callback': () => { currentModal.querySelector('.ce-captcha-error').textContent = 'La verificación expiró. Inténtalo nuevamente.'; },
