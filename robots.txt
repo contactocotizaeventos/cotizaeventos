@@ -5,7 +5,6 @@ Allow: /
 Disallow: /admin.html
 Disallow: /suscripciones.html
 Disallow: /api/
-Disallow: /repro.html
 
 # Parámetros de filtro (son la misma página, no indexar)
 Disallow: /*?cat=
@@ -15,4 +14,4 @@ Disallow: /*?q=
 Allow: /api/sitemap
 
 # Sitemap
-Sitemap: https://www.cotizaeventos.cl/api/sitemap
+Sitemap: https://www.cotizaeventos.cl/sitemap.xml
