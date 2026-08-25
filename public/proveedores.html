@@ -576,7 +576,7 @@ function matchesSearch(p){
 function renderDestCard(p){
   const imgHtml=p.cover_url
     ?`<img src="${esc(p.cover_url)}" alt="${esc(p.nombre)}" loading="lazy">`
-    :`<div class="placeholder">img</div>`;
+    :`<img src="/noimage.png" alt="${esc(p.nombre)}" loading="lazy">`;
   const logoHtml=p.logo_url
     ?`<img src="${esc(p.logo_url)}" alt="">`
     :`${esc(p.logo_emoji)||'✦'}`;
@@ -646,7 +646,7 @@ function openModal(id){
 
   const imgHtml=p.cover_url
     ?`<img src="${esc(p.cover_url)}" alt="${esc(p.nombre)}">`
-    :`<div class="placeholder">img</div>`;
+    :`<img src="/noimage.png" alt="${esc(p.nombre)}">`;
   const logoHtml=p.logo_url
     ?`<img src="${esc(p.logo_url)}" alt="">`
     :`${esc(p.logo_emoji)||'✦'}`;

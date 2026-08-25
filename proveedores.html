@@ -394,7 +394,7 @@ function matchesSearch(p){if(!searchQuery)return true;const q=searchQuery;return
 function openProv(id){const p=PROVIDERS_MAP[id];if(!p)return;if(p.slug){window.open('/prov/'+encodeURIComponent(p.slug),'_blank');return}openModal(id)}
 
 function renderDestCard(p){
-  const imgHtml=p.cover_url?`<img src="${esc(p.cover_url)}" alt="${esc(p.nombre)}" loading="lazy">`:`<div class="placeholder"></div>`;
+  const imgHtml=p.cover_url?`<img src="${esc(p.cover_url)}" alt="${esc(p.nombre)}" loading="lazy">`:`<img src="/noimage.png" alt="${esc(p.nombre)}" loading="lazy">`;
   const logoHtml=p.logo_url?`<img src="${esc(p.logo_url)}" alt="">`:`${esc(p.logo_emoji)||'✦'}`;
   const price=p.precio_minimo?`Desde $${esc(p.precio_minimo)}`:'';
   const waLink=p.whatsapp?`https://wa.me/${esc(p.whatsapp)}`:'';

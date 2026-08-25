@@ -528,7 +528,7 @@ function renderHighlighted(){
     const catLabel=etiqMap[p.etiqueta_id]||etiqMap[p.categoria]||'';
     const imgHtml=p.cover_url
       ?`<img src="${esc(p.cover_url)}" alt="${esc(p.nombre)}" loading="lazy">`
-      :`<div class="placeholder">img</div>`;
+      :`<img src="/noimage.png" alt="${esc(p.nombre)}" loading="lazy">`;
     const logoHtml=p.logo_url
       ?`<img src="${esc(p.logo_url)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:8px">`
       :`${esc(p.logo_emoji)||'✦'}`;

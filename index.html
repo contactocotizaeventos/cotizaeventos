@@ -869,7 +869,7 @@ function renderHighlighted(){
     const catLabel=etiqMap[p.etiqueta_id]||etiqMap[p.categoria]||'';
     const imgHtml=p.cover_url
       ?`<img src="${esc(p.cover_url)}" alt="${esc(p.nombre)}" loading="lazy">`
-      :`<img src="/favicon.png" alt="${esc(p.nombre)}" loading="lazy">`;
+      :`<img src="/noimage.png" alt="${esc(p.nombre)}" loading="lazy">`;
     const logoHtml=p.logo_url
       ?`<img src="${esc(p.logo_url)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:8px">`
       :`${esc(p.logo_emoji)||'✦'}`;
@@ -917,51 +917,5 @@ loadData();
 
 
   <script src="/ads.js" defer></script>
-
-    const daysEl = document.getElementById("days");
-    const hoursEl = document.getElementById("hours");
-    const minutesEl = document.getElementById("minutes");
-    const secondsEl = document.getElementById("seconds");
-
-    function formatNumber(num) {
-      return String(num).padStart(2, "0");
-    }
-
-    function updateCountdown() {
-      const now = new Date().getTime();
-      const distance = launchDate - now;
-
-      if (distance <= 0) {
-        daysEl.textContent = "000";
-        hoursEl.textContent = "00";
-        minutesEl.textContent = "00";
-        secondsEl.textContent = "00";
-
-        const bannerText = document.querySelector(".launch-text");
-        if (bannerText) {
-          bannerText.innerHTML = "<strong>CotizaEventos.cl ya fue lanzado oficialmente.</strong> Ya puedes ser parte de la plataforma.";
-        }
-
-        const badge = document.querySelector(".launch-badge");
-        if (badge) badge.textContent = "Ya disponible";
-
-        return;
-      }
-
-      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((distance / (1000 * 60 * 60)) % 24);
-      const minutes = Math.floor((distance / (1000 * 60)) % 60);
-      const seconds = Math.floor((distance / 1000) % 60);
-
-      daysEl.textContent = String(days).padStart(3, "0");
-      hoursEl.textContent = formatNumber(hours);
-      minutesEl.textContent = formatNumber(minutes);
-      secondsEl.textContent = formatNumber(seconds);
-    }
-
-    updateCountdown();
-    setInterval(updateCountdown, 1000);
-  })();
-</script> -->
 </body>
 </html>

@@ -15,7 +15,7 @@ export async function onRequest(context) {
   if (error || !prov || prov.length === 0) return new Response(build404(slug), { status: 404, headers: { "Content-Type": "text/html; charset=utf-8" } });
   const p = prov[0];
   const dest = true;
-  const imgs = p.imagenes || [];
+  const imgs = (p.imagenes || []).filter(Boolean);
   let catName = "";
   try { const { data: etiq } = await supabase.from("etiquetas").select("nombre").eq("id", p.categoria).limit(1); if (etiq && etiq.length > 0) catName = etiq[0].nombre; } catch (e) {}
   // Also try categoria table if etiqueta not found
@@ -44,7 +44,7 @@ function meta(p, catName) {
   const rawDesc = p.descripcion || p.tagline || p.diferenciador || `${p.nombre} — proveedor de eventos en Santiago`;
   const d = esc(rawDesc.substring(0, 155) + (rawDesc.length > 155 ? "..." : ""));
   const u = `https://www.cotizaeventos.cl/prov/${esc(p.slug)}`;
-  const img = p.cover_url || p.logo_url || "https://www.cotizaeventos.cl/favicon.png";
+  const img = p.cover_url || p.logo_url || "https://www.cotizaeventos.cl/noimage.png";
 
   // Rich schema.org
   const schema = {
@@ -308,7 +308,7 @@ ${navH()}
 
 <article>
 <section class="hero" aria-label="Portada">
-${p.cover_url ? `<img src="${esc(p.cover_url)}" alt="Portada de ${esc(p.nombre)}">` : ""}
+<img src="${esc(p.cover_url || "https://www.cotizaeventos.cl/noimage.png")}" alt="Portada de ${esc(p.nombre)}">
 <div class="hero-ov"></div>
 <div class="hero-bd">✦ Destacado</div>
 <div class="hero-ct"><div class="cx"><div class="hero-in anim">
