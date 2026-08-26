@@ -7,7 +7,6 @@
 <meta name="description" content="Registra tu negocio de eventos en CotizaEventos.cl. Crea tu página de proveedor y consigue clientes.">
 <meta name="robots" content="index, follow">
 <meta name="author" content="CotizaEventos.cl">
-<link rel="icon" type="image/png" href="/favicon.png">
 <meta property="og:site_name" content="CotizaEventos.cl">
 <meta property="og:locale" content="es_CL">
 <link rel="canonical" href="https://www.cotizaeventos.cl/form.html">
@@ -202,6 +201,8 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 /* Submit area */
 .submit-area{text-align:center;padding:32px 0;border-top:1px solid var(--border);margin-top:32px}
 .submit-area p{font-size:14px;color:var(--muted);margin-bottom:16px}
+.form-captcha-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;margin:20px 0 18px;min-height:82px}
+.form-captcha-error{font-size:12px;color:#e53e3e;margin-top:8px;min-height:18px}
 
 /* Success */
 .success-panel{display:none;max-width:600px;margin:60px auto;padding:0 20px;text-align:center;animation:fadeUp .5s var(--ease)}
@@ -452,6 +453,10 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
       <!-- Submit area -->
       <div class="submit-area" id="submitArea">
         <p>Al enviar, revisaremos tu solicitud en máximo 48 horas hábiles.</p>
+        <div class="form-captcha-wrap">
+          <div id="formRecaptcha" aria-label="Verificación reCAPTCHA"></div>
+          <div class="form-captcha-error" id="formCaptchaError" role="alert"></div>
+        </div>
         <button class="btn btn-teal" id="submitBtn" onclick="submitForm()" style="padding:16px 40px;font-size:16px">Enviar solicitud</button>
       </div>
 
@@ -489,6 +494,8 @@ let bannerUrl='';
 let logoUrl='';
 let galleryUrls=[];
 const MAX_GALLERY=5;
+let formRecaptchaWidgetId;
+let formRecaptchaToken='';
 
 function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;')}
 function toggleMobile(){document.getElementById('navMobile').classList.toggle('open')}
@@ -508,38 +515,24 @@ function startBuilder(){
   document.getElementById('builderPhase').classList.add('show');
   document.getElementById('tpl_nombre').value=g('f_nombre');
   document.getElementById('toolbarName').textContent=g('f_nombre');
+  if(formRecaptchaWidgetId===undefined) initFormRecaptcha();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
 /* ══ CATEGORIES ═════════════════════════════════════════════════════ */
 async function loadCategories(){
   try{
-    var res = await fetch('/api/get-providers');
-    var data = await res.json();
-
-    if(!data.ok) throw new Error();
-
-    var grupos = data.grupos || [];
-    etiquetas = [];
-
-    for(var g2 of grupos){
-      for(var et of (g2.etiquetas || [])){
-        etiquetas.push(et);
-      }
-    }
-
+    var res=await fetch('/api/get-providers');
+    var data=await res.json();
+    if(!data.ok)throw new Error();
+    var grupos=data.grupos||[];
+    etiquetas=[];
+    for(var g2 of grupos)for(var et of(g2.etiquetas||[]))etiquetas.push(et);
     renderCats();
-
-    if(data.promo === true){
-      isPromo = true;
-      applyPromo();
-    }
-
+    if(data.promo===true){isPromo=true;applyPromo()}
   }catch(e){
-    console.error('Error cargando categorías:', e);
-
-    document.getElementById('tplCats').innerHTML =
-      '<span class="tpl-cats-loading">Error al cargar categorías</span>';
+    console.error('Error cargando categorías:',e);
+    document.getElementById('tplCats').innerHTML='<span class="tpl-cats-loading">Error al cargar categorías</span>';
   }
 }
 
@@ -557,6 +550,77 @@ function pickCat(el,id){
   selectedCat=id;
 }
 
+function applyPromo(){
+  var promo=document.getElementById('promoBanner');
+  if(promo)promo.style.display='block';
+}
+
+/* ══ PREVIEW TOGGLE ═════════════════════════════════════════════════ */
+function setPreview(mode){
+  var btns=document.querySelectorAll('.preview-toggle button');
+  if(btns[0])btns[0].classList.toggle('active',mode==='dest');
+  var tpl=document.getElementById('tplPage');
+  if(tpl)tpl.classList.toggle('preview-basico',mode==='bas');
+}
+
+/* ══ GOOGLE RECAPTCHA ═══════════════════════════════════════════════ */
+async function initFormRecaptcha(){
+  if(formRecaptchaWidgetId!==undefined)return;
+  var box=document.getElementById('formCaptchaError');
+  try{
+    var configRes=await fetch('/api/recaptcha-config');
+    var config=await configRes.json();
+    if(!configRes.ok||!config.ok||!config.siteKey){
+      throw new Error(config.error||'reCAPTCHA no configurado');
+    }
+
+    if(!window.grecaptcha){
+      await new Promise(function(resolve,reject){
+        var existing=document.querySelector('script[src^="https://www.google.com/recaptcha/api.js"]');
+        if(existing){
+          var wait=setInterval(function(){
+            if(window.grecaptcha){clearInterval(wait);resolve()}
+          },50);
+          setTimeout(function(){clearInterval(wait);if(!window.grecaptcha)reject(new Error('No se pudo cargar reCAPTCHA'))},10000);
+          return;
+        }
+        var script=document.createElement('script');
+        script.src='https://www.google.com/recaptcha/api.js?render=explicit';
+        script.async=true;
+        script.defer=true;
+        script.onload=resolve;
+        script.onerror=function(){reject(new Error('No se pudo cargar reCAPTCHA'))};
+        document.head.appendChild(script);
+      });
+    }
+
+    formRecaptchaWidgetId=grecaptcha.render('formRecaptcha',{
+      sitekey:config.siteKey,
+      callback:function(token){
+        formRecaptchaToken=token;
+        if(box)box.textContent='';
+      },
+      'expired-callback':function(){
+        formRecaptchaToken='';
+        if(box)box.textContent='La verificación expiró. Complétala nuevamente.';
+      },
+      'error-callback':function(){
+        formRecaptchaToken='';
+        if(box)box.textContent='No se pudo cargar la verificación. Intenta nuevamente.';
+      }
+    });
+  }catch(e){
+    console.error('Error reCAPTCHA:',e);
+    if(box)box.textContent=e.message||'No se pudo cargar la verificación.';
+  }
+}
+
+function resetFormRecaptcha(){
+  formRecaptchaToken='';
+  if(window.grecaptcha&&formRecaptchaWidgetId!==undefined){
+    grecaptcha.reset(formRecaptchaWidgetId);
+  }
+}
 
 /* ══ IMAGE UPLOADS ══════════════════════════════════════════════════ */
 async function uploadImg(type,input){
@@ -658,10 +722,17 @@ function scrollToSubmit(){document.getElementById('submitArea').scrollIntoView({
 async function submitForm(){
   if(!selectedCat){alert('Selecciona una categoría');return}
 
+  if(!formRecaptchaToken){
+    var captchaError=document.getElementById('formCaptchaError');
+    if(captchaError)captchaError.textContent='Completa la verificación "No soy un robot" antes de enviar.';
+    document.getElementById('formRecaptcha').scrollIntoView({behavior:'smooth',block:'center'});
+    return;
+  }
+
   var btn=document.getElementById('submitBtn');
   btn.disabled=true;btn.textContent='Enviando...';
-  var pos=document.querySelector('input[name="posicion"]:checked');
-  var posVal=pos?pos.value:'0';
+  // El formulario actual publica el perfil como Destacado.
+  var posVal='1';
   var imgs=galleryUrls.filter(function(u){return u});
 
   var payload={
@@ -680,6 +751,7 @@ async function submitForm(){
     posicion_deseada:posVal,
     logo_url:logoUrl,cover_url:bannerUrl,logo_emoji:'',
     comentarios:imgs.join(','),
+    recaptcha_token:formRecaptchaToken,
   };
 
   try{
@@ -694,7 +766,7 @@ async function submitForm(){
     if(posVal==='1'&&isPromo){
       sEl.innerHTML='<div class="success-ico">🎉</div><h2>¡Solicitud enviada!</h2><p class="msg">Recibimos tu solicitud para <strong>'+nombre+'</strong>. En máximo <strong>48 horas hábiles</strong> revisaremos tu información.</p><div style="background:linear-gradient(135deg,#E1F5EE,#fff);border:2px solid var(--teal);border-radius:var(--r);padding:28px;margin:24px auto;max-width:480px;text-align:center"><div style="font-size:28px;margin-bottom:8px">🎁</div><h3 style="font-family:var(--font-title);font-size:20px;margin-bottom:8px;color:var(--teal)">Promocion de lanzamiento aplicada</h3><p style="font-size:15px;color:var(--ink2);line-height:1.7">Tu negocio será aprobado con todos los beneficios del plan <strong>Destacado</strong> de forma <strong>gratuita por tiempo limitado</strong>.</p></div><div class="success-btns"><a href="proveedores.html" class="btn btn-coral">Ver directorio</a><a href="suscripciones.html" class="btn btn-outline">Gestionar cuenta</a></div>';
     }else if(posVal==='1'){
-      var wm=encodeURIComponent('Hola, acabo de registrar mi negocio "'+g('f_nombre')+'" en CotizaEventos.cl y quiero ver mi cuenta');
+      var wm=encodeURIComponent('Hola, acabo de registrar mi negocio "'+g('f_nombre')+'" en CotizaEventos.cl y quiero activar el plan Destacado.');
       sEl.innerHTML='<div class="success-ico">🎉</div><h2>¡Solicitud enviada!</h2><p class="msg">Recibimos tu solicitud para <strong>'+nombre+'</strong>. En máximo <strong>48 horas hábiles</strong> revisaremos tu información.</p><div style="background:linear-gradient(160deg,#FFF9F7,#fff);border:2px solid var(--coral);border-radius:var(--r);padding:28px;margin:24px auto;max-width:500px;text-align:left"><h3 style="font-family:var(--font-title);font-size:20px;margin-bottom:8px;color:var(--coral)">Elegiste el plan Destacado</h3><p style="font-size:14px;color:var(--ink2);line-height:1.7;margin-bottom:16px">Para activar tu perfil Destacado, debes activar tu suscripción:</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px"><div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:14px;text-align:center"><div style="font-size:12px;color:var(--muted)">Mensual</div><div style="font-size:22px;font-weight:700;color:var(--coral)">$15.000</div></div><div style="background:var(--coral-lt);border:2px solid var(--coral);border-radius:var(--r);padding:14px;text-align:center"><div style="font-size:12px;color:var(--muted)">Anual</div><div style="font-size:22px;font-weight:700;color:var(--coral)">$95.000</div></div></div><div style="display:flex;gap:10px;flex-wrap:wrap"><a href="https://wa.me/56991999301?text='+wm+'" target="_blank" rel="noopener" class="btn btn-coral" style="font-size:14px">Activar por WhatsApp</a><a href="suscripciones.html" class="btn btn-outline" style="font-size:14px">Gestionar plan</a></div></div>';
     }else{
       sEl.innerHTML='<div class="success-ico">🎉</div><h2>¡Solicitud enviada!</h2><p class="msg">Recibimos tu solicitud para <strong>'+nombre+'</strong>. En máximo <strong>48 horas hábiles</strong> revisaremos tu información. Te notificaremos por email.</p><div class="success-btns"><a href="suscripciones.html" class="btn btn-coral">Gestionar mi cuenta</a><a href="proveedores.html" class="btn btn-outline">Ver directorio</a></div>';
@@ -704,6 +776,7 @@ async function submitForm(){
   }catch(e){
     alert('Error: '+e.message);
     btn.disabled=false;btn.textContent='Enviar solicitud';
+    resetFormRecaptcha();
   }
 }
 

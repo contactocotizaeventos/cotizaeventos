@@ -32,7 +32,79 @@ function jsonResponse(data, status = 200) {
 function errorResponse(message, status = 500) {
   return jsonResponse({ ok: false, error: message }, status);
 }
+// ── Google reCAPTCHA verification ───────────────────────────────────
 
+async function verifyRecaptcha(token, request, env) {
+  if (!env.RECAPTCHA_SECRET_KEY) {
+    console.error("Missing RECAPTCHA_SECRET_KEY");
+
+    return {
+      ok: false,
+      serverError: true,
+      error: "reCAPTCHA no configurado en el servidor",
+    };
+  }
+
+  if (!token) {
+    return {
+      ok: false,
+      error: "Token reCAPTCHA no recibido",
+    };
+  }
+
+  try {
+    const params = new URLSearchParams();
+
+    params.set("secret", env.RECAPTCHA_SECRET_KEY);
+    params.set("response", token);
+
+    // IP real del visitante entregada por Cloudflare
+    const ip = request.headers.get("CF-Connecting-IP");
+
+    if (ip) {
+      params.set("remoteip", ip);
+    }
+
+    const response = await fetch(
+      "https://www.google.com/recaptcha/api/siteverify",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: params.toString(),
+      }
+    );
+
+    const result = await response.json();
+
+    if (!result.success) {
+      console.warn(
+        "reCAPTCHA rechazado:",
+        result["error-codes"] || []
+      );
+
+      return {
+        ok: false,
+        error: "Verificación reCAPTCHA inválida",
+      };
+    }
+
+    return {
+      ok: true,
+      hostname: result.hostname || "",
+    };
+
+  } catch (err) {
+    console.error("Error verificando reCAPTCHA:", err);
+
+    return {
+      ok: false,
+      serverError: true,
+      error: "No se pudo verificar reCAPTCHA",
+    };
+  }
+}
 /**
  * sendEmail — utility to send transactional emails via Resend API.
  * Never blocks the main operation if it fails.
@@ -137,6 +209,40 @@ export async function onRequestPost(context) {
   if (!email || !email.trim()) {
     return errorResponse("El email es obligatorio", 400);
   }
+// ── Validate Google reCAPTCHA ──────────────────────────────────────
+
+const recaptchaToken = body.recaptcha_token;
+
+if (!recaptchaToken) {
+  return errorResponse(
+    "Completa la verificación de seguridad",
+    400
+  );
+}
+
+const captchaResult = await verifyRecaptcha(
+  recaptchaToken,
+  request,
+  env
+);
+
+if (!captchaResult.ok) {
+
+  if (captchaResult.serverError) {
+    return errorResponse(
+      "Error verificando la seguridad del formulario",
+      500
+    );
+  }
+
+  return errorResponse(
+    "Verificación reCAPTCHA inválida. Intenta nuevamente.",
+    403
+  );
+}
+
+
+
 
   const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_KEY);
 
