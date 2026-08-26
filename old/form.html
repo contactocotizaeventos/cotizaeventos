@@ -12,7 +12,6 @@
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<script src="/recaptcha.js" defer></script>
 <title>Registrar negocio de eventos en Santiago — Formulario | CotizaEventos.cl</title>
 <meta name="description" content="Registra tu negocio de catering, DJ, fotografía, decoración o cualquier servicio de eventos en Santiago. Formulario rápido, aprobación en 48 horas. Plan gratuito disponible.">
 <meta name="keywords" content="registrar negocio eventos santiago, publicar servicio eventos, inscribir proveedor eventos chile">
@@ -215,8 +214,6 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 /* Submit area */
 .submit-area{text-align:center;padding:32px 0;border-top:1px solid var(--border);margin-top:32px}
 .submit-area p{font-size:14px;color:var(--muted);margin-bottom:16px}
-.form-captcha-wrap{display:flex;flex-direction:column;align-items:center;gap:6px;margin:18px 0}
-.form-captcha-error{min-height:18px;color:#dc2626;font-size:13px;text-align:center}
 
 /* Success */
 .success-panel{display:none;max-width:600px;margin:60px auto;padding:0 20px;text-align:center;animation:fadeUp .5s var(--ease)}
@@ -471,10 +468,6 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
       <!-- Submit area -->
       <div class="submit-area" id="submitArea">
         <p>Al enviar, revisaremos tu solicitud en máximo 48 horas hábiles.</p>
-        <div class="form-captcha-wrap">
-          <div id="formRecaptcha" aria-label="Verificación reCAPTCHA"></div>
-          <div class="form-captcha-error" id="formCaptchaError" role="alert"></div>
-        </div>
         <button class="btn btn-teal" id="submitBtn" onclick="submitForm()" style="padding:16px 40px;font-size:16px">Enviar solicitud</button>
       </div>
 
@@ -511,8 +504,6 @@ let isPromo=false;
 let bannerUrl='';
 let logoUrl='';
 let galleryUrls=[];
-let formRecaptchaWidgetId;
-let formRecaptchaToken='';
 const MAX_GALLERY=5;
 
 function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;')}
@@ -533,47 +524,104 @@ function startBuilder(){
   document.getElementById('builderPhase').classList.add('show');
   document.getElementById('tpl_nombre').value=g('f_nombre');
   document.getElementById('toolbarName').textContent=g('f_nombre');
-  initFormRecaptcha();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
 /* ══ CATEGORIES ═════════════════════════════════════════════════════ */
 async function loadCategories(){
-  var contenedor=document.getElementById('tplCats');
+  var contenedor = document.getElementById('tplCats');
 
   try{
-    contenedor.innerHTML='<span class="tpl-cats-loading">Cargando categorías...</span>';
+    contenedor.innerHTML =
+      '<span class="tpl-cats-loading">Cargando categorías...</span>';
 
-    var res=await fetch('/api/get-providers',{cache:'no-store'});
-    if(!res.ok)throw new Error('Error HTTP '+res.status+' al cargar categorías');
+    var res = await fetch('/api/get-providers', {
+      cache: 'no-store'
+    });
 
-    var data=await res.json();
-    if(!data.ok)throw new Error(data.error||'La API respondió ok:false');
+    if(!res.ok){
+      throw new Error(
+        'Error HTTP ' + res.status + ' al cargar categorías'
+      );
+    }
 
-    var grupos=Array.isArray(data.grupos)?data.grupos:[];
-    etiquetas=[];
+    var data = await res.json();
+
+    console.log('Respuesta get-providers:', data);
+
+    if(!data.ok){
+      throw new Error(
+        data.error || 'La API respondió ok:false'
+      );
+    }
+
+    var grupos = Array.isArray(data.grupos)
+      ? data.grupos
+      : [];
+
+    etiquetas = [];
 
     grupos.forEach(function(grupo){
-      var subs=Array.isArray(grupo.etiquetas)?grupo.etiquetas:[];
 
-      if(subs.length){
+      var subs = Array.isArray(grupo.etiquetas)
+        ? grupo.etiquetas
+        : [];
+
+      // Si el grupo tiene etiquetas, usamos las etiquetas
+      if(subs.length > 0){
+
         subs.forEach(function(et){
-          if(et.id&&et.nombre)etiquetas.push({id:et.id,nombre:et.nombre});
+          if(et.id && et.nombre){
+            etiquetas.push({
+              id: et.id,
+              nombre: et.nombre
+            });
+          }
         });
-      }else if(grupo.id&&grupo.nombre){
-        etiquetas.push({id:grupo.id,nombre:grupo.nombre});
+
+      }else{
+
+        // Si no tiene etiquetas, usamos el grupo
+        if(grupo.id && grupo.nombre){
+          etiquetas.push({
+            id: grupo.id,
+            nombre: grupo.nombre
+          });
+        }
+
       }
+
     });
+
+    console.log('Categorías procesadas:', etiquetas);
 
     renderCats();
 
-    isPromo=data.promo===true;
-    var promo=document.getElementById('promoBanner');
-    if(promo)promo.style.display=isPromo?'block':'none';
+
+    // ── Promo ────────────────────────────────
+
+    isPromo = data.promo === true;
+
+    var promo = document.getElementById('promoBanner');
+
+    if(promo){
+      promo.style.display = isPromo
+        ? 'block'
+        : 'none';
+    }
 
   }catch(e){
-    console.error('Error cargando categorías:',e);
-    contenedor.innerHTML='<span class="tpl-cats-loading">Error al cargar categorías: '+esc(e.message)+'</span>';
+
+    console.error(
+      'Error cargando categorías:',
+      e
+    );
+
+    contenedor.innerHTML =
+      '<span class="tpl-cats-loading">' +
+      'Error al cargar categorías: ' +
+      esc(e.message) +
+      '</span>';
   }
 }
 
@@ -593,58 +641,6 @@ function pickCat(el,id){
 
 
 
-/* ══ PREVIEW TOGGLE ═════════════════════════════════════════════════ */
-function setPreview(mode){
-  var btn=document.querySelector('.preview-toggle button');
-  if(btn)btn.classList.add('active');
-  var tpl=document.getElementById('tplPage');
-  if(tpl)tpl.classList.remove('preview-basico');
-}
-
-/* ══ FORM RECAPTCHA ═════════════════════════════════════════════════ */
-async function waitForCotizaCaptcha(){
-  var started=Date.now();
-  while(!window.CotizaCaptcha){
-    if(Date.now()-started>10000)throw new Error('No se pudo cargar el módulo CAPTCHA');
-    await new Promise(function(resolve){setTimeout(resolve,50)});
-  }
-  return window.CotizaCaptcha;
-}
-
-async function initFormRecaptcha(){
-  if(formRecaptchaWidgetId!==undefined)return;
-
-  var errorBox=document.getElementById('formCaptchaError');
-
-  try{
-    var captcha=await waitForCotizaCaptcha();
-
-    formRecaptchaWidgetId=await captcha.render('formRecaptcha',{
-      callback:function(token){
-        formRecaptchaToken=token;
-        if(errorBox)errorBox.textContent='';
-      },
-      expiredCallback:function(){
-        formRecaptchaToken='';
-        if(errorBox)errorBox.textContent='La verificación expiró. Complétala nuevamente.';
-      },
-      errorCallback:function(){
-        formRecaptchaToken='';
-        if(errorBox)errorBox.textContent='No se pudo cargar la verificación. Intenta nuevamente.';
-      }
-    });
-  }catch(e){
-    console.error('Error reCAPTCHA formulario:',e);
-    if(errorBox)errorBox.textContent=e.message||'No se pudo cargar la verificación.';
-  }
-}
-
-function resetFormRecaptcha(){
-  formRecaptchaToken='';
-  if(window.CotizaCaptcha&&formRecaptchaWidgetId!==undefined){
-    window.CotizaCaptcha.reset(formRecaptchaWidgetId);
-  }
-}
 
 /* ══ IMAGE UPLOADS ══════════════════════════════════════════════════ */
 async function uploadImg(type,input){
@@ -746,14 +742,6 @@ function scrollToSubmit(){document.getElementById('submitArea').scrollIntoView({
 async function submitForm(){
   if(!selectedCat){alert('Selecciona una categoría');return}
 
-  if(!formRecaptchaToken){
-    var captchaError=document.getElementById('formCaptchaError');
-    if(captchaError)captchaError.textContent='Completa la verificación \"No soy un robot\" antes de enviar.';
-    var captchaBox=document.getElementById('formRecaptcha');
-    if(captchaBox)captchaBox.scrollIntoView({behavior:'smooth',block:'center'});
-    return;
-  }
-
   var btn=document.getElementById('submitBtn');
   btn.disabled=true;btn.textContent='Enviando...';
   var posVal='1';
@@ -775,7 +763,6 @@ async function submitForm(){
     posicion_deseada:posVal,
     logo_url:logoUrl,cover_url:bannerUrl,logo_emoji:'',
     comentarios:imgs.join(','),
-    recaptcha_token:formRecaptchaToken,
   };
 
   try{
@@ -800,7 +787,6 @@ async function submitForm(){
   }catch(e){
     alert('Error: '+e.message);
     btn.disabled=false;btn.textContent='Enviar solicitud';
-    resetFormRecaptcha();
   }
 }
 

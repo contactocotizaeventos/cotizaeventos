@@ -136,56 +136,79 @@ export async function onRequestPost(context) {
   if (!email || !email.trim()) {
     return errorResponse("El email es obligatorio", 400);
   }
-// ── Validate Google reCAPTCHA via dedicated Worker ──────────────────
-  const recaptchaToken =
-    typeof body.recaptcha_token === "string"
-      ? body.recaptcha_token.trim()
-      : "";
+// ── Validate Google reCAPTCHA ──────────────────────────────────────
+// ── Validate reCAPTCHA using existing CAPTCHA endpoint ─────────────
 
-  if (!recaptchaToken) {
-    return errorResponse("Completa la verificación de seguridad", 400);
-  }
+const recaptchaToken =
+  typeof body.recaptcha_token === "string"
+    ? body.recaptcha_token
+    : "";
 
-  try {
-    const captchaWorkerUrl =
-      env.CAPTCHA_WORKER_URL ||
-      "https://cotizaeventos-captcha.contactocotizaeventos.workers.dev";
+if (!recaptchaToken) {
+  return errorResponse(
+    "Completa la verificación de seguridad",
+    400
+  );
+}
 
-    const captchaResponse = await fetch(captchaWorkerUrl, {
+try {
+
+  const captchaUrl = new URL(
+    "/api/whatsapp",
+    request.url
+  );
+
+  const captchaResponse = await fetch(
+    captchaUrl.toString(),
+    {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "application/json"
       },
+
       body: JSON.stringify({
-        purpose: "form",
         token: recaptchaToken,
-      }),
-    });
 
-    let captchaResult;
-    try {
-      captchaResult = await captchaResponse.json();
-    } catch {
-      return errorResponse("El servicio CAPTCHA devolvió una respuesta inválida", 502);
+        // reutilizamos el WhatsApp del formulario
+        phone: whatsapp.replace(/\D/g, ""),
+
+        // no necesitamos mensaje
+        text: ""
+      })
     }
+  );
 
-    if (!captchaResponse.ok || !captchaResult.ok || !captchaResult.verified) {
-      console.warn("CAPTCHA rechazado:", captchaResult);
+  const captchaResult =
+    await captchaResponse.json();
 
-      const detail =
-        Array.isArray(captchaResult.captcha_errors) && captchaResult.captcha_errors.length
-          ? `: ${captchaResult.captcha_errors.join(", ")}`
-          : "";
+if (!captchaResponse.ok || !captchaResult.ok) {
 
-      return errorResponse(
-        (captchaResult.error || "No se pudo verificar reCAPTCHA") + detail,
-        403,
-      );
-    }
-  } catch (err) {
-    console.error("Error llamando al Worker CAPTCHA:", err);
-    return errorResponse("Error verificando la seguridad del formulario", 502);
-  }
+  console.log("Respuesta CAPTCHA:", captchaResult);
+
+  return errorResponse(
+    "CAPTCHA rechazado: " +
+    (
+      captchaResult.captcha_errors &&
+      captchaResult.captcha_errors.length
+        ? captchaResult.captcha_errors.join(", ")
+        : captchaResult.error || "motivo desconocido"
+    ),
+    403
+  );
+}
+} catch (err) {
+
+  console.error(
+    "Error llamando al verificador CAPTCHA:",
+    err
+  );
+
+  return errorResponse(
+    "Error verificando la seguridad del formulario",
+    500
+  );
+}
+
 
   const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_KEY);
 
