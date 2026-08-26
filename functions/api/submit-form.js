@@ -263,20 +263,23 @@ const captchaResult = await verifyRecaptcha(
 
 if (!captchaResult.ok) {
 
+  console.error(
+    "Resultado CAPTCHA:",
+    captchaResult
+  );
+
   if (captchaResult.serverError) {
     return errorResponse(
-      "Error verificando la seguridad del formulario",
+      captchaResult.error,
       500
     );
   }
 
   return errorResponse(
-    "Verificación reCAPTCHA inválida. Intenta nuevamente.",
+    captchaResult.error,
     403
   );
 }
-
-
 
 
   const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_KEY);
