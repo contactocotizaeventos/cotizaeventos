@@ -314,9 +314,9 @@ export async function onRequest(context) {
       <p style="margin:0 0 6px 0;font-size:14px;color:#8A8278;">Contraseña</p>
       <p style="margin:0;font-size:16px;font-weight:600;color:#1A1714;">${password}</p>
     </div>
-    <a href="https://www.cotizaeventos.cl/suscripciones.html" style="display:inline-block;background:#E8542A;color:#fff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;font-size:14px;">
+    <!--<a href="https://www.cotizaeventos.cl/suscripciones.html" style="display:inline-block;background:#E8542A;color:#fff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;font-size:14px;">
       Gestionar mi suscripción
-    </a>
+    </a> -->
     <hr style="border:none;border-top:1px solid #E8E4DF;margin:32px 0 16px 0;">
     <p style="margin:0;font-size:12px;color:#8A8278;">
       Este correo fue enviado automáticamente por CotizaEventos.cl. Te recomendamos no compartir tu contraseña.
@@ -403,7 +403,7 @@ export async function onRequest(context) {
     }
 
     // ── TOGGLE PAGO AUTOMÁTICO ───────────────────────────────────────
-    if (action === "toggle_pago_automatico") {
+   /* if (action === "toggle_pago_automatico") {
       return err("Las suscripciones y los pagos ya no están disponibles", 410);
       const token = extractToken(request) || body.token;
       const payload = await verifyToken(token, env.SUSCRIPTOR_SECRET);
@@ -466,7 +466,7 @@ export async function onRequest(context) {
       }
 
       return json({ ok: true });
-    }
+    } */
 
     // ── UPDATE PROFILE ───────────────────────────────────────────────
     if (action === "update_profile") {
@@ -553,7 +553,7 @@ export async function onRequest(context) {
       return json({ ok: true });
     }
 
-    // ── ACTIVAR GRATIS (promo lanzamiento) ───────────────────────────
+  /*  // ── ACTIVAR GRATIS (promo lanzamiento) ───────────────────────────
     if (action === "activar_gratis") {
       return err("La promoción de lanzamiento ha finalizado", 410);
       const token = extractToken(request) || body.token;
@@ -612,7 +612,7 @@ export async function onRequest(context) {
 
       return json({ ok: true });
     }
-
+*/
     // ── RESET PASSWORD (no auth required) ────────────────────────────
     if (action === "reset_password") {
       const { email } = body;

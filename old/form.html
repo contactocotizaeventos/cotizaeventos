@@ -1,14 +1,27 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18090764969"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'AW-18090764969');
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Publica tu negocio — CotizaEventos.cl</title>
-<meta name="description" content="Registra tu negocio de eventos en CotizaEventos.cl. Crea tu página de proveedor y consigue clientes.">
+<title>Registrar negocio de eventos en Santiago — Formulario | CotizaEventos.cl</title>
+<meta name="description" content="Registra tu negocio de catering, DJ, fotografía, decoración o cualquier servicio de eventos en Santiago. Formulario rápido, aprobación en 48 horas. Plan gratuito disponible.">
+<meta name="keywords" content="registrar negocio eventos santiago, publicar servicio eventos, inscribir proveedor eventos chile">
 <meta name="robots" content="index, follow">
-<meta name="author" content="CotizaEventos.cl">
+<meta name="geo.region" content="CL-RM">
+<meta name="geo.placename" content="Santiago">
 <meta property="og:site_name" content="CotizaEventos.cl">
 <meta property="og:locale" content="es_CL">
+<meta property="og:title" content="Registrar negocio de eventos — CotizaEventos.cl">
+<meta property="og:description" content="Publica tu negocio de eventos en el directorio de Santiago. Plan gratuito disponible.">
 <link rel="canonical" href="https://www.cotizaeventos.cl/form.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -49,7 +62,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .nav-cta{padding:8px 18px;background:var(--coral);color:#fff!important;border-radius:var(--r);font-weight:600;font-size:13px}
 .nav-burger{position:sticky;display:none;width:32px;height:32px;flex-direction:column;justify-content:center;gap:5px;cursor:pointer;top:0;z-index:999}
 .nav-burger span{display:block;height:2px;background:var(--ink);border-radius:2px;transition:all .3s var(--ease)}
-.nav-mobile{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:var(--white);z-index:200;flex-direction:column;padding:80px 32px 32px}
+.nav-mobile{position:fixed;display:none;top:0;left:0;right:0;bottom:0;background:var(--white);z-index:200;flex-direction:column;padding:80px 32px 32px}
 .nav-mobile.open{display:flex;animation:fadeIn .25s var(--ease)}
 .nav-mobile a{font-size:22px;font-weight:500;padding:16px 0;border-bottom:1px solid var(--border);color:var(--ink)}
 .nav-mobile a:hover{color:var(--coral)}
@@ -236,7 +249,9 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
       <a href="form.html" class="nav-cta">✦ Publica tu negocio</a>
       <a href="suscripciones.html" class="nav-cta">Mi Cuenta</a>
     </div>
-    <div class="nav-burger" onclick="toggleMobile()" aria-label="Menú"><span></span><span></span><span></span></div>
+    <div class="nav-burger" onclick="toggleMobile()" aria-label="Menú">
+      <span></span><span></span><span></span>
+    </div>
   </div>
 </nav>
 <div class="nav-mobile" id="navMobile">
@@ -281,7 +296,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
       <label>WhatsApp <span class="req">*</span></label>
       <div style="display:flex;align-items:center;gap:0">
         <span style="padding:11px 12px;background:var(--bg2);border:1px solid var(--border);border-right:none;border-radius:10px 0 0 10px;font-size:14px;color:var(--ink2);white-space:nowrap">+56 9</span>
-        <input type="tel" id="f_whatsapp" placeholder="1234 5678" maxlength="9" style="border-radius:0 10px 10px 0" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+        <input type="tel" id="f_whatsapp" placeholder="1234 5678" maxlength="8" style="border-radius:0 10px 10px 0" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
       </div>
       <span class="hint">8 dígitos después del 9</span>
       <span class="error-msg">El WhatsApp es obligatorio</span>
@@ -299,13 +314,14 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
     <div class="toolbar-right">
       <div class="preview-toggle">
         <button class="active" onclick="setPreview('dest')">Destacado</button>
+        <button onclick="setPreview('bas')">Básico</button>
       </div>
       <button class="btn btn-teal" style="padding:9px 18px;font-size:13px" onclick="scrollToSubmit()">Enviar solicitud</button>
     </div>
   </div>
 
   <!-- Promo banner -->
-  <div class="promo-banner" id="promoBanner">¡Todos los perfiles son gratuitos! No olvides de agregar tus fotos y descripciones para aumentar tu visibilidad y más clientes te encuentren</div>
+  <div class="promo-banner" id="promoBanner">Promocion de lanzamiento: todos los nuevos negocios obtienen beneficios Destacado gratis por tiempo limitado</div>
 
   <!-- Template page -->
   <div class="tpl" id="tplPage">
@@ -447,6 +463,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
         </div>
       </div>
 
+      <div class="tpl-section"><div class="tpl-section-label">Publicación con visibilidad premium</div><p>Todos los negocios aprobados tendrán el mismo nivel de presentación y visibilidad.</p></div>
 
       <!-- Submit area -->
       <div class="submit-area" id="submitArea">
@@ -670,8 +687,7 @@ async function submitForm(){
 
   var btn=document.getElementById('submitBtn');
   btn.disabled=true;btn.textContent='Enviando...';
-  var pos=document.querySelector('input[name="posicion"]:checked');
-  var posVal=pos?pos.value:'0';
+  var posVal='1';
   var imgs=galleryUrls.filter(function(u){return u});
 
   var payload={

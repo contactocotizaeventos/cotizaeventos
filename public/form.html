@@ -299,14 +299,13 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
     <div class="toolbar-right">
       <div class="preview-toggle">
         <button class="active" onclick="setPreview('dest')">Destacado</button>
-        <button onclick="setPreview('bas')">Básico</button>
       </div>
       <button class="btn btn-teal" style="padding:9px 18px;font-size:13px" onclick="scrollToSubmit()">Enviar solicitud</button>
     </div>
   </div>
 
   <!-- Promo banner -->
-  <div class="promo-banner" id="promoBanner">Promocion de lanzamiento: todos los nuevos negocios obtienen beneficios Destacado gratis por tiempo limitado</div>
+  <div class="promo-banner" id="promoBanner">¡Todos los perfiles son gratuitos! No olvides de agregar tus fotos y descripciones para aumentar tu visibilidad y más clientes te encuentren</div>
 
   <!-- Template page -->
   <div class="tpl" id="tplPage">
@@ -448,27 +447,6 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
         </div>
       </div>
 
-      <!-- Básico notice (visible only in básico preview) -->
-      <div class="basico-notice">En el plan <strong>Básico</strong>, los clientes solo podrán contactarte por email. Para habilitar WhatsApp directo, galería de fotos y portada, activa el plan Destacado.</div>
-
-      <!-- Plan selection -->
-      <div class="tpl-section">
-        <div class="tpl-section-label">Elige tu plan</div>
-        <div class="plan-row">
-          <label class="plan-opt" id="planBasico" onclick="selectPlan('0')">
-            <input type="radio" name="posicion" value="0">
-            <h4>Básico</h4>
-            <p>Listado con nombre, precio y contacto por email</p>
-            <span class="plan-tag" style="background:var(--muted);color:#fff">Gratis</span>
-          </label>
-          <label class="plan-opt" id="planDestacado" onclick="selectPlan('1')">
-            <input type="radio" name="posicion" value="1">
-            <h4>Destacado</h4>
-            <p>Página completa con fotos, WhatsApp directo y máxima visibilidad</p>
-            <span class="plan-tag" id="destTag" style="background:var(--coral);color:#fff">Recomendado</span>
-          </label>
-        </div>
-      </div>
 
       <!-- Submit area -->
       <div class="submit-area" id="submitArea">
