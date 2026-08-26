@@ -32,7 +32,15 @@ function jsonResponse(data, status = 200) {
 function errorResponse(message, status = 500) {
   return jsonResponse({ ok: false, error: message }, status);
 }
-// ── Google reCAPTCHA verification ───────────────────────────────────
+
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
 /* sendEmail — utility to send transactional emails via Resend API.
  * Never blocks the main operation if it fails.
  */
@@ -65,6 +73,8 @@ async function sendEmail(to, subject, html, env) {
  * buildConfirmationEmail — Email 1: Confirmation that the request was received.
  */
 function buildConfirmationEmail(nombre) {
+  const safeNombre = escapeHtml(nombre);
+
   return `
 <!DOCTYPE html>
 <html lang="es">
@@ -72,28 +82,33 @@ function buildConfirmationEmail(nombre) {
 <body style="font-family:Arial,Helvetica,sans-serif;background:#FAFAF8;padding:32px 16px;color:#1A1714;">
   <div style="max-width:560px;margin:0 auto;background:#FFFFFF;border-radius:14px;padding:40px 32px;border:1px solid #E8E4DF;">
     <h1 style="font-size:22px;margin:0 0 8px 0;color:#E8542A;">CotizaEventos.cl</h1>
-    <h2 style="font-size:18px;margin:0 0 24px 0;color:#1A1714;">¡Recibimos tu solicitud!</h2>
-    <p style="margin:0 0 16px 0;line-height:1.6;color:#3D3733;">
-      Hola${nombre ? ` <strong>${nombre}</strong>` : ""},
+    <h2 style="font-size:18px;margin:0 0 24px 0;color:#1A1714;">Recibimos tu registro</h2>
+
+    <p style="margin:0 0 16px;line-height:1.6;color:#3D3733;">
+      Hola${safeNombre ? ` <strong>${safeNombre}</strong>` : ""},
     </p>
-    <p style="margin:0 0 16px 0;line-height:1.6;color:#3D3733;">
-      Tu solicitud de registro en <strong>CotizaEventos.cl</strong> fue recibida exitosamente.
+
+    <p style="margin:0 0 16px;line-height:1.6;color:#3D3733;">
+      Recibimos correctamente tu solicitud para publicar tu negocio en <strong>CotizaEventos.cl</strong>.
     </p>
-    <p style="margin:0 0 16px 0;line-height:1.6;color:#3D3733;">
-      En un plazo máximo de <strong>48 horas hábiles</strong> revisaremos tu información. La admisión no es automática — evaluamos cada solicitud para garantizar la calidad del directorio y la mejor experiencia para los clientes.
+
+    <p style="margin:0 0 16px;line-height:1.6;color:#3D3733;">
+      Tu cuenta está ahora en revisión. Nuestro objetivo es revisar las cuentas válidas en los próximos minutos.
     </p>
-    <p style="margin:0 0 16px 0;line-height:1.6;color:#3D3733;">
-      Te notificaremos por correo electrónico cuando tu solicitud sea revisada.
+
+    <p style="margin:0 0 24px;line-height:1.6;color:#3D3733;">
+      <strong>Cuando tu cuenta sea aprobada, recibirás un segundo correo con tus credenciales de acceso.</strong>
+      Luego podrás iniciar sesión desde <strong>Mi Cuenta</strong>.
     </p>
-    <p style="margin:0 0 24px 0;line-height:1.6;color:#3D3733;">
-      Si tienes dudas, escríbenos por WhatsApp:
-    </p>
-    <a href="https://wa.me/56991999301" style="display:inline-block;background:#25D366;color:#fff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;font-size:14px;">
-      💬 Contactar por WhatsApp
+
+    <a href="https://www.cotizaeventos.cl/suscripciones.html"
+       style="display:inline-block;background:#E8542A;color:#fff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;font-size:14px;">
+      Ir a Mi Cuenta
     </a>
-    <hr style="border:none;border-top:1px solid #E8E4DF;margin:32px 0 16px 0;">
+
+    <hr style="border:none;border-top:1px solid #E8E4DF;margin:32px 0 16px;">
     <p style="margin:0;font-size:12px;color:#8A8278;">
-      Este correo fue enviado automáticamente por CotizaEventos.cl
+      Este correo confirma la recepción de tu solicitud. Las credenciales se envían después de la aprobación.
     </p>
   </div>
 </body>
@@ -136,79 +151,97 @@ export async function onRequestPost(context) {
   if (!email || !email.trim()) {
     return errorResponse("El email es obligatorio", 400);
   }
-// ── Validate Google reCAPTCHA ──────────────────────────────────────
-// ── Validate reCAPTCHA using existing CAPTCHA endpoint ─────────────
 
-const recaptchaToken =
-  typeof body.recaptcha_token === "string"
-    ? body.recaptcha_token
-    : "";
+  // ── Validate required profile content ──────────────────────────────
+  const categorias = Array.isArray(body.categorias)
+    ? body.categorias.filter(Boolean)
+    : [];
 
-if (!recaptchaToken) {
-  return errorResponse(
-    "Completa la verificación de seguridad",
-    400
-  );
-}
+  const logoUrl =
+    typeof body.logo_url === "string"
+      ? body.logo_url.trim()
+      : "";
 
-try {
+  const coverUrl =
+    typeof body.cover_url === "string"
+      ? body.cover_url.trim()
+      : "";
 
-  const captchaUrl = new URL(
-    "/api/whatsapp",
-    request.url
-  );
+  const galleryRaw =
+    typeof body.comentarios === "string"
+      ? body.comentarios.trim()
+      : "";
 
-  const captchaResponse = await fetch(
-    captchaUrl.toString(),
-    {
+  const galleryImages = galleryRaw
+    .split(",")
+    .map((url) => url.trim())
+    .filter(Boolean);
+
+  if (!categorias.length) {
+    return errorResponse("Debes seleccionar una categoría", 400);
+  }
+
+  if (!logoUrl) {
+    return errorResponse("Debes subir el logo de tu negocio", 400);
+  }
+
+  if (!coverUrl) {
+    return errorResponse("Debes subir una foto de portada", 400);
+  }
+
+  if (!galleryImages.length) {
+    return errorResponse("Debes subir al menos una imagen a la galería", 400);
+  }
+// ── Validate Google reCAPTCHA via dedicated Worker ──────────────────
+  const recaptchaToken =
+    typeof body.recaptcha_token === "string"
+      ? body.recaptcha_token.trim()
+      : "";
+
+  if (!recaptchaToken) {
+    return errorResponse("Completa la verificación de seguridad", 400);
+  }
+
+  try {
+    const captchaWorkerUrl =
+      env.CAPTCHA_WORKER_URL ||
+      "https://cotizaeventos-captcha.contactocotizaeventos.workers.dev";
+
+    const captchaResponse = await fetch(captchaWorkerUrl, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-
       body: JSON.stringify({
+        purpose: "form",
         token: recaptchaToken,
+      }),
+    });
 
-        // reutilizamos el WhatsApp del formulario
-        phone: whatsapp.replace(/\D/g, ""),
-
-        // no necesitamos mensaje
-        text: ""
-      })
+    let captchaResult;
+    try {
+      captchaResult = await captchaResponse.json();
+    } catch {
+      return errorResponse("El servicio CAPTCHA devolvió una respuesta inválida", 502);
     }
-  );
 
-  const captchaResult =
-    await captchaResponse.json();
+    if (!captchaResponse.ok || !captchaResult.ok || !captchaResult.verified) {
+      console.warn("CAPTCHA rechazado:", captchaResult);
 
-if (!captchaResponse.ok || !captchaResult.ok) {
+      const detail =
+        Array.isArray(captchaResult.captcha_errors) && captchaResult.captcha_errors.length
+          ? `: ${captchaResult.captcha_errors.join(", ")}`
+          : "";
 
-  console.log("Respuesta CAPTCHA:", captchaResult);
-
-  return errorResponse(
-    "CAPTCHA rechazado: " +
-    (
-      captchaResult.captcha_errors &&
-      captchaResult.captcha_errors.length
-        ? captchaResult.captcha_errors.join(", ")
-        : captchaResult.error || "motivo desconocido"
-    ),
-    403
-  );
-}
-} catch (err) {
-
-  console.error(
-    "Error llamando al verificador CAPTCHA:",
-    err
-  );
-
-  return errorResponse(
-    "Error verificando la seguridad del formulario",
-    500
-  );
-}
-
+      return errorResponse(
+        (captchaResult.error || "No se pudo verificar reCAPTCHA") + detail,
+        403,
+      );
+    }
+  } catch (err) {
+    console.error("Error llamando al Worker CAPTCHA:", err);
+    return errorResponse("Error verificando la seguridad del formulario", 502);
+  }
 
   const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_KEY);
 
@@ -223,7 +256,7 @@ if (!captchaResponse.ok || !captchaResult.ok) {
       tagline: (body.tagline || "").trim(),
       experiencia: (body.experiencia || "").trim(),
       capacidad: (body.capacidad || "").trim(),
-      categorias: body.categorias || [],
+      categorias,
       comunas: (body.comunas || "").trim(),
       precio_minimo: (body.precio_minimo || "").trim(),
       precio_maximo: (body.precio_maximo || "").trim(),
@@ -241,10 +274,10 @@ if (!captchaResponse.ok || !captchaResult.ok) {
       youtube: (body.youtube || "").trim(),
       direccion: (body.direccion || "").trim(),
       posicion_deseada: "1",
-      logo_url: (body.logo_url || "").trim(),
-      cover_url: (body.cover_url || "").trim(),
+      logo_url: logoUrl,
+      cover_url: coverUrl,
       logo_emoji: (body.logo_emoji || "").trim(),
-      comentarios: (body.comentarios || "").trim(),
+      comentarios: galleryRaw,
       estado: "pendiente",
       fecha_registro: new Date().toISOString(),
     };
@@ -264,7 +297,7 @@ if (!captchaResponse.ok || !captchaResult.ok) {
     // ── Send Email 1 ──────────────────────────────────────────────────
     if (env.RESEND_API_KEY && env.EMAIL_FROM) {
       const emailHtml = buildConfirmationEmail(solicitud.nombre);
-      await sendEmail(solicitud.email, "Tu solicitud en CotizaEventos.cl fue recibida", emailHtml, env);
+      await sendEmail(solicitud.email, "Recibimos tu registro en CotizaEventos.cl", emailHtml, env);
     }
 
     return jsonResponse({ ok: true, id: data.id });

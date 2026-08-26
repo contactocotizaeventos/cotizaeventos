@@ -14,7 +14,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <script src="/recaptcha.js" defer></script>
 <title>Registrar negocio de eventos en Santiago — Formulario | CotizaEventos.cl</title>
-<meta name="description" content="Registra tu negocio de catering, DJ, fotografía, decoración o cualquier servicio de eventos en Santiago. Formulario rápido, aprobación en 48 horas. Plan gratuito disponible.">
+<meta name="description" content="Registra tu negocio de catering, DJ, fotografía, decoración o cualquier servicio de eventos en Santiago. Formulario rápido para crear tu perfil de proveedor. La cuenta queda sujeta a revisión antes de activarse.">
 <meta name="keywords" content="registrar negocio eventos santiago, publicar servicio eventos, inscribir proveedor eventos chile">
 <meta name="robots" content="index, follow">
 <meta name="geo.region" content="CL-RM">
@@ -107,9 +107,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .toolbar-left{font-family:var(--font-title);font-weight:600;font-size:16px;color:var(--ink)}
 .toolbar-right{display:flex;gap:8px}
 .toolbar .btn{padding:9px 18px;font-size:13px}
-.preview-toggle{display:inline-flex;border:1px solid var(--border2);border-radius:100px;overflow:hidden}
-.preview-toggle button{padding:8px 16px;font-size:12px;font-weight:600;color:var(--ink2);background:var(--white);border:none;cursor:pointer;transition:all .2s}
-.preview-toggle button.active{background:var(--coral);color:#fff}
+.preview-badge{display:inline-flex;align-items:center;padding:8px 14px;border-radius:100px;background:var(--coral-lt);color:var(--coral);font-size:12px;font-weight:700;border:1px solid var(--coral-md)}
 
 /* Template page mock */
 .tpl{background:var(--white);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
@@ -190,27 +188,9 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .com-chip{display:inline-flex;align-items:center;gap:3px;padding:4px 10px;background:var(--coral-lt);border:1px solid var(--coral-md);border-radius:100px;font-size:12px;color:var(--coral)}
 .com-chip button{background:none;border:none;color:var(--coral);font-size:14px;cursor:pointer;padding:0}
 
-/* Plan selection in builder */
-.plan-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:24px 0}
-@media(max-width:480px){.plan-row{grid-template-columns:1fr}}
-.plan-opt{border:2px solid var(--border);border-radius:var(--r);padding:20px;cursor:pointer;transition:all .2s;text-align:center;position:relative}
-.plan-opt:hover{border-color:var(--coral-md)}
-.plan-opt.selected{border-color:var(--coral);background:linear-gradient(160deg,#FFF9F7,#fff)}
-.plan-opt h4{font-family:var(--font-title);font-size:18px;font-weight:600;margin-bottom:4px}
-.plan-opt p{font-size:13px;color:var(--ink2);line-height:1.5}
-.plan-opt .plan-tag{display:inline-block;margin-top:8px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px}
-.plan-opt input{display:none}
-
-/* Promo banner */
-.promo-banner{display:none;background:linear-gradient(135deg,var(--coral),var(--coral2));color:#fff;border-radius:var(--r);padding:16px 20px;margin-bottom:20px;text-align:center;font-size:14px;font-weight:500}
-
-/* Preview overlay for Básico */
-.tpl.preview-basico .tpl-banner{height:0;overflow:hidden}
-.tpl.preview-basico .tpl-logo-wrap{margin-top:20px}
-.tpl.preview-basico .tpl-gallery{display:none}
-.tpl.preview-basico .basico-notice{display:block}
-.basico-notice{display:none;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center;font-size:14px;color:var(--ink2);margin:16px 0}
-.basico-notice strong{color:var(--coral)}
+/* Required media */
+.required-note{font-size:12px;color:var(--muted);margin-top:6px}
+.media-required-error{outline:3px solid rgba(220,38,38,.18);border-color:#dc2626!important}
 
 /* Submit area */
 .submit-area{text-align:center;padding:32px 0;border-top:1px solid var(--border);margin-top:32px}
@@ -219,12 +199,30 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .form-captcha-error{min-height:18px;color:#dc2626;font-size:13px;text-align:center}
 
 /* Success */
-.success-panel{display:none;max-width:600px;margin:60px auto;padding:0 20px;text-align:center;animation:fadeUp .5s var(--ease)}
+.success-panel{display:none;max-width:860px;margin:48px auto;padding:0 20px 70px;text-align:center;animation:fadeUp .5s var(--ease)}
 .success-panel.show{display:block}
-.success-ico{font-size:56px;margin-bottom:16px}
-.success-panel h2{font-family:var(--font-title);font-size:28px;font-weight:700;margin-bottom:10px}
-.success-panel .msg{font-size:15px;color:var(--ink2);line-height:1.7;margin-bottom:24px}
-.success-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.success-ico{font-size:56px;margin-bottom:12px}
+.success-panel h2{font-family:var(--font-title);font-size:30px;font-weight:700;margin-bottom:10px}
+.success-panel .msg{font-size:15px;color:var(--ink2);line-height:1.75;margin:0 auto 20px;max-width:650px}
+.success-steps{max-width:650px;margin:22px auto;padding:18px 20px;background:var(--coral-lt);border:1px solid var(--coral-md);border-radius:14px;text-align:left}
+.success-steps strong{color:var(--coral)}
+.success-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:34px}
+.final-preview-title{font-family:var(--font-title);font-size:24px;font-weight:700;margin:34px 0 14px}
+.profile-preview{overflow:hidden;text-align:left;background:#fff;border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow-md)}
+.profile-preview-cover{height:220px;background:var(--bg2);position:relative;overflow:hidden}
+.profile-preview-cover>img{width:100%;height:100%;object-fit:cover}
+.profile-preview-logo{position:absolute;left:28px;bottom:-38px;width:84px;height:84px;border-radius:18px;background:#fff;border:4px solid #fff;box-shadow:var(--shadow);overflow:hidden}
+.profile-preview-logo img{width:100%;height:100%;object-fit:cover}
+.profile-preview-body{padding:52px 28px 28px}
+.profile-preview-name{font-family:var(--font-title);font-size:28px;font-weight:700;line-height:1.15}
+.profile-preview-tagline{font-size:15px;color:var(--ink2);margin-top:5px}
+.profile-preview-cat{display:inline-block;margin-top:12px;padding:5px 11px;border-radius:100px;background:var(--coral-lt);color:var(--coral);font-size:12px;font-weight:700}
+.profile-preview-desc{margin-top:20px;color:var(--ink2);font-size:14px;line-height:1.7}
+.profile-preview-prices{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.profile-preview-price{padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:10px;font-size:13px}
+.profile-preview-gallery{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-top:20px}
+.profile-preview-gallery img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:9px}
+@media(max-width:600px){.profile-preview-gallery{grid-template-columns:repeat(3,1fr)}.profile-preview-cover{height:180px}}
 
 /* Footer */
 .footer{background:var(--bg2);border-top:1px solid var(--border);padding:48px 0 32px}
@@ -310,22 +308,14 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 
 <!-- ══ PHASE 2: TEMPLATE BUILDER ════════════════════════════════════ -->
 <div class="builder" id="builderPhase">
-
-  <!-- Sticky toolbar fff-->
+  <!-- Barra de edición -->
   <div class="toolbar">
     <div class="toolbar-left">Editando: <span id="toolbarName">Mi negocio</span></div>
     <div class="toolbar-right">
-      <div class="preview-toggle">
-        <button class="active" onclick="setPreview('dest')">Destacado</button>
-        
-      </div>
+      <span class="preview-badge">✦ Vista previa del perfil</span>
       <button class="btn btn-teal" style="padding:9px 18px;font-size:13px" onclick="scrollToSubmit()">Enviar solicitud</button>
     </div>
   </div>
-
-  <!-- Promo banner -->
-  <div class="promo-banner" id="promoBanner">Promocion de lanzamiento: todos los nuevos negocios obtienen beneficios Destacado gratis por tiempo limitado</div>
-
   <!-- Template page -->
   <div class="tpl" id="tplPage">
 
@@ -333,7 +323,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
     <div class="tpl-banner" id="bannerArea" onclick="document.getElementById('bannerFile').click()">
       <div class="placeholder" id="bannerPlaceholder">
         <span>+</span>
-        <p>Sube tu foto de portada (1200x400px recomendado)</p>
+        <p><strong>Foto de portada *</strong><br>1200x400px recomendado</p>
       </div>
       <img id="bannerImg" style="display:none" alt="">
       <input type="file" id="bannerFile" accept="image/jpeg,image/png,image/webp" onchange="uploadImg('banner',this)">
@@ -342,8 +332,8 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 
     <!-- Logo upload -->
     <div class="tpl-logo-wrap">
-      <div class="tpl-logo" onclick="document.getElementById('logoFile').click()">
-        <div class="placeholder" id="logoPlaceholder">Subir logo</div>
+      <div class="tpl-logo" id="logoVisual" onclick="document.getElementById('logoFile').click()">
+        <div class="placeholder" id="logoPlaceholder"><strong>Subir logo *</strong></div>
         <img id="logoImg" style="display:none" alt="">
         <input type="file" id="logoFile" accept="image/jpeg,image/png,image/webp" onchange="uploadImg('logo',this)">
       </div>
@@ -405,8 +395,9 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 
       <!-- Gallery -->
       <div class="tpl-section">
-        <div class="tpl-section-label">Galería de fotos (hasta 5)</div>
+        <div class="tpl-section-label">Galería de fotos * (mínimo 1, hasta 5)</div>
         <div class="tpl-gallery" id="gallery"></div>
+        <div class="required-note">Debes subir al menos una imagen de tu trabajo para poder enviar el perfil.</div>
       </div>
 
       <!-- Includes / Not includes -->
@@ -470,7 +461,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 
       <!-- Submit area -->
       <div class="submit-area" id="submitArea">
-        <p>Al enviar, revisaremos tu solicitud en máximo 48 horas hábiles.</p>
+        <p>Para enviar debes completar el CAPTCHA y haber subido foto de portada, logo y al menos 1 imagen en la galería.</p>
         <div class="form-captcha-wrap">
           <div id="formRecaptcha" aria-label="Verificación reCAPTCHA"></div>
           <div class="form-captcha-error" id="formCaptchaError" role="alert"></div>
@@ -507,7 +498,6 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 let selectedCat=null;
 let comunas=[];
 let etiquetas=[];
-let isPromo=false;
 let bannerUrl='';
 let logoUrl='';
 let galleryUrls=[];
@@ -566,12 +556,7 @@ async function loadCategories(){
     });
 
     renderCats();
-
-    isPromo=data.promo===true;
-    var promo=document.getElementById('promoBanner');
-    if(promo)promo.style.display=isPromo?'block':'none';
-
-  }catch(e){
+}catch(e){
     console.error('Error cargando categorías:',e);
     contenedor.innerHTML='<span class="tpl-cats-loading">Error al cargar categorías: '+esc(e.message)+'</span>';
   }
@@ -592,14 +577,6 @@ function pickCat(el,id){
 }
 
 
-
-/* ══ PREVIEW TOGGLE ═════════════════════════════════════════════════ */
-function setPreview(mode){
-  var btn=document.querySelector('.preview-toggle button');
-  if(btn)btn.classList.add('active');
-  var tpl=document.getElementById('tplPage');
-  if(tpl)tpl.classList.remove('preview-basico');
-}
 
 /* ══ FORM RECAPTCHA ═════════════════════════════════════════════════ */
 async function waitForCotizaCaptcha(){
@@ -676,8 +653,15 @@ async function uploadImg(type,input){
     var res=await fetch('/api/upload-image',{method:'POST',body:fd});
     var data=await res.json();
     if(!data.ok)throw new Error(data.error||'Error');
-    if(type==='banner')bannerUrl=data.url;
-    else if(type==='logo')logoUrl=data.url;
+    if(type==='banner'){
+      bannerUrl=data.url;
+      var bannerBox=document.getElementById('bannerArea');
+      if(bannerBox)bannerBox.classList.remove('media-required-error');
+    }else if(type==='logo'){
+      logoUrl=data.url;
+      var logoBox=document.getElementById('logoVisual');
+      if(logoBox)logoBox.classList.remove('media-required-error');
+    }
   }catch(e){alert('Error subiendo imagen: '+e.message)}
 }
 
@@ -708,6 +692,8 @@ async function uploadGalImg(idx,input){
     var data=await res.json();
     if(!data.ok)throw new Error(data.error||'Error');
     galleryUrls[idx]=data.url;
+    var galleryBox=document.getElementById('gallery');
+    if(galleryBox)galleryBox.classList.remove('media-required-error');
     renderGallery();
   }catch(e){
     alert('Error: '+e.message);
@@ -742,21 +728,107 @@ document.addEventListener('DOMContentLoaded',function(){
 
 function scrollToSubmit(){document.getElementById('submitArea').scrollIntoView({behavior:'smooth'})}
 
+
+function clearMediaErrors(){
+  ['bannerArea','logoVisual','gallery'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el)el.classList.remove('media-required-error');
+  });
+}
+
+function requireMedia(){
+  clearMediaErrors();
+
+  if(!bannerUrl){
+    var banner=document.getElementById('bannerArea');
+    if(banner){
+      banner.classList.add('media-required-error');
+      banner.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+    alert('Debes subir una foto de portada antes de enviar.');
+    return false;
+  }
+
+  if(!logoUrl){
+    var logo=document.getElementById('logoVisual');
+    if(logo){
+      logo.classList.add('media-required-error');
+      logo.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+    alert('Debes subir el logo de tu negocio antes de enviar.');
+    return false;
+  }
+
+  var imgs=galleryUrls.filter(function(u){return u});
+  if(!imgs.length){
+    var gal=document.getElementById('gallery');
+    if(gal){
+      gal.classList.add('media-required-error');
+      gal.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+    alert('Debes subir al menos una imagen a la galería antes de enviar.');
+    return false;
+  }
+
+  return true;
+}
+
+function selectedCategoryName(){
+  var found=etiquetas.find(function(et){return String(et.id)===String(selectedCat)});
+  return found&&found.nombre?found.nombre:'';
+}
+
+function buildFinalPreview(imgs){
+  var prices='';
+  if(g('f_precio_minimo')){
+    prices+='<div class="profile-preview-price">Desde <strong>$'+esc(g('f_precio_minimo'))+'</strong></div>';
+  }
+  if(g('f_precio_maximo')){
+    prices+='<div class="profile-preview-price">Hasta <strong>$'+esc(g('f_precio_maximo'))+'</strong></div>';
+  }
+
+  var galleryHtml=imgs.map(function(url){
+    return '<img src="'+esc(url)+'" alt="Trabajo de '+esc(g('f_nombre'))+'">';
+  }).join('');
+
+  return ''+
+    '<div class="profile-preview">'+
+      '<div class="profile-preview-cover">'+
+        '<img src="'+esc(bannerUrl)+'" alt="Portada de '+esc(g('f_nombre'))+'">'+
+        '<div class="profile-preview-logo"><img src="'+esc(logoUrl)+'" alt="Logo de '+esc(g('f_nombre'))+'"></div>'+
+      '</div>'+
+      '<div class="profile-preview-body">'+
+        '<div class="profile-preview-name">'+esc(g('f_nombre'))+'</div>'+
+        (g('f_tagline')?'<div class="profile-preview-tagline">'+esc(g('f_tagline'))+'</div>':'')+
+        (selectedCategoryName()?'<div class="profile-preview-cat">'+esc(selectedCategoryName())+'</div>':'')+
+        (g('f_descripcion')?'<div class="profile-preview-desc">'+esc(g('f_descripcion'))+'</div>':'')+
+        (prices?'<div class="profile-preview-prices">'+prices+'</div>':'')+
+        '<div class="profile-preview-gallery">'+galleryHtml+'</div>'+
+      '</div>'+
+    '</div>';
+}
+
 /* ══ SUBMIT ═════════════════════════════════════════════════════════ */
 async function submitForm(){
-  if(!selectedCat){alert('Selecciona una categoría');return}
+  if(!selectedCat){
+    alert('Selecciona una categoría');
+    return;
+  }
+
+  if(!requireMedia())return;
 
   if(!formRecaptchaToken){
     var captchaError=document.getElementById('formCaptchaError');
-    if(captchaError)captchaError.textContent='Completa la verificación \"No soy un robot\" antes de enviar.';
+    if(captchaError)captchaError.textContent='Completa la verificación "No soy un robot" antes de enviar.';
     var captchaBox=document.getElementById('formRecaptcha');
     if(captchaBox)captchaBox.scrollIntoView({behavior:'smooth',block:'center'});
     return;
   }
 
   var btn=document.getElementById('submitBtn');
-  btn.disabled=true;btn.textContent='Enviando...';
-  var posVal='1';
+  btn.disabled=true;
+  btn.textContent='Enviando...';
+
   var imgs=galleryUrls.filter(function(u){return u});
 
   var payload={
@@ -772,34 +844,52 @@ async function submitForm(){
     telefono:g('f_telefono'),email:g('f_email'),
     web:g('f_web'),instagram:g('f_instagram'),facebook:g('f_facebook'),
     tiktok:g('f_tiktok'),youtube:g('f_youtube'),direccion:g('f_direccion'),
-    posicion_deseada:posVal,
+    posicion_deseada:'1',
     logo_url:logoUrl,cover_url:bannerUrl,logo_emoji:'',
     comentarios:imgs.join(','),
     recaptcha_token:formRecaptchaToken,
   };
 
   try{
-    var res=await fetch('/api/submit-form',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    var res=await fetch('/api/submit-form',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(payload)
+    });
+
     var data=await res.json();
     if(!data.ok)throw new Error(data.error||'Error');
 
     document.getElementById('builderPhase').style.display='none';
+
     var nombre=esc(g('f_nombre'));
+    var email=esc(g('f_email'));
     var sEl=document.getElementById('successContent');
 
-    if(posVal==='1'&&isPromo){
-      sEl.innerHTML='<div class="success-ico">🎉</div><h2>¡Solicitud enviada!</h2><p class="msg">Recibimos tu solicitud para <strong>'+nombre+'</strong>. En máximo <strong>48 horas hábiles</strong> revisaremos tu información.</p><div style="background:linear-gradient(135deg,#E1F5EE,#fff);border:2px solid var(--teal);border-radius:var(--r);padding:28px;margin:24px auto;max-width:480px;text-align:center"><div style="font-size:28px;margin-bottom:8px">🎁</div><h3 style="font-family:var(--font-title);font-size:20px;margin-bottom:8px;color:var(--teal)">Promocion de lanzamiento aplicada</h3><p style="font-size:15px;color:var(--ink2);line-height:1.7">Tu negocio será aprobado con todos los beneficios del plan <strong>Destacado</strong> de forma <strong>gratuita por tiempo limitado</strong>.</p></div><div class="success-btns"><a href="proveedores.html" class="btn btn-coral">Ver directorio</a><a href="suscripciones.html" class="btn btn-outline">Gestionar cuenta</a></div>';
-    }else if(posVal==='1'){
-      var wm=encodeURIComponent('Hola, acabo de registrar mi negocio "'+g('f_nombre')+'" en CotizaEventos.cl y quiero activar el plan Destacado.');
-      sEl.innerHTML='<div class="success-ico">🎉</div><h2>¡Solicitud enviada!</h2><p class="msg">Recibimos tu solicitud para <strong>'+nombre+'</strong>. En máximo <strong>48 horas hábiles</strong> revisaremos tu información.</p><div style="background:linear-gradient(160deg,#FFF9F7,#fff);border:2px solid var(--coral);border-radius:var(--r);padding:28px;margin:24px auto;max-width:500px;text-align:left"><h3 style="font-family:var(--font-title);font-size:20px;margin-bottom:8px;color:var(--coral)">Elegiste el plan Destacado</h3><p style="font-size:14px;color:var(--ink2);line-height:1.7;margin-bottom:16px">Para activar tu perfil Destacado, debes activar tu suscripción:</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px"><div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:14px;text-align:center"><div style="font-size:12px;color:var(--muted)">Mensual</div><div style="font-size:22px;font-weight:700;color:var(--coral)">$15.000</div></div><div style="background:var(--coral-lt);border:2px solid var(--coral);border-radius:var(--r);padding:14px;text-align:center"><div style="font-size:12px;color:var(--muted)">Anual</div><div style="font-size:22px;font-weight:700;color:var(--coral)">$95.000</div></div></div><div style="display:flex;gap:10px;flex-wrap:wrap"><a href="https://wa.me/56991999301?text='+wm+'" target="_blank" rel="noopener" class="btn btn-coral" style="font-size:14px">Activar por WhatsApp</a><a href="suscripciones.html" class="btn btn-outline" style="font-size:14px">Gestionar plan</a></div></div>';
-    }else{
-      sEl.innerHTML='<div class="success-ico">🎉</div><h2>¡Solicitud enviada!</h2><p class="msg">Recibimos tu solicitud para <strong>'+nombre+'</strong>. En máximo <strong>48 horas hábiles</strong> revisaremos tu información. Te notificaremos por email.</p><div class="success-btns"><a href="suscripciones.html" class="btn btn-coral">Gestionar mi cuenta</a><a href="proveedores.html" class="btn btn-outline">Ver directorio</a></div>';
-    }
+    sEl.innerHTML=
+      '<div class="success-ico">✉️</div>'+
+      '<h2>¡Registro recibido!</h2>'+
+      '<p class="msg">Tu perfil de <strong>'+nombre+'</strong> fue enviado correctamente.</p>'+
+      '<div class="success-steps">'+
+        '<strong>Revisa tu correo ('+email+').</strong><br>'+
+        'Te enviaremos una confirmación de que recibimos tu solicitud. Nuestro objetivo es revisar las cuentas válidas en los próximos minutos. '+
+        'Cuando tu cuenta sea aprobada, recibirás un segundo correo con tus credenciales de acceso. '+
+        'Con esas credenciales podrás iniciar sesión en <strong>Mi Cuenta</strong>.'+
+      '</div>'+
+      '<div class="success-btns">'+
+        '<a href="suscripciones.html" class="btn btn-coral">Ir a Mi Cuenta</a>'+
+        '<a href="proveedores.html" class="btn btn-outline">Ver directorio</a>'+
+      '</div>'+
+      '<div class="final-preview-title">Vista previa del perfil que enviaste</div>'+
+      buildFinalPreview(imgs);
+
     document.getElementById('successPanel').classList.add('show');
     window.scrollTo({top:0,behavior:'smooth'});
+
   }catch(e){
     alert('Error: '+e.message);
-    btn.disabled=false;btn.textContent='Enviar solicitud';
+    btn.disabled=false;
+    btn.textContent='Enviar solicitud';
     resetFormRecaptcha();
   }
 }

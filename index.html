@@ -12,7 +12,6 @@
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<script src="/recaptcha.js" defer></script>
 <title>Proveedores de Eventos en Santiago — Catering, DJ, Fotógrafos | CotizaEventos.cl</title>
 <meta name="description" content="Directorio de proveedores de eventos en Santiago. Encuentra catering, DJ, fotógrafos, decoración y más para tu evento. Compara precios y contacta directo por WhatsApp, sin comisiones.">
 <meta name="keywords" content="proveedores de eventos, proveedores eventos santiago, catering eventos santiago, DJ para eventos, fotógrafo eventos santiago, directorio eventos chile, contratar proveedores eventos">
@@ -29,6 +28,12 @@
 <link rel="canonical" href="https://www.cotizaeventos.cl/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+  rel="preload"
+  as="image"
+  href="/img/IMG_9996.jpg"
+  fetchpriority="high"
+>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9257154700327932" crossorigin="anonymous"></script>
   <link rel="icon" type="image/png" href="/favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -86,13 +91,13 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes slideDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
-@keyframes shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
+/*@keyframes shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
 .anim-up{animation:fadeUp .7s var(--ease) both}
 .anim-up-d1{animation-delay:.1s}
 .anim-up-d2{animation-delay:.2s}
 .anim-up-d3{animation-delay:.3s}
 .anim-up-d4{animation-delay:.4s}
-
+*/
 /* ── Nav ────────────────────────────────────────────────────────── */
 .nav{
   position: sticky;
@@ -142,7 +147,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
   padding:100px 0 80px;
   position:relative;
   overflow:hidden;
-  background: url("img/IMG_9996.jpg") center/cover no-repeat;
+  background: url("img/IMG_9996.webp") center/cover no-repeat;
 }
 .hero::before{content:'';position:absolute;top:-50%;right:-20%;width:600px;height:600px;background:radial-gradient(circle,rgba(232,84,42,.15) 0%,transparent 70%);pointer-events:none}
 .hero-inner{max-width:1140px;margin:0 auto;padding:0 20px;position:relative;z-index:1}
@@ -916,7 +921,7 @@ loadData();
 
 
 
-
+<script src="/recaptcha.js" defer></script>
 
   <script src="/ads.js" defer></script>
 </body>
