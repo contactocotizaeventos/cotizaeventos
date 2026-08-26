@@ -1,14 +1,27 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18090764969"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'AW-18090764969');
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Publica tu negocio — CotizaEventos.cl</title>
-<meta name="description" content="Registra tu negocio de eventos en CotizaEventos.cl. Crea tu página de proveedor y consigue clientes.">
+<title>Registrar negocio de eventos en Santiago — Formulario | CotizaEventos.cl</title>
+<meta name="description" content="Registra tu negocio de catering, DJ, fotografía, decoración o cualquier servicio de eventos en Santiago. Formulario rápido, aprobación en 48 horas. Plan gratuito disponible.">
+<meta name="keywords" content="registrar negocio eventos santiago, publicar servicio eventos, inscribir proveedor eventos chile">
 <meta name="robots" content="index, follow">
-<meta name="author" content="CotizaEventos.cl">
+<meta name="geo.region" content="CL-RM">
+<meta name="geo.placename" content="Santiago">
 <meta property="og:site_name" content="CotizaEventos.cl">
 <meta property="og:locale" content="es_CL">
+<meta property="og:title" content="Registrar negocio de eventos — CotizaEventos.cl">
+<meta property="og:description" content="Publica tu negocio de eventos en el directorio de Santiago. Plan gratuito disponible.">
 <link rel="canonical" href="https://www.cotizaeventos.cl/form.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -49,7 +62,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .nav-cta{padding:8px 18px;background:var(--coral);color:#fff!important;border-radius:var(--r);font-weight:600;font-size:13px}
 .nav-burger{position:sticky;display:none;width:32px;height:32px;flex-direction:column;justify-content:center;gap:5px;cursor:pointer;top:0;z-index:999}
 .nav-burger span{display:block;height:2px;background:var(--ink);border-radius:2px;transition:all .3s var(--ease)}
-.nav-mobile{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:var(--white);z-index:200;flex-direction:column;padding:80px 32px 32px}
+.nav-mobile{position:fixed;display:none;top:0;left:0;right:0;bottom:0;background:var(--white);z-index:200;flex-direction:column;padding:80px 32px 32px}
 .nav-mobile.open{display:flex;animation:fadeIn .25s var(--ease)}
 .nav-mobile a{font-size:22px;font-weight:500;padding:16px 0;border-bottom:1px solid var(--border);color:var(--ink)}
 .nav-mobile a:hover{color:var(--coral)}
@@ -201,8 +214,6 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 /* Submit area */
 .submit-area{text-align:center;padding:32px 0;border-top:1px solid var(--border);margin-top:32px}
 .submit-area p{font-size:14px;color:var(--muted);margin-bottom:16px}
-.form-captcha-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;margin:20px 0 18px;min-height:82px}
-.form-captcha-error{font-size:12px;color:#e53e3e;margin-top:8px;min-height:18px}
 
 /* Success */
 .success-panel{display:none;max-width:600px;margin:60px auto;padding:0 20px;text-align:center;animation:fadeUp .5s var(--ease)}
@@ -238,7 +249,9 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
       <a href="form.html" class="nav-cta">✦ Publica tu negocio</a>
       <a href="suscripciones.html" class="nav-cta">Mi Cuenta</a>
     </div>
-    <div class="nav-burger" onclick="toggleMobile()" aria-label="Menú"><span></span><span></span><span></span></div>
+    <div class="nav-burger" onclick="toggleMobile()" aria-label="Menú">
+      <span></span><span></span><span></span>
+    </div>
   </div>
 </nav>
 <div class="nav-mobile" id="navMobile">
@@ -283,7 +296,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
       <label>WhatsApp <span class="req">*</span></label>
       <div style="display:flex;align-items:center;gap:0">
         <span style="padding:11px 12px;background:var(--bg2);border:1px solid var(--border);border-right:none;border-radius:10px 0 0 10px;font-size:14px;color:var(--ink2);white-space:nowrap">+56 9</span>
-        <input type="tel" id="f_whatsapp" placeholder="1234 5678" maxlength="9" style="border-radius:0 10px 10px 0" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+        <input type="tel" id="f_whatsapp" placeholder="1234 5678" maxlength="8" style="border-radius:0 10px 10px 0" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
       </div>
       <span class="hint">8 dígitos después del 9</span>
       <span class="error-msg">El WhatsApp es obligatorio</span>
@@ -301,13 +314,14 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
     <div class="toolbar-right">
       <div class="preview-toggle">
         <button class="active" onclick="setPreview('dest')">Destacado</button>
+        <button onclick="setPreview('bas')">Básico</button>
       </div>
       <button class="btn btn-teal" style="padding:9px 18px;font-size:13px" onclick="scrollToSubmit()">Enviar solicitud</button>
     </div>
   </div>
 
   <!-- Promo banner -->
-  <div class="promo-banner" id="promoBanner">¡Todos los perfiles son gratuitos! No olvides de agregar tus fotos y descripciones para aumentar tu visibilidad y más clientes te encuentren</div>
+  <div class="promo-banner" id="promoBanner">Promocion de lanzamiento: todos los nuevos negocios obtienen beneficios Destacado gratis por tiempo limitado</div>
 
   <!-- Template page -->
   <div class="tpl" id="tplPage">
@@ -449,14 +463,11 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
         </div>
       </div>
 
+      <div class="tpl-section"><div class="tpl-section-label">Publicación con visibilidad premium</div><p>Todos los negocios aprobados tendrán el mismo nivel de presentación y visibilidad.</p></div>
 
       <!-- Submit area -->
       <div class="submit-area" id="submitArea">
         <p>Al enviar, revisaremos tu solicitud en máximo 48 horas hábiles.</p>
-        <!--<div class="form-captcha-wrap">
-          <div id="formRecaptcha" aria-label="Verificación reCAPTCHA"></div>
-          <div class="form-captcha-error" id="formCaptchaError" role="alert"></div>
-        </div> -->
         <button class="btn btn-teal" id="submitBtn" onclick="submitForm()" style="padding:16px 40px;font-size:16px">Enviar solicitud</button>
       </div>
 
@@ -494,8 +505,6 @@ let bannerUrl='';
 let logoUrl='';
 let galleryUrls=[];
 const MAX_GALLERY=5;
-let formRecaptchaWidgetId;
-let formRecaptchaToken='';
 
 function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;')}
 function toggleMobile(){document.getElementById('navMobile').classList.toggle('open')}
@@ -515,7 +524,6 @@ function startBuilder(){
   document.getElementById('builderPhase').classList.add('show');
   document.getElementById('tpl_nombre').value=g('f_nombre');
   document.getElementById('toolbarName').textContent=g('f_nombre');
-  if(formRecaptchaWidgetId===undefined) initFormRecaptcha();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -529,10 +537,10 @@ async function loadCategories(){
     etiquetas=[];
     for(var g2 of grupos)for(var et of(g2.etiquetas||[]))etiquetas.push(et);
     renderCats();
-    if(data.promo===true){isPromo=true;applyPromo()}
+    if(data.promo===true){isPromo=true;applyPromo()}else{selectPlan('0')}
   }catch(e){
-    console.error('Error cargando categorías:',e);
     document.getElementById('tplCats').innerHTML='<span class="tpl-cats-loading">Error al cargar categorías</span>';
+    selectPlan('0');
   }
 }
 
@@ -551,152 +559,30 @@ function pickCat(el,id){
 }
 
 function applyPromo(){
-  var promo=document.getElementById('promoBanner');
-  if(promo)promo.style.display='block';
+  document.getElementById('promoBanner').style.display='block';
+  document.getElementById('destTag').textContent='Gratis por tiempo limitado';
+  document.getElementById('destTag').style.background='var(--teal)';
+  selectPlan('1');
+}
+
+/* ══ PLAN SELECTION ═════════════════════════════════════════════════ */
+function selectPlan(v){
+  document.querySelectorAll('.plan-opt').forEach(function(p){p.classList.remove('selected')});
+  if(v==='1'){
+    document.getElementById('planDestacado').classList.add('selected');
+    document.querySelector('#planDestacado input').checked=true;
+  }else{
+    document.getElementById('planBasico').classList.add('selected');
+    document.querySelector('#planBasico input').checked=true;
+  }
 }
 
 /* ══ PREVIEW TOGGLE ═════════════════════════════════════════════════ */
 function setPreview(mode){
   var btns=document.querySelectorAll('.preview-toggle button');
-  if(btns[0])btns[0].classList.toggle('active',mode==='dest');
-  var tpl=document.getElementById('tplPage');
-  if(tpl)tpl.classList.toggle('preview-basico',mode==='bas');
-}
-async function initFormRecaptcha(){
-  if(formRecaptchaWidgetId !== undefined) return;
-
-  var box = document.getElementById('formCaptchaError');
-
-  try{
-
-    // 1. Obtener Site Key desde tu backend
-    var configRes = await fetch('/api/recaptcha-config');
-    var config = await configRes.json();
-
-    if(!configRes.ok || !config.ok || !config.siteKey){
-      throw new Error(
-        config.error || 'reCAPTCHA no configurado'
-      );
-    }
-
-
-    // 2. Cargar Google reCAPTCHA si todavía no está cargado
-    if(
-      !window.grecaptcha ||
-      typeof window.grecaptcha.render !== 'function'
-    ){
-
-      var existing = document.querySelector(
-        'script[src^="https://www.google.com/recaptcha/api.js"]'
-      );
-
-      if(!existing){
-
-        var script = document.createElement('script');
-
-        script.src =
-          'https://www.google.com/recaptcha/api.js?render=explicit';
-
-        script.async = true;
-        script.defer = true;
-
-        document.head.appendChild(script);
-      }
-
-
-      // 3. ESPERAR realmente a que grecaptcha.render exista
-      await new Promise(function(resolve,reject){
-
-        var attempts = 0;
-
-        var wait = setInterval(function(){
-
-          attempts++;
-
-          if(
-            window.grecaptcha &&
-            typeof window.grecaptcha.render === 'function'
-          ){
-            clearInterval(wait);
-            resolve();
-            return;
-          }
-
-          // 200 intentos × 50ms = 10 segundos
-          if(attempts >= 200){
-            clearInterval(wait);
-
-            reject(
-              new Error(
-                'Google reCAPTCHA tardó demasiado en cargar'
-              )
-            );
-          }
-
-        },50);
-
-      });
-
-    }
-
-
-    // 4. Renderizar CAPTCHA
-    formRecaptchaWidgetId = window.grecaptcha.render(
-      'formRecaptcha',
-      {
-        sitekey: config.siteKey,
-
-        callback: function(token){
-
-          formRecaptchaToken = token;
-
-          if(box){
-            box.textContent = '';
-          }
-        },
-
-        'expired-callback': function(){
-
-          formRecaptchaToken = '';
-
-          if(box){
-            box.textContent =
-              'La verificación expiró. Complétala nuevamente.';
-          }
-        },
-
-        'error-callback': function(){
-
-          formRecaptchaToken = '';
-
-          if(box){
-            box.textContent =
-              'No se pudo cargar la verificación. Intenta nuevamente.';
-          }
-        }
-      }
-    );
-
-  }catch(e){
-
-    console.error(
-      'Error reCAPTCHA:',
-      e
-    );
-
-    if(box){
-      box.textContent =
-        e.message ||
-        'No se pudo cargar la verificación.';
-    }
-
-  }
-}
-function resetFormRecaptcha(){
-  formRecaptchaToken='';
-  if(window.grecaptcha&&formRecaptchaWidgetId!==undefined){
-    grecaptcha.reset(formRecaptchaWidgetId);
-  }
+  btns[0].classList.toggle('active',mode==='dest');
+  btns[1].classList.toggle('active',mode==='bas');
+  document.getElementById('tplPage').classList.toggle('preview-basico',mode==='bas');
 }
 
 /* ══ IMAGE UPLOADS ══════════════════════════════════════════════════ */
@@ -799,16 +685,8 @@ function scrollToSubmit(){document.getElementById('submitArea').scrollIntoView({
 async function submitForm(){
   if(!selectedCat){alert('Selecciona una categoría');return}
 
-  /*if(!formRecaptchaToken){
-    var captchaError=document.getElementById('formCaptchaError');
-    if(captchaError)captchaError.textContent='Completa la verificación "No soy un robot" antes de enviar.';
-    document.getElementById('formRecaptcha').scrollIntoView({behavior:'smooth',block:'center'});
-    return;
-  } */
-
   var btn=document.getElementById('submitBtn');
   btn.disabled=true;btn.textContent='Enviando...';
-  // El formulario actual publica el perfil como Destacado.
   var posVal='1';
   var imgs=galleryUrls.filter(function(u){return u});
 
@@ -828,7 +706,6 @@ async function submitForm(){
     posicion_deseada:posVal,
     logo_url:logoUrl,cover_url:bannerUrl,logo_emoji:'',
     comentarios:imgs.join(','),
-    recaptcha_token:formRecaptchaToken,
   };
 
   try{
@@ -853,7 +730,6 @@ async function submitForm(){
   }catch(e){
     alert('Error: '+e.message);
     btn.disabled=false;btn.textContent='Enviar solicitud';
-    resetFormRecaptcha();
   }
 }
 
