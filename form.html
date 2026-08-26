@@ -529,18 +529,100 @@ function startBuilder(){
 
 /* ══ CATEGORIES ═════════════════════════════════════════════════════ */
 async function loadCategories(){
+  var contenedor = document.getElementById('tplCats');
+
   try{
-    var res=await fetch('/api/get-providers');
-    var data=await res.json();
-    if(!data.ok)throw new Error();
-    var grupos=data.grupos||[];
-    etiquetas=[];
-    for(var g2 of grupos)for(var et of(g2.etiquetas||[]))etiquetas.push(et);
+    contenedor.innerHTML =
+      '<span class="tpl-cats-loading">Cargando categorías...</span>';
+
+    var res = await fetch('/api/get-providers', {
+      cache: 'no-store'
+    });
+
+    if(!res.ok){
+      throw new Error(
+        'Error HTTP ' + res.status + ' al cargar /api/get-providers'
+      );
+    }
+
+    var data = await res.json();
+
+    console.log('Respuesta get-providers:', data);
+
+    if(!data.ok){
+      throw new Error(
+        data.error || 'La API respondió ok:false'
+      );
+    }
+
+    var grupos = Array.isArray(data.grupos)
+      ? data.grupos
+      : [];
+
+    etiquetas = [];
+
+    grupos.forEach(function(grupo){
+
+      var subcategorias = Array.isArray(grupo.etiquetas)
+        ? grupo.etiquetas
+        : [];
+
+      /*
+       * Misma lógica utilizada en proveedores.html:
+       *
+       * 0 o 1 subcategorías:
+       * usamos directamente el grupo.
+       *
+       * 2 o más:
+       * mostramos las subcategorías.
+       */
+      if(subcategorias.length <= 1){
+
+        if(grupo.id && grupo.nombre){
+          etiquetas.push({
+            id: grupo.id,
+            nombre: grupo.nombre
+          });
+        }
+
+      }else{
+
+        subcategorias.forEach(function(et){
+
+          if(et.id && et.nombre){
+            etiquetas.push({
+              id: et.id,
+              nombre: et.nombre
+            });
+          }
+
+        });
+
+      }
+
+    });
+
+    console.log('Categorías procesadas:', etiquetas);
+
     renderCats();
-    if(data.promo===true){isPromo=true;applyPromo()}else{selectPlan('0')}
+
+    if(data.promo === true){
+      isPromo = true;
+      applyPromo();
+    }
+
   }catch(e){
-    document.getElementById('tplCats').innerHTML='<span class="tpl-cats-loading">Error al cargar categorías</span>';
-    selectPlan('0');
+
+    console.error(
+      'Error cargando categorías:',
+      e
+    );
+
+    contenedor.innerHTML =
+      '<span class="tpl-cats-loading">' +
+      'Error al cargar categorías: ' +
+      esc(e.message) +
+      '</span>';
   }
 }
 
