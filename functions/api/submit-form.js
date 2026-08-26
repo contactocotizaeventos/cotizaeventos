@@ -35,73 +35,108 @@ function errorResponse(message, status = 500) {
 // ── Google reCAPTCHA verification ───────────────────────────────────
 
 async function verifyRecaptcha(token, request, env) {
-  if (!env.RECAPTCHA_SECRET_KEY) {
-    console.error("Missing RECAPTCHA_SECRET_KEY");
 
+  if (!env.RECAPTCHA_SECRET_KEY) {
     return {
       ok: false,
       serverError: true,
-      error: "reCAPTCHA no configurado en el servidor",
+      error: "RECAPTCHA_SECRET_KEY no disponible en este entorno"
     };
   }
 
   if (!token) {
     return {
       ok: false,
-      error: "Token reCAPTCHA no recibido",
+      error: "Token reCAPTCHA no recibido"
     };
   }
 
   try {
+
     const params = new URLSearchParams();
 
-    params.set("secret", env.RECAPTCHA_SECRET_KEY);
-    params.set("response", token);
+    params.append("secret", env.RECAPTCHA_SECRET_KEY);
+    params.append("response", token);
 
-    // IP real del visitante entregada por Cloudflare
     const ip = request.headers.get("CF-Connecting-IP");
 
     if (ip) {
-      params.set("remoteip", ip);
+      params.append("remoteip", ip);
     }
+
+    console.log("Enviando validación a Google reCAPTCHA");
 
     const response = await fetch(
       "https://www.google.com/recaptcha/api/siteverify",
       {
         method: "POST",
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
+          "Content-Type": "application/x-www-form-urlencoded"
         },
-        body: params.toString(),
+        body: params.toString()
       }
     );
 
-    const result = await response.json();
+    console.log("Google reCAPTCHA HTTP:", response.status);
 
-    if (!result.success) {
-      console.warn(
-        "reCAPTCHA rechazado:",
-        result["error-codes"] || []
-      );
+    // Primero lo leemos como texto para poder detectar respuestas raras
+    const raw = await response.text();
 
+    console.log("Respuesta Google reCAPTCHA:", raw);
+
+    let result;
+
+    try {
+      result = JSON.parse(raw);
+    } catch (err) {
       return {
         ok: false,
-        error: "Verificación reCAPTCHA inválida",
+        serverError: true,
+        error:
+          "Google respondió algo que no era JSON. HTTP " +
+          response.status +
+          ": " +
+          raw.substring(0, 200)
       };
     }
 
+    if (!result.success) {
+
+      const codes = result["error-codes"] || [];
+
+      console.warn("Google rechazó reCAPTCHA:", codes);
+
+      return {
+        ok: false,
+        error:
+          "Google rechazó el CAPTCHA: " +
+          (codes.length ? codes.join(", ") : "motivo desconocido")
+      };
+    }
+
+    console.log(
+      "reCAPTCHA válido. Hostname:",
+      result.hostname
+    );
+
     return {
       ok: true,
-      hostname: result.hostname || "",
+      hostname: result.hostname || ""
     };
 
   } catch (err) {
-    console.error("Error verificando reCAPTCHA:", err);
+
+    console.error(
+      "ERROR REAL verifyRecaptcha:",
+      err
+    );
 
     return {
       ok: false,
       serverError: true,
-      error: "No se pudo verificar reCAPTCHA",
+      error:
+        "Error interno reCAPTCHA: " +
+        (err?.message || String(err))
     };
   }
 }
