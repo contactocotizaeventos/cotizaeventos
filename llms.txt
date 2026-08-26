@@ -1,0 +1,22 @@
+# CotizaEventos.cl
+
+CotizaEventos.cl es un directorio de proveedores de eventos en Santiago de Chile.
+Permite encontrar, comparar y contactar directamente proveedores de catering,
+fotografía, DJ, decoración y otros servicios para eventos.
+
+## Páginas principales
+
+- [Inicio](https://www.cotizaeventos.cl/)
+- [Buscar proveedores](https://www.cotizaeventos.cl/proveedores.html)
+- [Publicar un negocio](https://www.cotizaeventos.cl/form.html)
+- [Cómo contratar proveedores](https://www.cotizaeventos.cl/contratar-proveedores-eventos.html)
+- [Nosotros](https://www.cotizaeventos.cl/nosotros.html)
+- [Términos](https://www.cotizaeventos.cl/terminos.html)
+
+## Funciones principales
+
+- Buscar proveedores de eventos por categoría.
+- Ver perfiles individuales de proveedores.
+- Comparar precios y servicios.
+- Contactar proveedores directamente por WhatsApp.
+- Registrar un negocio de eventos en el directorio.

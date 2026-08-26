@@ -675,18 +675,24 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
     <p class="section-label">Escríbenos</p>
     <h2 class="section-title">Contacto</h2>
     <div class="contact-grid">
-      <form class="contact-form" id="contactForm" onsubmit="handleContact(event)">
+      <form
+  class="contact-form"
+  id="contactForm"
+  onsubmit="handleContact(event)"
+  toolname="contact_cotizaeventos"
+  tooldescription="Envía una consulta a CotizaEventos.cl"
+>
         <div>
           <label for="cNombre">Nombre</label>
-          <input type="text" id="cNombre" placeholder="Tu nombre" required>
+          <input type="text" id="cNombre" placeholder="Tu nombre" required  toolparamdescription="Nombre de la persona que realiza la consulta">
         </div>
         <div>
           <label for="cEmail">Email</label>
-          <input type="email" id="cEmail" placeholder="tu@email.com" required>
+          <input type="email" id="cEmail" placeholder="tu@email.com" required  toolparamdescription="Correo electrónico de la persona que realiza la consulta">
         </div>
         <div>
           <label for="cMsg">Mensaje</label>
-          <textarea id="cMsg" placeholder="¿En qué podemos ayudarte?" required></textarea>
+          <textarea id="cMsg" placeholder="¿En qué podemos ayudarte?" required  toolparamdescription="Mensaje de la persona que realiza la consulta"></textarea>></textarea>
         </div>
         <div style="display:flex;gap:12px;flex-wrap:wrap">
           <button type="submit" class="btn btn-coral btn-sm">Enviar por WhatsApp</button>
