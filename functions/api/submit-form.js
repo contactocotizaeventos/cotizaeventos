@@ -139,7 +139,7 @@ export async function onRequestPost(context) {
 // ── Validate Google reCAPTCHA ──────────────────────────────────────
 // ── Validate reCAPTCHA using existing CAPTCHA endpoint ─────────────
 
-const recaptchaToken =
+/*const recaptchaToken =
   typeof body.recaptcha_token === "string"
     ? body.recaptcha_token
     : "";
@@ -208,7 +208,7 @@ if (!captchaResponse.ok || !captchaResult.ok) {
     500
   );
 }
-
+*/
 
   const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_KEY);
 

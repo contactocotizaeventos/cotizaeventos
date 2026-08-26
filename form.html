@@ -453,10 +453,10 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
       <!-- Submit area -->
       <div class="submit-area" id="submitArea">
         <p>Al enviar, revisaremos tu solicitud en máximo 48 horas hábiles.</p>
-        <div class="form-captcha-wrap">
+        <!--<div class="form-captcha-wrap">
           <div id="formRecaptcha" aria-label="Verificación reCAPTCHA"></div>
           <div class="form-captcha-error" id="formCaptchaError" role="alert"></div>
-        </div>
+        </div> -->
         <button class="btn btn-teal" id="submitBtn" onclick="submitForm()" style="padding:16px 40px;font-size:16px">Enviar solicitud</button>
       </div>
 
@@ -799,12 +799,12 @@ function scrollToSubmit(){document.getElementById('submitArea').scrollIntoView({
 async function submitForm(){
   if(!selectedCat){alert('Selecciona una categoría');return}
 
-  if(!formRecaptchaToken){
+  /*if(!formRecaptchaToken){
     var captchaError=document.getElementById('formCaptchaError');
     if(captchaError)captchaError.textContent='Completa la verificación "No soy un robot" antes de enviar.';
     document.getElementById('formRecaptcha').scrollIntoView({behavior:'smooth',block:'center'});
     return;
-  }
+  } */
 
   var btn=document.getElementById('submitBtn');
   btn.disabled=true;btn.textContent='Enviando...';
