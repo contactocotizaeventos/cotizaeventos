@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <!-- Google tag (gtag.js) -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18090764969"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'AW-18090764969');
 </script>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Proveedores de Eventos en Santiago — Catering, DJ, Fotógrafos | CotizaEventos.cl</title>
 <meta name="description" content="Directorio de proveedores de eventos en Santiago. Encuentra catering, DJ, fotógrafos, decoración y más para tu evento. Compara precios y contacta directo por WhatsApp, sin comisiones.">
 <meta name="keywords" content="proveedores de eventos, proveedores eventos santiago, catering eventos santiago, DJ para eventos, fotógrafo eventos santiago, directorio eventos chile, contratar proveedores eventos">
@@ -31,11 +31,10 @@
 <link
   rel="preload"
   as="image"
-  href="/img/IMG_9996.jpg"
+  href="/img/IMG_9996.webp"
   fetchpriority="high"
 >
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9257154700327932" crossorigin="anonymous"></script>
-  <link rel="icon" type="image/png" href="/favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* ── Reset & Variables ──────────────────────────────────────────── */
@@ -84,7 +83,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .btn-white:hover{background:var(--coral-lt);color:var(--coral)}
 .btn-sm{padding:10px 20px;font-size:14px}
 .ad-slot{min-height:120px;margin:28px 0;padding:18px;border:1px solid var(--border);background:repeating-linear-gradient(135deg,var(--bg2),var(--bg2) 8px,#fff 8px,#fff 16px);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:11px;letter-spacing:1.5px;text-transform:uppercase}
-.ad-slot.ad-ready{border:0;background:none;min-height:0;padding:0}
+.ad-slot.ad-ready{border:0;background:none;min-height:120px;padding:0}
 .premium-notice{padding:7px 16px;background:var(--coral-lt);border-bottom:1px solid var(--coral-md);color:var(--coral);font-size:12px;font-weight:600;text-align:center}
 
 /* ── Animations ─────────────────────────────────────────────────── */
@@ -120,6 +119,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .nav-cta:hover{background:var(--coral2);transform:translateY(-1px)}
 .nav-burger{
   position:sticky;
+  padding:0;
   display:none;
   width:32px;
   height:32px;
@@ -147,10 +147,20 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
   padding:100px 0 80px;
   position:relative;
   overflow:hidden;
-  background: url("img/IMG_9996.webp") center/cover no-repeat;
+  background:#1A1410;
 }
-.hero::before{content:'';position:absolute;top:-50%;right:-20%;width:600px;height:600px;background:radial-gradient(circle,rgba(232,84,42,.15) 0%,transparent 70%);pointer-events:none}
-.hero-inner{max-width:1140px;margin:0 auto;padding:0 20px;position:relative;z-index:1}
+.hero-bg{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  z-index:0;
+  pointer-events:none;
+}
+.hero::before{content:'';position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(10,8,7,.48) 0%,rgba(10,8,7,.18) 60%,rgba(10,8,7,.08) 100%),radial-gradient(circle at 85% 20%,rgba(232,84,42,.15) 0%,transparent 45%);pointer-events:none}
+.hero-inner{max-width:1140px;margin:0 auto;padding:0 20px;position:relative;z-index:2}
 .hero-title{
     text-shadow:
     -.1px -.1px 0 #000,
@@ -176,6 +186,10 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .gallery-img img{width:100%;height:100%;object-fit:cover;transition:transform .6s var(--ease)}
 .gallery-img:hover img{transform:scale(1.05)}
 @media(max-width:560px){.gallery-grid{grid-template-columns:repeat(2,1fr)}}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
+
 
 /* ── Categories ─────────────────────────────────────────────────── */
 .cats{background:var(--white)}
@@ -320,15 +334,15 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
    <a href="tutorial.html" class="nav-cta">✦ Publica tu negocio</a>
         <a href="suscripciones.html" class="nav-cta">Mi Cuenta</a>
     </div>
-    <div class="nav-burger" onclick="toggleMobile()" aria-label="Menú">
+    <button type="button" class="nav-burger" onclick="toggleMobile()" aria-label="Abrir menú de navegación" aria-controls="navMobile" aria-expanded="false">
       <span></span><span></span><span></span>
-    </div>
+    </button>
   </div>
 </nav>
 
 <!-- Mobile menu -->
 <div class="nav-mobile" id="navMobile">
-  <button class="nav-mobile-close" onclick="toggleMobile()">✕</button>
+  <button type="button" class="nav-mobile-close" onclick="toggleMobile()" aria-label="Cerrar menú de navegación">✕</button>
   <a href="index.html" onclick="toggleMobile()">Inicio</a>
   <a href="proveedores.html" onclick="toggleMobile()">Proveedores</a>
   <a href="#como" onclick="toggleMobile()">¿Cómo funciona?</a>
@@ -570,6 +584,15 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
   
 <!-- ══ HERO ══════════════════════════════════════════════════════════ -->
 <section class="hero">
+  <img
+    class="hero-bg"
+    src="/img/IMG_9996.webp"
+    alt=""
+    aria-hidden="true"
+    loading="eager"
+    fetchpriority="high"
+    decoding="async"
+  >
   <div class="hero-inner">
     <h1 class="hero-title anim-up">Encuentra los mejores <em>proveedores de eventos</em> en Santiago</h1>
     <p class="hero-sub anim-up anim-up-d1">Encuentra proveedores verificados para tu evento. Compara, elige y contacta directo — sin intermediarios ni comisiones.</p>
@@ -621,10 +644,10 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 <!-- ══ GALLERY ═══════════════════════════════════════════════════════ -->
 <section class="gallery">
   <div class="gallery-grid">
-    <div class="gallery-img"><img src="https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=600&q=80" alt="Evento" loading="lazy"></div>
-    <div class="gallery-img"><img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=600&q=80" alt="Celebración" loading="lazy"></div>
-    <div class="gallery-img"><img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=80" alt="Catering" loading="lazy"></div>
-    <div class="gallery-img"><img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&q=80" alt="Fiesta" loading="lazy"></div>
+    <div class="gallery-img"><img src="https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=600&q=80" alt="Evento" loading="lazy" decoding="async" fetchpriority="low"></div>
+    <div class="gallery-img"><img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=600&q=80" alt="Celebración" loading="lazy" decoding="async" fetchpriority="low"></div>
+    <div class="gallery-img"><img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=80" alt="Catering" loading="lazy" decoding="async" fetchpriority="low"></div>
+    <div class="gallery-img"><img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&q=80" alt="Fiesta" loading="lazy" decoding="async" fetchpriority="low"></div>
   </div>
 </section>
 
@@ -676,26 +699,48 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
     <h2 class="section-title">Contacto</h2>
     <div class="contact-grid">
       <form
-  class="contact-form"
-  id="contactForm"
-  onsubmit="handleContact(event)"
-  toolname="contact_cotizaeventos"
-  tooldescription="Envía una consulta a CotizaEventos.cl"
->
+        class="contact-form"
+        id="contactForm"
+        onsubmit="handleContact(event)"
+        toolname="contact_cotizaeventos"
+        tooldescription="Envía una consulta a CotizaEventos.cl"
+      >
         <div>
           <label for="cNombre">Nombre</label>
-          <input type="text" id="cNombre" placeholder="Tu nombre" required  toolparamdescription="Nombre de la persona que realiza la consulta">
+          <input
+            type="text"
+            id="cNombre"
+            name="nombre"
+            placeholder="Tu nombre"
+            autocomplete="name"
+            required
+            toolparamdescription="Nombre de la persona que realiza la consulta"
+          >
         </div>
         <div>
           <label for="cEmail">Email</label>
-          <input type="email" id="cEmail" placeholder="tu@email.com" required  toolparamdescription="Correo electrónico de la persona que realiza la consulta">
+          <input
+            type="email"
+            id="cEmail"
+            name="email"
+            placeholder="tu@email.com"
+            autocomplete="email"
+            required
+            toolparamdescription="Correo electrónico de la persona que realiza la consulta"
+          >
         </div>
         <div>
           <label for="cMsg">Mensaje</label>
-          <textarea id="cMsg" placeholder="¿En qué podemos ayudarte?" required  toolparamdescription="Mensaje de la persona que realiza la consulta"></textarea>></textarea>
+          <textarea
+            id="cMsg"
+            name="mensaje"
+            placeholder="¿En qué podemos ayudarte?"
+            required
+            toolparamdescription="Mensaje de la persona que realiza la consulta"
+          ></textarea>
         </div>
         <div style="display:flex;gap:12px;flex-wrap:wrap">
-          <button type="submit" class="btn btn-coral btn-sm"  toolparamdescription="Correo electrónico de la persona que realiza la consulta" toolparamdescription="Enviar mensaje de contacto de la persona que realiza la consulta">Enviar por WhatsApp</button>
+          <button type="submit" class="btn btn-coral btn-sm">Enviar por WhatsApp</button>
           <button type="button" class="btn btn-outline btn-sm" onclick="handleContactEmail()">Enviar por Email</button>
         </div>
       </form>
@@ -775,7 +820,12 @@ function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/<
 function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 
 /* ── Mobile menu ──────────────────────────────────────────────────── */
-function toggleMobile(){document.getElementById('navMobile').classList.toggle('open')}
+function toggleMobile(){
+  const menu=document.getElementById('navMobile');
+  const btn=document.querySelector('.nav-burger');
+  const isOpen=menu.classList.toggle('open');
+  if(btn)btn.setAttribute('aria-expanded',isOpen?'true':'false');
+}
 
 /* ── Contact form handlers ────────────────────────────────────────── */
 function handleContact(e){
@@ -866,8 +916,10 @@ function renderHighlighted(){
     return;
   }
 
-  // Shuffle and take up to 8
-  const shuffled=shuffle(destacados).slice(0,8);
+  // En móvil mostramos 4 para evitar descargar demasiadas portadas pesadas.
+  // En escritorio mantenemos hasta 8.
+  const maxCards=window.matchMedia('(max-width:760px)').matches?4:8;
+  const shuffled=shuffle(destacados).slice(0,maxCards);
 
   // Find etiqueta names for category labels
   const etiqMap={};
@@ -881,10 +933,10 @@ function renderHighlighted(){
   for(const [index,p] of shuffled.entries()){
     const catLabel=etiqMap[p.etiqueta_id]||etiqMap[p.categoria]||'';
     const imgHtml=p.cover_url
-      ?`<img src="${esc(p.cover_url)}" alt="${esc(p.nombre)}" loading="lazy">`
-      :`<img src="/noimage.png" alt="${esc(p.nombre)}" loading="lazy">`;
+      ?`<img src="${esc(p.cover_url)}" alt="${esc(p.nombre)}" loading="lazy" decoding="async" fetchpriority="low">`
+      :`<img src="/noimage.png" alt="${esc(p.nombre)}" loading="lazy" decoding="async" fetchpriority="low">`;
     const logoHtml=p.logo_url
-      ?`<img src="${esc(p.logo_url)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:8px">`
+      ?`<img src="${esc(p.logo_url)}" alt="" loading="lazy" decoding="async" fetchpriority="low" style="width:100%;height:100%;object-fit:cover;border-radius:8px">`
       :`${esc(p.logo_emoji)||'✦'}`;
     const price=p.precio_minimo?`Desde ${esc(p.precio_minimo)}`:'';
     const waLink=p.whatsapp?`https://wa.me/${esc(p.whatsapp)}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`:'#';
@@ -912,7 +964,19 @@ function renderHighlighted(){
 }
 
 /* ── Init ──────────────────────────────────────────────────────────── */
-loadData();
+function startDeferredDataLoad(){
+  if('requestIdleCallback' in window){
+    requestIdleCallback(loadData,{timeout:1200});
+  }else{
+    setTimeout(loadData,150);
+  }
+}
+
+if(document.readyState==='complete'){
+  startDeferredDataLoad();
+}else{
+  window.addEventListener('load',startDeferredDataLoad,{once:true});
+}
 </script>
 
 
