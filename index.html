@@ -3,14 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18090764969"></script>
+<meta name="theme-color" content="#FAFAF8">
 <script>
+  /* Cola mínima: Google Tag se descarga después del render inicial. */
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'AW-18090764969');
 </script>
 <title>Proveedores de Eventos en Santiago — Catering, DJ, Fotógrafos | CotizaEventos.cl</title>
 <meta name="description" content="Directorio de proveedores de eventos en Santiago. Encuentra catering, DJ, fotógrafos, decoración y más para tu evento. Compara precios y contacta directo por WhatsApp, sin comisiones.">
@@ -26,31 +23,21 @@
 <meta property="og:url" content="https://www.cotizaeventos.cl/">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="canonical" href="https://www.cotizaeventos.cl/">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link
-  rel="preload"
-  as="image"
-  href="/img/IMG_9996.webp"
-  fetchpriority="high"
->
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9257154700327932" crossorigin="anonymous"></script>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* ── Reset & Variables ──────────────────────────────────────────── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --coral:#E8542A;--coral2:#FF7A54;--coral-lt:#FFF0EB;--coral-md:#FFCFC2;
+  --coral:#C94725;--coral2:#E8542A;--coral-lt:#FFF0EB;--coral-md:#FFCFC2;
   --sun:#F0A500;--teal:#06C7A5;
   --bg:#FAFAF8;--bg2:#F5F3EF;--white:#FFFFFF;
-  --ink:#1A1714;--ink2:#3D3733;--muted:#8A8278;
+  --ink:#1A1714;--ink2:#3D3733;--muted:#6F675F;
   --border:#E8E4DF;--border2:#D4CFC9;
   --r:14px;--ease:cubic-bezier(.4,0,.2,1);
   --shadow:0 2px 12px rgba(0,0,0,.07);
   --shadow-md:0 8px 32px rgba(0,0,0,.1);
   --shadow-lg:0 20px 60px rgba(0,0,0,.12);
-  --font-title:'Fraunces',serif;
-  --font-body:'Outfit',sans-serif;
+  --font-title:Georgia,'Times New Roman',serif;
+  --font-body:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
 }
 html{scroll-behavior:smooth}
 body{
@@ -67,6 +54,9 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 ::-webkit-scrollbar{width:5px}
 ::-webkit-scrollbar-track{background:var(--bg2)}
 ::-webkit-scrollbar-thumb{background:var(--coral);border-radius:9px}
+.skip-link{position:absolute;left:12px;top:-60px;z-index:5000;background:#fff;color:#1A1714;padding:10px 14px;border-radius:8px;box-shadow:var(--shadow-md);font-weight:700}
+.skip-link:focus{top:12px}
+:focus-visible{outline:3px solid #0B6B5D;outline-offset:3px}
 
 /* ── Utilities ──────────────────────────────────────────────────── */
 .container{width:100%;max-width:1140px;margin:0 auto;padding:0 20px}
@@ -82,8 +72,9 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .btn-white{background:#fff;color:var(--ink)}
 .btn-white:hover{background:var(--coral-lt);color:var(--coral)}
 .btn-sm{padding:10px 20px;font-size:14px}
-.ad-slot{min-height:120px;margin:28px 0;padding:18px;border:1px solid var(--border);background:repeating-linear-gradient(135deg,var(--bg2),var(--bg2) 8px,#fff 8px,#fff 16px);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:11px;letter-spacing:1.5px;text-transform:uppercase}
-.ad-slot.ad-ready{border:0;background:none;min-height:120px;padding:0}
+.ad-region{min-height:120px;margin:28px 0}
+.ad-slot{width:100%;min-height:120px;padding:18px;border:1px solid var(--border);background:repeating-linear-gradient(135deg,var(--bg2),var(--bg2) 8px,#fff 8px,#fff 16px);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:11px;letter-spacing:1.5px;text-transform:uppercase}
+.ad-slot.ad-ready{border:0;background:none;min-height:120px;padding:0;display:block}
 .premium-notice{padding:7px 16px;background:var(--coral-lt);border-bottom:1px solid var(--coral-md);color:var(--coral);font-size:12px;font-weight:600;text-align:center}
 
 /* ── Animations ─────────────────────────────────────────────────── */
@@ -119,7 +110,6 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .nav-cta:hover{background:var(--coral2);transform:translateY(-1px)}
 .nav-burger{
   position:sticky;
-  padding:0;
   display:none;
   width:32px;
   height:32px;
@@ -148,19 +138,11 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
   position:relative;
   overflow:hidden;
   background:#1A1410;
+  isolation:isolate;
 }
-.hero-bg{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  object-position:center;
-  z-index:0;
-  pointer-events:none;
-}
-.hero::before{content:'';position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(10,8,7,.48) 0%,rgba(10,8,7,.18) 60%,rgba(10,8,7,.08) 100%),radial-gradient(circle at 85% 20%,rgba(232,84,42,.15) 0%,transparent 45%);pointer-events:none}
-.hero-inner{max-width:1140px;margin:0 auto;padding:0 20px;position:relative;z-index:2}
+.hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:-2}
+.hero::before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(14,10,8,.78) 0%,rgba(14,10,8,.56) 56%,rgba(14,10,8,.28) 100%);pointer-events:none}
+.hero-inner{max-width:1140px;margin:0 auto;padding:0 20px;position:relative;z-index:1}
 .hero-title{
     text-shadow:
     -.1px -.1px 0 #000,
@@ -175,10 +157,10 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
      .1px -.1px 0 #000,
     -.1px  .1px 0 #000,
      .1px  .1px 0 #000;
-  font-size:clamp(16px,2vw,19px);color:rgba(255,255,255,.72);max-width:520px;line-height:1.7;margin-bottom:36px}
+  font-size:clamp(16px,2vw,19px);color:rgba(255,255,255,.94);max-width:520px;line-height:1.7;margin-bottom:36px}
 .hero-btns{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:48px}
 .hero-pills{display:flex;flex-wrap:wrap;gap:10px}
-.hero-pill{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:100px;padding:8px 18px;font-size:13px;color:rgba(255,255,255,.65);font-weight:400}
+.hero-pill{background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.38);border-radius:100px;padding:8px 18px;font-size:13px;color:#fff;font-weight:500;white-space:nowrap}
 /* ── Gallery ────────────────────────────────────────────────────── */
 .gallery{padding:60px 0;overflow:hidden;background:var(--bg)}
 .gallery-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:1140px;margin:0 auto;padding:0 20px}
@@ -186,10 +168,8 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .gallery-img img{width:100%;height:100%;object-fit:cover;transition:transform .6s var(--ease)}
 .gallery-img:hover img{transform:scale(1.05)}
 @media(max-width:560px){.gallery-grid{grid-template-columns:repeat(2,1fr)}}
-@media (prefers-reduced-motion: reduce){
-  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
-}
-
+@media(max-width:560px){.hero{padding:72px 0 56px}.hero-title{font-size:clamp(34px,11vw,48px)}.hero-btns{margin-bottom:34px}.hero-pills{gap:8px}.hero-pill{padding:7px 12px;font-size:12px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 
 /* ── Categories ─────────────────────────────────────────────────── */
 .cats{background:var(--white)}
@@ -253,7 +233,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .about-preview{background:var(--bg2)}
 .about-card{background:var(--white);border-radius:var(--r);padding:48px;display:flex;align-items:center;gap:48px;border:1px solid var(--border)}
 .about-card-text{flex:1}
-.about-card-text h3{font-family:var(--font-title);font-size:26px;font-weight:600;margin-bottom:12px}
+.about-card-text h2{font-family:var(--font-title);font-size:26px;font-weight:600;margin-bottom:12px}
 .about-card-text p{color:var(--ink2);font-size:16px;line-height:1.7;margin-bottom:24px}
 .about-card-visual{width:180px;height:180px;border-radius:50%;background:linear-gradient(135deg,var(--coral-lt),var(--coral-md));flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:64px}
 @media(max-width:680px){.about-card{flex-direction:column;text-align:center;padding:32px 24px}.about-card-visual{width:120px;height:120px;font-size:48px}}
@@ -269,7 +249,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .contact-info{display:flex;flex-direction:column;justify-content:center;gap:24px}
 .contact-info-item{display:flex;align-items:flex-start;gap:14px}
 .contact-info-ico{width:44px;height:44px;border-radius:12px;background:var(--coral-lt);color:var(--coral);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-.contact-info-item h4{font-size:15px;font-weight:600;margin-bottom:2px}
+.contact-info-item h3{font-size:15px;font-weight:600;margin-bottom:2px}
 .contact-info-item p{font-size:14px;color:var(--ink2)}
 @media(max-width:680px){.contact-grid{grid-template-columns:1fr}}
 
@@ -317,7 +297,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
   
 </head>
 <body>
-
+<a class="skip-link" href="#main-content">Saltar al contenido principal</a>
 
 <div class="premium-notice" role="status">Ahora todos los perfiles son premium para siempre!</div>
 
@@ -334,7 +314,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
    <a href="tutorial.html" class="nav-cta">✦ Publica tu negocio</a>
         <a href="suscripciones.html" class="nav-cta">Mi Cuenta</a>
     </div>
-    <button type="button" class="nav-burger" onclick="toggleMobile()" aria-label="Abrir menú de navegación" aria-controls="navMobile" aria-expanded="false">
+    <button type="button" class="nav-burger" id="navBurger" onclick="toggleMobile()" aria-label="Abrir menú" aria-controls="navMobile" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
   </div>
@@ -342,7 +322,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 
 <!-- Mobile menu -->
 <div class="nav-mobile" id="navMobile">
-  <button type="button" class="nav-mobile-close" onclick="toggleMobile()" aria-label="Cerrar menú de navegación">✕</button>
+  <button type="button" class="nav-mobile-close" onclick="toggleMobile()" aria-label="Cerrar menú">✕</button>
   <a href="index.html" onclick="toggleMobile()">Inicio</a>
   <a href="proveedores.html" onclick="toggleMobile()">Proveedores</a>
   <a href="#como" onclick="toggleMobile()">¿Cómo funciona?</a>
@@ -564,35 +544,11 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 </style>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   
+<main id="main-content">
 <!-- ══ HERO ══════════════════════════════════════════════════════════ -->
 <section class="hero">
-  <img
-    class="hero-bg"
-    src="/img/IMG_9996.webp"
-    alt=""
-    aria-hidden="true"
-    loading="eager"
-    fetchpriority="high"
-    decoding="async"
-  >
+  <img class="hero-bg" src="/img/IMG_9996.webp" alt="" aria-hidden="true" loading="eager" fetchpriority="high" decoding="async">
   <div class="hero-inner">
     <h1 class="hero-title anim-up">Encuentra los mejores <em>proveedores de eventos</em> en Santiago</h1>
     <p class="hero-sub anim-up anim-up-d1">Encuentra proveedores verificados para tu evento. Compara, elige y contacta directo — sin intermediarios ni comisiones.</p>
@@ -635,7 +591,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
       <div class="hl-skel"></div><div class="hl-skel"></div><div class="hl-skel"></div><div class="hl-skel"></div>
       <div class="hl-skel"></div><div class="hl-skel"></div><div class="hl-skel"></div><div class="hl-skel"></div>
     </div>
-    <ins class="ad-slot" data-ad-slot="homepage" aria-label="Espacio publicitario"></ins>
+    <div class="ad-region"><ins class="ad-slot" data-ad-slot="homepage"></ins></div>
     <div class="hl-more">
       <a href="proveedores.html" class="btn btn-coral">Ver todos los proveedores →</a>
     </div>
@@ -644,10 +600,10 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 <!-- ══ GALLERY ═══════════════════════════════════════════════════════ -->
 <section class="gallery">
   <div class="gallery-grid">
-    <div class="gallery-img"><img src="https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=600&q=80" alt="Evento" loading="lazy" decoding="async" fetchpriority="low"></div>
-    <div class="gallery-img"><img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=600&q=80" alt="Celebración" loading="lazy" decoding="async" fetchpriority="low"></div>
-    <div class="gallery-img"><img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=80" alt="Catering" loading="lazy" decoding="async" fetchpriority="low"></div>
-    <div class="gallery-img"><img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&q=80" alt="Fiesta" loading="lazy" decoding="async" fetchpriority="low"></div>
+    <div class="gallery-img"><img src="https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=600&q=80" alt="Evento" loading="lazy"></div>
+    <div class="gallery-img"><img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=600&q=80" alt="Celebración" loading="lazy"></div>
+    <div class="gallery-img"><img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=80" alt="Catering" loading="lazy"></div>
+    <div class="gallery-img"><img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&q=80" alt="Fiesta" loading="lazy"></div>
   </div>
 </section>
 
@@ -683,7 +639,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
     <div class="about-card">
       <div class="about-card-text">
         <p class="section-label">Sobre nosotros</p>
-        <h3>Conectamos personas con los mejores proveedores de eventos</h3>
+        <h2>Conectamos personas con los mejores proveedores de eventos</h2>
         <p>Creemos que organizar un evento no debería ser estresante. Por eso creamos un directorio transparente donde puedes comparar y contactar proveedores verificados de forma directa y gratuita.</p>
         <a href="nosotros.html" class="btn btn-outline btn-sm">Conoce más →</a>
       </div>
@@ -699,45 +655,23 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
     <h2 class="section-title">Contacto</h2>
     <div class="contact-grid">
       <form
-        class="contact-form"
-        id="contactForm"
-        onsubmit="handleContact(event)"
-        toolname="contact_cotizaeventos"
-        tooldescription="Envía una consulta a CotizaEventos.cl"
-      >
+  class="contact-form"
+  id="contactForm"
+  onsubmit="handleContact(event)"
+  toolname="contact_cotizaeventos"
+  tooldescription="Envía una consulta a CotizaEventos.cl"
+>
         <div>
           <label for="cNombre">Nombre</label>
-          <input
-            type="text"
-            id="cNombre"
-            name="nombre"
-            placeholder="Tu nombre"
-            autocomplete="name"
-            required
-            toolparamdescription="Nombre de la persona que realiza la consulta"
-          >
+          <input type="text" id="cNombre" name="nombre" autocomplete="name" placeholder="Tu nombre" required toolparamdescription="Nombre de la persona que realiza la consulta">
         </div>
         <div>
           <label for="cEmail">Email</label>
-          <input
-            type="email"
-            id="cEmail"
-            name="email"
-            placeholder="tu@email.com"
-            autocomplete="email"
-            required
-            toolparamdescription="Correo electrónico de la persona que realiza la consulta"
-          >
+          <input type="email" id="cEmail" name="email" autocomplete="email" placeholder="tu@email.com" required toolparamdescription="Correo electrónico de la persona que realiza la consulta">
         </div>
         <div>
           <label for="cMsg">Mensaje</label>
-          <textarea
-            id="cMsg"
-            name="mensaje"
-            placeholder="¿En qué podemos ayudarte?"
-            required
-            toolparamdescription="Mensaje de la persona que realiza la consulta"
-          ></textarea>
+          <textarea id="cMsg" name="mensaje" placeholder="¿En qué podemos ayudarte?" required toolparamdescription="Mensaje de la persona que realiza la consulta"></textarea>
         </div>
         <div style="display:flex;gap:12px;flex-wrap:wrap">
           <button type="submit" class="btn btn-coral btn-sm">Enviar por WhatsApp</button>
@@ -748,21 +682,21 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
         <div class="contact-info-item">
           <div class="contact-info-ico">💬</div>
           <div>
-            <h4>WhatsApp</h4>
+            <h3>WhatsApp</h3>
             <p><a href="https://wa.me/56991999301" target="_blank" rel="noopener">+56 9 9199 9301</a></p>
           </div>
         </div>
         <div class="contact-info-item">
           <div class="contact-info-ico">✉️</div>
           <div>
-            <h4>Email</h4>
-            <p><a href="/cdn-cgi/l/email-protection#3a5955544e5b594e5559554e53405b5f4c5f544e55497a5d575b535614595557"><span class="__cf_email__" data-cfemail="b0d3dfdec4d1d3c4dfd3dfc4d9cad1d5c6d5dec4dfc3f0d7ddd1d9dc9ed3dfdd">[email&#160;protected]</span></a></p>
+            <h3>Email</h3>
+            <p><a href="mailto:contactocotizaeventos@gmail.com">contactocotizaeventos@gmail.com</a></p>
           </div>
         </div>
         <div class="contact-info-item">
           <div class="contact-info-ico">📍</div>
           <div>
-            <h4>Cobertura</h4>
+            <h3>Cobertura</h3>
             <p>Región Metropolitana, Santiago de Chile</p>
           </div>
         </div>
@@ -792,6 +726,8 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
   </div>
 </section>
 
+</main>
+
 <!-- ══ FOOTER ═══════════════════════════════════════════════════════ -->
 <footer class="footer">
   <div class="container">
@@ -812,7 +748,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
   </div>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 /* ── Escape HTML ──────────────────────────────────────────────────── */
 function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;')}
 
@@ -822,9 +758,9 @@ function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Mat
 /* ── Mobile menu ──────────────────────────────────────────────────── */
 function toggleMobile(){
   const menu=document.getElementById('navMobile');
-  const btn=document.querySelector('.nav-burger');
-  const isOpen=menu.classList.toggle('open');
-  if(btn)btn.setAttribute('aria-expanded',isOpen?'true':'false');
+  const button=document.getElementById('navBurger');
+  const open=menu.classList.toggle('open');
+  if(button){button.setAttribute('aria-expanded',String(open));button.setAttribute('aria-label',open?'Cerrar menú':'Abrir menú')}
 }
 
 /* ── Contact form handlers ────────────────────────────────────────── */
@@ -849,6 +785,49 @@ let GRUPOS=[];
 let PROVIDERS=[];
 const WHATSAPP_MESSAGE='¡Hola! Te escribo desde Cotizaeventos.cl. ¿Puedes darme más información de tu servicio? ';
 
+
+/* ── Imágenes Supabase optimizadas ───────────────────────────────────
+   Si Image Transformations está disponible, servimos una miniatura.
+   Si no está disponible, onerror vuelve automáticamente a la URL original. */
+function optimizedSupabaseImageUrl(raw,width,quality=72){
+  if(!raw)return'';
+  try{
+    const u=new URL(raw,window.location.origin);
+    if(u.hostname.endsWith('.supabase.co')&&u.pathname.includes('/storage/v1/object/public/')){
+      u.pathname=u.pathname.replace('/storage/v1/object/public/','/storage/v1/render/image/public/');
+      u.searchParams.set('width',String(width));
+      u.searchParams.set('quality',String(quality));
+      u.searchParams.set('resize','cover');
+      return u.toString();
+    }
+  }catch(_e){}
+  return raw;
+}
+function fallbackImage(img){
+  const original=img.dataset.original;
+  if(original&&img.src!==original){
+    img.onerror=null;
+    img.src=original;
+  }
+}
+
+let highlightedRendered=false;
+function observeHighlighted(){
+  const section=document.getElementById('destacados');
+  if(!section||highlightedRendered)return;
+  if(!('IntersectionObserver' in window)){
+    setTimeout(renderHighlighted,1200);
+    return;
+  }
+  const observer=new IntersectionObserver(entries=>{
+    if(entries.some(entry=>entry.isIntersecting)){
+      observer.disconnect();
+      renderHighlighted();
+    }
+  },{rootMargin:'350px 0px'});
+  observer.observe(section);
+}
+
 async function loadData(){
   try{
     const res=await fetch('/api/get-providers');
@@ -857,7 +836,7 @@ async function loadData(){
     GRUPOS=data.grupos||[];
     PROVIDERS=(data.providers||[]).filter(p=>p.cover_url);
     renderCategories();
-    renderHighlighted();
+    observeHighlighted();
   }catch(e){
     console.error('Error loading data:',e);
     document.getElementById('catsGrid').innerHTML='<p style="color:var(--muted);padding:20px 0">Error al cargar categorías. Intenta recargar la página.</p>';
@@ -905,10 +884,12 @@ document.addEventListener('click',function(e){
   }
 });
 
-/* ── Render highlighted providers (2×4 grid, shuffled) ────────────── */
+/* ── Render highlighted providers ──────────────────────────────────── */
 function renderHighlighted(){
-  const grid=document.getElementById('hlGrid');
+  if(highlightedRendered)return;
+  highlightedRendered=true;
 
+  const grid=document.getElementById('hlGrid');
   const destacados=PROVIDERS.filter(p=>p.cover_url);
 
   if(!destacados.length){
@@ -916,34 +897,35 @@ function renderHighlighted(){
     return;
   }
 
-  // En móvil mostramos 4 para evitar descargar demasiadas portadas pesadas.
-  // En escritorio mantenemos hasta 8.
-  const maxCards=window.matchMedia('(max-width:760px)').matches?4:8;
+  // Móvil: 4 tarjetas. Escritorio/tablet: 8.
+  const maxCards=window.matchMedia('(max-width:560px)').matches?4:8;
   const shuffled=shuffle(destacados).slice(0,maxCards);
 
-  // Find etiqueta names for category labels
   const etiqMap={};
   for(const g of GRUPOS){
-    for(const et of (g.etiquetas||[])){
-      etiqMap[et.id]=et.nombre;
-    }
+    for(const et of(g.etiquetas||[]))etiqMap[et.id]=et.nombre;
   }
 
+  const coverWidth=window.matchMedia('(max-width:560px)').matches?640:720;
   let html='';
-  for(const [index,p] of shuffled.entries()){
+
+  for(const p of shuffled){
     const catLabel=etiqMap[p.etiqueta_id]||etiqMap[p.categoria]||'';
-    const imgHtml=p.cover_url
-      ?`<img src="${esc(p.cover_url)}" alt="${esc(p.nombre)}" loading="lazy" decoding="async" fetchpriority="low">`
-      :`<img src="/noimage.png" alt="${esc(p.nombre)}" loading="lazy" decoding="async" fetchpriority="low">`;
-    const logoHtml=p.logo_url
-      ?`<img src="${esc(p.logo_url)}" alt="" loading="lazy" decoding="async" fetchpriority="low" style="width:100%;height:100%;object-fit:cover;border-radius:8px">`
+    const coverOriginal=p.cover_url||'/noimage.png';
+    const coverOptimized=optimizedSupabaseImageUrl(coverOriginal,coverWidth,70);
+    const logoOriginal=p.logo_url||'';
+    const logoOptimized=logoOriginal?optimizedSupabaseImageUrl(logoOriginal,96,70):'';
+
+    const imgHtml=`<img src="${esc(coverOptimized)}" data-original="${esc(coverOriginal)}" onerror="fallbackImage(this)" alt="${esc(p.nombre)}" width="720" height="480" loading="lazy" decoding="async" fetchpriority="low">`;
+    const logoHtml=logoOriginal
+      ?`<img src="${esc(logoOptimized)}" data-original="${esc(logoOriginal)}" onerror="fallbackImage(this)" alt="" width="80" height="80" loading="lazy" decoding="async" fetchpriority="low" style="width:100%;height:100%;object-fit:cover;border-radius:8px">`
       :`${esc(p.logo_emoji)||'✦'}`;
+
     const price=p.precio_minimo?`Desde ${esc(p.precio_minimo)}`:'';
     const waLink=p.whatsapp?`https://wa.me/${esc(p.whatsapp)}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`:'#';
-
     const cardUrl=p.slug?'/prov/'+encodeURIComponent(p.slug):'proveedores.html?open='+encodeURIComponent(p.id);
 
-    html+=`<div class="hl-card" onclick="window.open('${cardUrl}','_blank')">
+    html+=`<article class="hl-card" onclick="window.open('${cardUrl}','_blank')">
       <div class="hl-card-img">
         ${imgHtml}
         <div class="hl-card-badge">✦ Destacado</div>
@@ -958,41 +940,90 @@ function renderHighlighted(){
           ${p.whatsapp?`<a href="${waLink}" class="hl-card-wa" onclick="event.stopPropagation()" target="_blank" rel="noopener">💬 WhatsApp</a>`:''}
         </div>
       </div>
-    </div>`;
+    </article>`;
   }
   grid.innerHTML=html;
 }
 
-/* ── Init ──────────────────────────────────────────────────────────── */
-function startDeferredDataLoad(){
+/* ── Init de datos: fuera de la ruta crítica del hero ─────────────── */
+function scheduleDataLoad(){
   if('requestIdleCallback' in window){
-    requestIdleCallback(loadData,{timeout:1200});
+    requestIdleCallback(loadData,{timeout:1800});
   }else{
-    setTimeout(loadData,150);
+    setTimeout(loadData,700);
   }
 }
-
-if(document.readyState==='complete'){
-  startDeferredDataLoad();
-}else{
-  window.addEventListener('load',startDeferredDataLoad,{once:true});
-}
+if(document.readyState==='complete')scheduleDataLoad();
+else window.addEventListener('load',scheduleDataLoad,{once:true});
 </script>
 
 
+<script>
+/* ── Terceros fuera de la ruta crítica ───────────────────────────── */
+function appendScript(src,attrs={}){
+  return new Promise((resolve,reject)=>{
+    const existing=document.querySelector(`script[src="${src}"]`);
+    if(existing){resolve(existing);return}
+    const s=document.createElement('script');
+    s.src=src;
+    Object.entries(attrs).forEach(([k,v])=>{if(v===true)s.setAttribute(k,'');else s.setAttribute(k,String(v))});
+    s.onload=()=>resolve(s);
+    s.onerror=reject;
+    document.head.appendChild(s);
+  });
+}
 
+// Google Ads tag: se difiere 6 s o hasta la primera interacción real.
+let gtagLoaded=false;
+function loadGoogleTag(){
+  if(gtagLoaded)return;
+  gtagLoaded=true;
+  gtag('js',new Date());
+  gtag('config','AW-18090764969');
+  appendScript('https://www.googletagmanager.com/gtag/js?id=AW-18090764969',{async:true}).catch(()=>{});
+}
+['pointerdown','keydown','touchstart'].forEach(type=>window.addEventListener(type,loadGoogleTag,{once:true,passive:true}));
+window.addEventListener('load',()=>setTimeout(loadGoogleTag,6000),{once:true});
 
+// reCAPTCHA solo se descarga si alguien intenta abrir WhatsApp.
+let captchaLoading=null;
+function ensureCaptchaScript(){
+  if(window.CotizaCaptcha)return Promise.resolve();
+  if(!captchaLoading)captchaLoading=appendScript('/recaptcha.js',{defer:true});
+  return captchaLoading;
+}
+document.addEventListener('click',function(event){
+  const link=event.target.closest('a[href*="wa.me/"]');
+  if(!link||window.CotizaCaptcha)return;
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  ensureCaptchaScript().then(()=>link.click()).catch(err=>{
+    console.error('No se pudo cargar CAPTCHA:',err);
+    alert('No se pudo cargar la verificación de seguridad. Inténtalo nuevamente.');
+  });
+},true);
 
-
-
-
-
-
-
-
-
-<script src="/recaptcha.js" defer></script>
-
-  <script src="/ads.js" defer></script>
+// AdSense + ads.js solo cuando el espacio publicitario está cerca del viewport.
+let adsLoading=false;
+function loadAds(){
+  if(adsLoading)return;
+  adsLoading=true;
+  appendScript('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9257154700327932',{async:true,crossorigin:'anonymous'})
+    .then(()=>appendScript('/ads.js',{defer:true}))
+    .catch(err=>console.warn('Publicidad no disponible:',err));
+}
+const adRegion=document.querySelector('.ad-region');
+if(adRegion&&'IntersectionObserver' in window){
+  const adObserver=new IntersectionObserver(entries=>{
+    if(entries.some(e=>e.isIntersecting)){
+      adObserver.disconnect();
+      loadAds();
+    }
+  },{rootMargin:'500px 0px'});
+  adObserver.observe(adRegion);
+}else if(adRegion){
+  window.addEventListener('scroll',loadAds,{once:true,passive:true});
+}
+</script>
 </body>
 </html>
