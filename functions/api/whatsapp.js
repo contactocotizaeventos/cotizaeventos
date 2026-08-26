@@ -37,7 +37,20 @@ export async function onRequestPost({ request, env }) {
     body: params,
   });
   const captcha = await captchaResponse.json();
-  if (!captcha.success) return json({ ok: false, error: "No se pudo verificar reCAPTCHA" }, 403);
+  if (!captcha.success) {
+
+  console.log("Google reCAPTCHA rechazado:", captcha);
+
+  return json(
+    {
+      ok: false,
+      error: "No se pudo verificar reCAPTCHA",
+      captcha_errors: captcha["error-codes"] || [],
+      hostname: captcha.hostname || null
+    },
+    403
+  );
+}
 
   const query = text ? `?text=${encodeURIComponent(text.slice(0, 500))}` : "";
   return json({ ok: true, url: `https://wa.me/${phone}${query}` });

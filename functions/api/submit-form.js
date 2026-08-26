@@ -181,22 +181,21 @@ try {
   const captchaResult =
     await captchaResponse.json();
 
-  if (
-    !captchaResponse.ok ||
-    !captchaResult.ok
-  ) {
+if (!captchaResponse.ok || !captchaResult.ok) {
 
-    console.warn(
-      "CAPTCHA rechazado:",
-      captchaResult
-    );
+  console.log("Respuesta CAPTCHA:", captchaResult);
 
-    return errorResponse(
-      "No se pudo verificar reCAPTCHA. Intenta nuevamente.",
-      403
-    );
-  }
-
+  return errorResponse(
+    "CAPTCHA rechazado: " +
+    (
+      captchaResult.captcha_errors &&
+      captchaResult.captcha_errors.length
+        ? captchaResult.captcha_errors.join(", ")
+        : captchaResult.error || "motivo desconocido"
+    ),
+    403
+  );
+}
 } catch (err) {
 
   console.error(
