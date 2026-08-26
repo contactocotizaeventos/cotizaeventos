@@ -640,24 +640,7 @@ function pickCat(el,id){
   selectedCat=id;
 }
 
-function applyPromo(){
-  document.getElementById('promoBanner').style.display='block';
-  document.getElementById('destTag').textContent='Gratis por tiempo limitado';
-  document.getElementById('destTag').style.background='var(--teal)';
-  selectPlan('1');
-}
 
-/* ══ PLAN SELECTION ═════════════════════════════════════════════════ */
-function selectPlan(v){
-  document.querySelectorAll('.plan-opt').forEach(function(p){p.classList.remove('selected')});
-  if(v==='1'){
-    document.getElementById('planDestacado').classList.add('selected');
-    document.querySelector('#planDestacado input').checked=true;
-  }else{
-    document.getElementById('planBasico').classList.add('selected');
-    document.querySelector('#planBasico input').checked=true;
-  }
-}
 
 /* ══ PREVIEW TOGGLE ═════════════════════════════════════════════════ */
 function setPreview(mode){
