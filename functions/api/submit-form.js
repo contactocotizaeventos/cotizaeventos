@@ -33,115 +33,7 @@ function errorResponse(message, status = 500) {
   return jsonResponse({ ok: false, error: message }, status);
 }
 // ── Google reCAPTCHA verification ───────────────────────────────────
-
-async function verifyRecaptcha(token, request, env) {
-
-  if (!env.RECAPTCHA_SECRET_KEY) {
-    return {
-      ok: false,
-      serverError: true,
-      error: "RECAPTCHA_SECRET_KEY no disponible en este entorno"
-    };
-  }
-
-  if (!token) {
-    return {
-      ok: false,
-      error: "Token reCAPTCHA no recibido"
-    };
-  }
-
-  try {
-
-    const params = new URLSearchParams();
-
-    params.append("secret", env.RECAPTCHA_SECRET_KEY);
-    params.append("response", token);
-
-    const ip = request.headers.get("CF-Connecting-IP");
-
-    if (ip) {
-      params.append("remoteip", ip);
-    }
-
-    console.log("Enviando validación a Google reCAPTCHA");
-
-    const response = await fetch(
-      "https://www.google.com/recaptcha/api/siteverify",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: params.toString()
-      }
-    );
-
-    console.log("Google reCAPTCHA HTTP:", response.status);
-
-    // Primero lo leemos como texto para poder detectar respuestas raras
-    const raw = await response.text();
-
-    console.log("Respuesta Google reCAPTCHA:", raw);
-
-    let result;
-
-    try {
-      result = JSON.parse(raw);
-    } catch (err) {
-      return {
-        ok: false,
-        serverError: true,
-        error:
-          "Google respondió algo que no era JSON. HTTP " +
-          response.status +
-          ": " +
-          raw.substring(0, 200)
-      };
-    }
-
-    if (!result.success) {
-
-      const codes = result["error-codes"] || [];
-
-      console.warn("Google rechazó reCAPTCHA:", codes);
-
-      return {
-        ok: false,
-        error:
-          "Google rechazó el CAPTCHA: " +
-          (codes.length ? codes.join(", ") : "motivo desconocido")
-      };
-    }
-
-    console.log(
-      "reCAPTCHA válido. Hostname:",
-      result.hostname
-    );
-
-    return {
-      ok: true,
-      hostname: result.hostname || ""
-    };
-
-  } catch (err) {
-
-    console.error(
-      "ERROR REAL verifyRecaptcha:",
-      err
-    );
-
-    return {
-      ok: false,
-      serverError: true,
-      error:
-        "Error interno reCAPTCHA: " +
-        (err?.message || String(err))
-    };
-  }
-}
-/**
- * sendEmail — utility to send transactional emails via Resend API.
+/* sendEmail — utility to send transactional emails via Resend API.
  * Never blocks the main operation if it fails.
  */
 async function sendEmail(to, subject, html, env) {
@@ -245,8 +137,12 @@ export async function onRequestPost(context) {
     return errorResponse("El email es obligatorio", 400);
   }
 // ── Validate Google reCAPTCHA ──────────────────────────────────────
+// ── Validate reCAPTCHA using existing CAPTCHA endpoint ─────────────
 
-const recaptchaToken = body.recaptcha_token;
+const recaptchaToken =
+  typeof body.recaptcha_token === "string"
+    ? body.recaptcha_token
+    : "";
 
 if (!recaptchaToken) {
   return errorResponse(
@@ -255,29 +151,62 @@ if (!recaptchaToken) {
   );
 }
 
-const captchaResult = await verifyRecaptcha(
-  recaptchaToken,
-  request,
-  env
-);
+try {
 
-if (!captchaResult.ok) {
-
-  console.error(
-    "Resultado CAPTCHA:",
-    captchaResult
+  const captchaUrl = new URL(
+    "/api/whatsapp",
+    request.url
   );
 
-  if (captchaResult.serverError) {
+  const captchaResponse = await fetch(
+    captchaUrl.toString(),
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+
+      body: JSON.stringify({
+        token: recaptchaToken,
+
+        // reutilizamos el WhatsApp del formulario
+        phone: whatsapp.replace(/\D/g, ""),
+
+        // no necesitamos mensaje
+        text: ""
+      })
+    }
+  );
+
+  const captchaResult =
+    await captchaResponse.json();
+
+  if (
+    !captchaResponse.ok ||
+    !captchaResult.ok
+  ) {
+
+    console.warn(
+      "CAPTCHA rechazado:",
+      captchaResult
+    );
+
     return errorResponse(
-      captchaResult.error,
-      500
+      "No se pudo verificar reCAPTCHA. Intenta nuevamente.",
+      403
     );
   }
 
+} catch (err) {
+
+  console.error(
+    "Error llamando al verificador CAPTCHA:",
+    err
+  );
+
   return errorResponse(
-    captchaResult.error,
-    403
+    "Error verificando la seguridad del formulario",
+    500
   );
 }
 
