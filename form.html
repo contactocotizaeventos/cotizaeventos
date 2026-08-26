@@ -562,59 +562,136 @@ function setPreview(mode){
   var tpl=document.getElementById('tplPage');
   if(tpl)tpl.classList.toggle('preview-basico',mode==='bas');
 }
-
-/* ══ GOOGLE RECAPTCHA ═══════════════════════════════════════════════ */
 async function initFormRecaptcha(){
-  if(formRecaptchaWidgetId!==undefined)return;
-  var box=document.getElementById('formCaptchaError');
+  if(formRecaptchaWidgetId !== undefined) return;
+
+  var box = document.getElementById('formCaptchaError');
+
   try{
-    var configRes=await fetch('/api/recaptcha-config');
-    var config=await configRes.json();
-    if(!configRes.ok||!config.ok||!config.siteKey){
-      throw new Error(config.error||'reCAPTCHA no configurado');
+
+    // 1. Obtener Site Key desde tu backend
+    var configRes = await fetch('/api/recaptcha-config');
+    var config = await configRes.json();
+
+    if(!configRes.ok || !config.ok || !config.siteKey){
+      throw new Error(
+        config.error || 'reCAPTCHA no configurado'
+      );
     }
 
-    if(!window.grecaptcha){
-      await new Promise(function(resolve,reject){
-        var existing=document.querySelector('script[src^="https://www.google.com/recaptcha/api.js"]');
-        if(existing){
-          var wait=setInterval(function(){
-            if(window.grecaptcha){clearInterval(wait);resolve()}
-          },50);
-          setTimeout(function(){clearInterval(wait);if(!window.grecaptcha)reject(new Error('No se pudo cargar reCAPTCHA'))},10000);
-          return;
-        }
-        var script=document.createElement('script');
-        script.src='https://www.google.com/recaptcha/api.js?render=explicit';
-        script.async=true;
-        script.defer=true;
-        script.onload=resolve;
-        script.onerror=function(){reject(new Error('No se pudo cargar reCAPTCHA'))};
+
+    // 2. Cargar Google reCAPTCHA si todavía no está cargado
+    if(
+      !window.grecaptcha ||
+      typeof window.grecaptcha.render !== 'function'
+    ){
+
+      var existing = document.querySelector(
+        'script[src^="https://www.google.com/recaptcha/api.js"]'
+      );
+
+      if(!existing){
+
+        var script = document.createElement('script');
+
+        script.src =
+          'https://www.google.com/recaptcha/api.js?render=explicit';
+
+        script.async = true;
+        script.defer = true;
+
         document.head.appendChild(script);
+      }
+
+
+      // 3. ESPERAR realmente a que grecaptcha.render exista
+      await new Promise(function(resolve,reject){
+
+        var attempts = 0;
+
+        var wait = setInterval(function(){
+
+          attempts++;
+
+          if(
+            window.grecaptcha &&
+            typeof window.grecaptcha.render === 'function'
+          ){
+            clearInterval(wait);
+            resolve();
+            return;
+          }
+
+          // 200 intentos × 50ms = 10 segundos
+          if(attempts >= 200){
+            clearInterval(wait);
+
+            reject(
+              new Error(
+                'Google reCAPTCHA tardó demasiado en cargar'
+              )
+            );
+          }
+
+        },50);
+
       });
+
     }
 
-    formRecaptchaWidgetId=grecaptcha.render('formRecaptcha',{
-      sitekey:config.siteKey,
-      callback:function(token){
-        formRecaptchaToken=token;
-        if(box)box.textContent='';
-      },
-      'expired-callback':function(){
-        formRecaptchaToken='';
-        if(box)box.textContent='La verificación expiró. Complétala nuevamente.';
-      },
-      'error-callback':function(){
-        formRecaptchaToken='';
-        if(box)box.textContent='No se pudo cargar la verificación. Intenta nuevamente.';
+
+    // 4. Renderizar CAPTCHA
+    formRecaptchaWidgetId = window.grecaptcha.render(
+      'formRecaptcha',
+      {
+        sitekey: config.siteKey,
+
+        callback: function(token){
+
+          formRecaptchaToken = token;
+
+          if(box){
+            box.textContent = '';
+          }
+        },
+
+        'expired-callback': function(){
+
+          formRecaptchaToken = '';
+
+          if(box){
+            box.textContent =
+              'La verificación expiró. Complétala nuevamente.';
+          }
+        },
+
+        'error-callback': function(){
+
+          formRecaptchaToken = '';
+
+          if(box){
+            box.textContent =
+              'No se pudo cargar la verificación. Intenta nuevamente.';
+          }
+        }
       }
-    });
+    );
+
   }catch(e){
-    console.error('Error reCAPTCHA:',e);
-    if(box)box.textContent=e.message||'No se pudo cargar la verificación.';
+
+    console.error(
+      'Error reCAPTCHA:',
+      e
+    );
+
+    if(box){
+      box.textContent =
+        e.message ||
+        'No se pudo cargar la verificación.';
+    }
+
   }
 }
-
 function resetFormRecaptcha(){
   formRecaptchaToken='';
   if(window.grecaptcha&&formRecaptchaWidgetId!==undefined){
